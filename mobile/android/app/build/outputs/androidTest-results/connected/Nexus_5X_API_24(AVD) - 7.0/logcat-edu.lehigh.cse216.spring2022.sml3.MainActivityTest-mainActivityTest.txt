@@ -1,0 +1,114 @@
+02-14 13:09:37.828  9624  9639 I TestRunner: started: mainActivityTest(edu.lehigh.cse216.spring2022.sml3.MainActivityTest)
+02-14 13:09:37.829  9624  9639 W ActivityTestRule: getActivityIntent() returned null using default: Intent(Intent.ACTION_MAIN)
+02-14 13:09:37.868  9624  9624 D LifecycleMonitor: Lifecycle status change: edu.lehigh.cse216.law322.MainActivity@d46f73 in: PRE_ON_CREATE
+02-14 13:09:37.878  9624  9624 W art     : Before Android 4.1, method android.graphics.PorterDuffColorFilter androidx.vectordrawable.graphics.drawable.VectorDrawableCompat.updateTintFilter(android.graphics.PorterDuffColorFilter, android.content.res.ColorStateList, android.graphics.PorterDuff$Mode) would have incorrectly overridden the package-private method in android.graphics.drawable.Drawable
+02-14 13:09:37.897  1348  2077 D gralloc_ranchu: gralloc_alloc: Creating ashmem region of size 8294400
+02-14 13:09:37.950  1782  1782 W asset   : Asset path /data/app/edu.lehigh.cse216.law322-2/base.apk is neither a directory nor file (type=1).
+02-14 13:09:37.951  1782  1782 W PackageManager: Failure retrieving resources for edu.lehigh.cse216.law322
+02-14 13:09:37.951  1782  1782 W asset   : Asset path /data/app/edu.lehigh.cse216.law322-2/base.apk is neither a directory nor file (type=1).
+02-14 13:09:37.951  1782  1782 W PackageManager: Failure retrieving resources for edu.lehigh.cse216.law322
+02-14 13:09:37.951  1782  1782 W asset   : Asset path /data/app/edu.lehigh.cse216.law322-2/base.apk is neither a directory nor file (type=1).
+02-14 13:09:37.952  1782  1782 W PackageManager: Failure retrieving resources for edu.lehigh.cse216.law322
+02-14 13:09:37.952  1782  1782 W asset   : Asset path /data/app/edu.lehigh.cse216.law322-2/base.apk is neither a directory nor file (type=1).
+02-14 13:09:37.952  1782  1782 W PackageManager: Failure retrieving resources for edu.lehigh.cse216.law322
+02-14 13:09:37.952  1782  1782 W asset   : Asset path /data/app/edu.lehigh.cse216.law322-2/base.apk is neither a directory nor file (type=1).
+02-14 13:09:37.953  1782  1782 W PackageManager: Failure retrieving resources for edu.lehigh.cse216.law322
+02-14 13:09:37.960  9645  9645 W ps      : type=1400 audit(0.0:9622): avc: denied { getattr } for path="/proc/1" dev="proc" ino=1072 scontext=u:r:untrusted_app:s0:c512,c768 tcontext=u:r:init:s0 tclass=dir permissive=0
+02-14 13:09:37.960  9645  9645 W ps      : type=1400 audit(0.0:9623): avc: denied { search } for name="1" dev="proc" ino=1072 scontext=u:r:untrusted_app:s0:c512,c768 tcontext=u:r:init:s0 tclass=dir permissive=0
+02-14 13:09:37.994  9624  9624 D law322  : Debug Message from onCreate
+02-14 13:09:37.960  9645  9645 W ps      : type=1400 audit(0.0:9624): avc: denied { search } for name="1" dev="proc" ino=1072 scontext=u:r:untrusted_app:s0:c512,c768 tcontext=u:r:init:s0 tclass=dir permissive=0
+02-14 13:09:37.960  9645  9645 W ps      : type=1400 audit(0.0:9625): avc: denied { getattr } for path="/proc/2" dev="proc" ino=8514 scontext=u:r:untrusted_app:s0:c512,c768 tcontext=u:r:kernel:s0 tclass=dir permissive=0
+02-14 13:09:37.960  9645  9645 W ps      : type=1400 audit(0.0:9626): avc: denied { search } for name="2" dev="proc" ino=8514 scontext=u:r:untrusted_app:s0:c512,c768 tcontext=u:r:kernel:s0 tclass=dir permissive=0
+02-14 13:09:38.022  9624  9624 D LifecycleMonitor: Lifecycle status change: edu.lehigh.cse216.law322.MainActivity@d46f73 in: CREATED
+02-14 13:09:37.960  9645  9645 W ps      : type=1400 audit(0.0:9627): avc: denied { search } for name="2" dev="proc" ino=8514 scontext=u:r:untrusted_app:s0:c512,c768 tcontext=u:r:kernel:s0 tclass=dir permissive=0
+02-14 13:09:38.031  9624  9624 D LifecycleMonitor: Lifecycle status change: edu.lehigh.cse216.law322.MainActivity@d46f73 in: STARTED
+02-14 13:09:38.036  9624  9624 D LifecycleMonitor: Lifecycle status change: edu.lehigh.cse216.law322.MainActivity@d46f73 in: RESUMED
+02-14 13:09:38.036  2350  2430 D EGL_emulation: eglMakeCurrent: 0xb2a05480: ver 2 0 (tinfo 0xb2a036b0)
+02-14 13:09:37.960  9645  9645 W ps      : type=1400 audit(0.0:9628): avc: denied { getattr } for path="/proc/3" dev="proc" ino=8515 scontext=u:r:untrusted_app:s0:c512,c768 tcontext=u:r:kernel:s0 tclass=dir permissive=0
+02-14 13:09:37.960  9645  9645 W ps      : type=1400 audit(0.0:9629): avc: denied { search } for name="3" dev="proc" ino=8515 scontext=u:r:untrusted_app:s0:c512,c768 tcontext=u:r:kernel:s0 tclass=dir permissive=0
+02-14 13:09:38.050  1348  1357 E SurfaceFlinger: ro.sf.lcd_density must be defined as a build property
+02-14 13:09:38.058  9624  9624 D         : HostConnection::get() New Host Connection established 0x975e7240, tid 9624
+02-14 13:09:37.960  9645  9645 W ps      : type=1400 audit(0.0:9630): avc: denied { search } for name="3" dev="proc" ino=8515 scontext=u:r:untrusted_app:s0:c512,c768 tcontext=u:r:kernel:s0 tclass=dir permissive=0
+02-14 13:09:37.960  9645  9645 W ps      : type=1400 audit(0.0:9631): avc: denied { getattr } for path="/proc/5" dev="proc" ino=8517 scontext=u:r:untrusted_app:s0:c512,c768 tcontext=u:r:kernel:s0 tclass=dir permissive=0
+02-14 13:09:37.960  9645  9645 W ps      : type=1400 audit(0.0:9632): avc: denied { search } for name="5" dev="proc" ino=8517 scontext=u:r:untrusted_app:s0:c512,c768 tcontext=u:r:kernel:s0 tclass=dir permissive=0
+02-14 13:09:37.960  9645  9645 W ps      : type=1400 audit(0.0:9633): avc: denied { search } for name="5" dev="proc" ino=8517 scontext=u:r:untrusted_app:s0:c512,c768 tcontext=u:r:kernel:s0 tclass=dir permissive=0
+02-14 13:09:37.960  9645  9645 W ps      : type=1400 audit(0.0:9634): avc: denied { getattr } for path="/proc/7" dev="proc" ino=8519 scontext=u:r:untrusted_app:s0:c512,c768 tcontext=u:r:kernel:s0 tclass=dir permissive=0
+02-14 13:09:37.960  9645  9645 W ps      : type=1400 audit(0.0:9635): avc: denied { search } for name="7" dev="proc" ino=8519 scontext=u:r:untrusted_app:s0:c512,c768 tcontext=u:r:kernel:s0 tclass=dir permissive=0
+02-14 13:09:37.960  9645  9645 W ps      : type=1400 audit(0.0:9636): avc: denied { search } for name="7" dev="proc" ino=8519 scontext=u:r:untrusted_app:s0:c512,c768 tcontext=u:r:kernel:s0 tclass=dir permissive=0
+02-14 13:09:37.960  9645  9645 W ps      : type=1400 audit(0.0:9637): avc: denied { getattr } for path="/proc/8" dev="proc" ino=8520 scontext=u:r:untrusted_app:s0:c512,c768 tcontext=u:r:kernel:s0 tclass=dir permissive=0
+02-14 13:09:37.960  9645  9645 W ps      : type=1400 audit(0.0:9638): avc: denied { search } for name="8" dev="proc" ino=8520 scontext=u:r:untrusted_app:s0:c512,c768 tcontext=u:r:kernel:s0 tclass=dir permissive=0
+02-14 13:09:37.960  9645  9645 W ps      : type=1400 audit(0.0:9639): avc: denied { search } for name="8" dev="proc" ino=8520 scontext=u:r:untrusted_app:s0:c512,c768 tcontext=u:r:kernel:s0 tclass=dir permissive=0
+02-14 13:09:38.136  9624  9624 D sml3    : Successfully parsed JSON file.
+02-14 13:09:37.960  9645  9645 W ps      : type=1400 audit(0.0:9640): avc: denied { getattr } for path="/proc/9" dev="proc" ino=8521 scontext=u:r:untrusted_app:s0:c512,c768 tcontext=u:r:kernel:s0 tclass=dir permissive=0
+02-14 13:09:37.960  9645  9645 W ps      : type=1400 audit(0.0:9641): avc: denied { search } for name="9" dev="proc" ino=8521 scontext=u:r:untrusted_app:s0:c512,c768 tcontext=u:r:kernel:s0 tclass=dir permissive=0
+02-14 13:09:38.180  9624  9656 D         : HostConnection::get() New Host Connection established 0x975e7700, tid 9656
+02-14 13:09:38.184  9624  9656 I OpenGLRenderer: Initialized EGL, version 1.4
+02-14 13:09:38.184  9624  9656 D OpenGLRenderer: Swap behavior 1
+02-14 13:09:38.184  9624  9656 W OpenGLRenderer: Failed to choose config with EGL_SWAP_BEHAVIOR_PRESERVED, retrying without...
+02-14 13:09:38.184  9624  9656 D OpenGLRenderer: Swap behavior 0
+02-14 13:09:38.190  9624  9656 D EGL_emulation: eglCreateContext: 0xb2a05900: maj 2 min 0 rcv 2
+02-14 13:09:38.194  9624  9656 D EGL_emulation: eglMakeCurrent: 0xb2a05900: ver 2 0 (tinfo 0xb2a037b0)
+02-14 13:09:38.264  9624  9656 D EGL_emulation: eglMakeCurrent: 0xb2a05900: ver 2 0 (tinfo 0xb2a037b0)
+02-14 13:09:38.420  1654  1674 I ActivityManager: Displayed edu.lehigh.cse216.law322/.MainActivity: +579ms
+02-14 13:09:39.011  9624  9639 D EventInjectionStrategy: Creating injection strategy with input manager.
+02-14 13:09:39.030  9624  9624 I ViewInteraction: Performing 'single click' action on view (view.getContentDescription() is "More options" and Child at position 0 in parent Child at position 1 in parent view.getId() is <2131231142/edu.lehigh.cse216.law322:id/toolbar> and (view has effective visibility <VISIBLE> and view.getGlobalVisibleRect() to return non-empty rectangle))
+02-14 13:09:39.097  9624  9624 W art     : Before Android 4.1, method int androidx.appcompat.widget.DropDownListView.lookForSelectablePosition(int, boolean) would have incorrectly overridden the package-private method in android.widget.ListView
+02-14 13:09:39.102  9624  9624 W art     : Before Android 4.1, method int androidx.appcompat.widget.MenuPopupWindow$MenuDropDownListView.lookForSelectablePosition(int, boolean) would have incorrectly overridden the package-private method in android.widget.ListView
+02-14 13:09:39.104  1416  1436 W audio_hw_generic: Not supplying enough data to HAL, expected position 2138652 , only wrote 2138400
+02-14 13:09:39.167  1416  1436 W audio_hw_generic: Not supplying enough data to HAL, expected position 2141418 , only wrote 2141280
+02-14 13:09:39.167  1416  1436 W audio_hw_generic: Not supplying enough data to HAL, expected position 2141288 , only wrote 2141280
+02-14 13:09:39.168  1416  1436 W audio_hw_generic: Hardware backing HAL too slow, could only write 0 of 720 frames
+02-14 13:09:39.211  1416  1437 D AudioFlinger: mixer(0xb4e03fc0) throttle end: throttle time(12)
+02-14 13:09:39.259  9624  9656 D EGL_emulation: eglMakeCurrent: 0xb2a05900: ver 2 0 (tinfo 0xb2a037b0)
+02-14 13:09:39.324  9624  9656 D EGL_emulation: eglMakeCurrent: 0xb2a05900: ver 2 0 (tinfo 0xb2a037b0)
+02-14 13:09:39.364  9624  9656 D EGL_emulation: eglMakeCurrent: 0xb2a05900: ver 2 0 (tinfo 0xb2a037b0)
+02-14 13:09:39.397  9624  9656 D EGL_emulation: eglMakeCurrent: 0xb2a05900: ver 2 0 (tinfo 0xb2a037b0)
+02-14 13:09:39.407  9624  9656 D EGL_emulation: eglMakeCurrent: 0xb2a05900: ver 2 0 (tinfo 0xb2a037b0)
+02-14 13:09:39.412  9624  9656 D EGL_emulation: eglMakeCurrent: 0xb2a05900: ver 2 0 (tinfo 0xb2a037b0)
+02-14 13:09:39.417  9624  9656 D EGL_emulation: eglMakeCurrent: 0xb2a05900: ver 2 0 (tinfo 0xb2a037b0)
+02-14 13:09:39.427  9624  9656 D EGL_emulation: eglMakeCurrent: 0xb2a05900: ver 2 0 (tinfo 0xb2a037b0)
+02-14 13:09:39.434  9624  9656 D EGL_emulation: eglMakeCurrent: 0xb2a05900: ver 2 0 (tinfo 0xb2a037b0)
+02-14 13:09:39.439  9624  9625 I art     : Do partial code cache collection, code=25KB, data=30KB
+02-14 13:09:39.440  9624  9625 I art     : After code cache collection, code=24KB, data=30KB
+02-14 13:09:39.440  9624  9625 I art     : Increasing code cache capacity to 128KB
+02-14 13:09:39.444  9624  9656 D EGL_emulation: eglMakeCurrent: 0xb2a05900: ver 2 0 (tinfo 0xb2a037b0)
+02-14 13:09:39.451  9624  9656 D EGL_emulation: eglMakeCurrent: 0xb2a05900: ver 2 0 (tinfo 0xb2a037b0)
+02-14 13:09:39.460  9624  9656 D EGL_emulation: eglMakeCurrent: 0xb2a05900: ver 2 0 (tinfo 0xb2a037b0)
+02-14 13:09:39.468  9624  9656 D EGL_emulation: eglMakeCurrent: 0xb2a05900: ver 2 0 (tinfo 0xb2a037b0)
+02-14 13:09:39.479  9624  9656 D EGL_emulation: eglMakeCurrent: 0xb2a05900: ver 2 0 (tinfo 0xb2a037b0)
+02-14 13:09:39.485  9624  9656 D EGL_emulation: eglMakeCurrent: 0xb2a05900: ver 2 0 (tinfo 0xb2a037b0)
+02-14 13:09:39.494  9624  9656 D EGL_emulation: eglMakeCurrent: 0xb2a05900: ver 2 0 (tinfo 0xb2a037b0)
+02-14 13:09:39.498  9624  9656 D EGL_emulation: eglMakeCurrent: 0xb2a05900: ver 2 0 (tinfo 0xb2a037b0)
+02-14 13:09:39.510  9624  9656 D EGL_emulation: eglMakeCurrent: 0xb2a05900: ver 2 0 (tinfo 0xb2a037b0)
+02-14 13:09:39.515  9624  9656 D EGL_emulation: eglMakeCurrent: 0xb2a05900: ver 2 0 (tinfo 0xb2a037b0)
+02-14 13:09:39.529  9624  9656 D EGL_emulation: eglMakeCurrent: 0xb2a05900: ver 2 0 (tinfo 0xb2a037b0)
+02-14 13:09:39.534  9624  9656 D EGL_emulation: eglMakeCurrent: 0xb2a05900: ver 2 0 (tinfo 0xb2a037b0)
+02-14 13:09:39.544  9624  9656 D EGL_emulation: eglMakeCurrent: 0xb2a05900: ver 2 0 (tinfo 0xb2a037b0)
+02-14 13:09:39.550  9624  9656 D EGL_emulation: eglMakeCurrent: 0xb2a05900: ver 2 0 (tinfo 0xb2a037b0)
+02-14 13:09:39.560  9624  9656 D EGL_emulation: eglMakeCurrent: 0xb2a05900: ver 2 0 (tinfo 0xb2a037b0)
+02-14 13:09:39.564  9624  9656 D EGL_emulation: eglMakeCurrent: 0xb2a05900: ver 2 0 (tinfo 0xb2a037b0)
+02-14 13:09:39.577  9624  9656 D EGL_emulation: eglMakeCurrent: 0xb2a05900: ver 2 0 (tinfo 0xb2a037b0)
+02-14 13:09:39.581  9624  9656 D EGL_emulation: eglMakeCurrent: 0xb2a05900: ver 2 0 (tinfo 0xb2a037b0)
+02-14 13:09:39.592  9624  9656 D EGL_emulation: eglMakeCurrent: 0xb2a05900: ver 2 0 (tinfo 0xb2a037b0)
+02-14 13:09:39.885  9624  9624 I ViewInteraction: Performing 'single click' action on view an instance of android.widget.TextView and view.getText() with or without transformation to match: is "Settings"
+02-14 13:09:39.942  9624  9656 D EGL_emulation: eglMakeCurrent: 0xb2a05900: ver 2 0 (tinfo 0xb2a037b0)
+02-14 13:09:40.015  9624  9624 D LifecycleMonitor: Lifecycle status change: edu.lehigh.cse216.law322.MainActivity@d46f73 in: PAUSED
+02-14 13:09:40.035  9624  9624 D LifecycleMonitor: Lifecycle status change: edu.lehigh.cse216.law322.SecondActivity@c086ae3 in: PRE_ON_CREATE
+02-14 13:09:40.103  9624  9624 D LifecycleMonitor: Lifecycle status change: edu.lehigh.cse216.law322.SecondActivity@c086ae3 in: CREATED
+02-14 13:09:40.105  9624  9624 D LifecycleMonitor: Lifecycle status change: edu.lehigh.cse216.law322.SecondActivity@c086ae3 in: STARTED
+02-14 13:09:40.108  9624  9624 D LifecycleMonitor: Lifecycle status change: edu.lehigh.cse216.law322.SecondActivity@c086ae3 in: RESUMED
+02-14 13:09:40.165  9624  9625 I art     : Do partial code cache collection, code=56KB, data=62KB
+02-14 13:09:40.167  9624  9625 I art     : After code cache collection, code=50KB, data=59KB
+02-14 13:09:40.167  9624  9625 I art     : Increasing code cache capacity to 256KB
+02-14 13:09:40.188  9624  9656 D EGL_emulation: eglMakeCurrent: 0xb2a05900: ver 2 0 (tinfo 0xb2a037b0)
+02-14 13:09:40.247  9624  9656 D EGL_emulation: eglMakeCurrent: 0xb2a05900: ver 2 0 (tinfo 0xb2a037b0)
+02-14 13:09:40.267  9624  9656 D EGL_emulation: eglMakeCurrent: 0xb2a05900: ver 2 0 (tinfo 0xb2a037b0)
+02-14 13:09:40.275  9624  9656 D EGL_emulation: eglMakeCurrent: 0xb2a05900: ver 2 0 (tinfo 0xb2a037b0)
+02-14 13:09:40.276  1654  1674 I ActivityManager: Displayed edu.lehigh.cse216.law322/.SecondActivity: +260ms
+02-14 13:09:40.287  9624  9656 D EGL_emulation: eglMakeCurrent: 0xb2a05900: ver 2 0 (tinfo 0xb2a037b0)
+02-14 13:09:40.289  9624  9656 D OpenGLRenderer: endAllActiveAnimators on 0x96dd9680 (MenuPopupWindow$MenuDropDownListView) with handle 0x95ea5350
+02-14 13:09:40.621  9624  9624 D LifecycleMonitor: Lifecycle status change: edu.lehigh.cse216.law322.MainActivity@d46f73 in: STOPPED
+02-14 13:09:40.775  9624  9656 D EGL_emulation: eglMakeCurrent: 0xb2a05900: ver 2 0 (tinfo 0xb2a037b0)
+02-14 13:09:41.067  9624  9624 I ViewInteraction: Checking 'MatchesViewAssertion{viewMatcher=an instance of android.widget.TextView and view.getText() with or without transformation to match: is "CSE216 is the best"}' assertion on view (view.getId() is <2131231081/edu.lehigh.cse216.law322:id/specialMessage> and an instance of android.widget.TextView and view.getText() with or without transformation to match: is "CSE216 is the best" and view.getParent() view.getParent() an instance of android.view.ViewGroup and (view has effective visibility <VISIBLE> and view.getGlobalVisibleRect() to return non-empty rectangle))
+02-14 13:09:41.075  9624  9624 D LifecycleMonitor: Lifecycle status change: edu.lehigh.cse216.law322.MainActivity@d46f73 in: DESTROYED
+02-14 13:09:41.080  9624  9639 I TestRunner: finished: mainActivityTest(edu.lehigh.cse216.spring2022.sml3.MainActivityTest)

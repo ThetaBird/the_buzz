@@ -1,0 +1,2 @@
+02-14 13:09:37.821  9624  9639 I TestRunner: started: useAppContext(edu.lehigh.cse216.law322.ExampleInstrumentedTest)
+02-14 13:09:37.824  9624  9639 I TestRunner: finished: useAppContext(edu.lehigh.cse216.law322.ExampleInstrumentedTest)

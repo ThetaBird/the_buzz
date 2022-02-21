@@ -1,0 +1,120 @@
+# 2022-02-14T18:09:42.531Z:
+test_suite_meta_data {
+  scheduled_test_case_count: 2
+}
+test_status: PASSED
+test_result {
+  test_case {
+    test_class: "ExampleInstrumentedTest"
+    test_package: "edu.lehigh.cse216.law322"
+    test_method: "useAppContext"
+    start_time {
+      seconds: 1644862178
+      nanos: 332000000
+    }
+    end_time {
+      seconds: 1644862178
+      nanos: 406000000
+    }
+  }
+  test_status: PASSED
+  output_artifact {
+    label {
+      label: "logcat"
+      namespace: "android"
+    }
+    source_path {
+      path: "/Users/laurenwasserman/Desktop/cse216_law322/mobile/android/app/build/outputs/androidTest-results/connected/Nexus_5X_API_24(AVD) - 7.0/logcat-edu.lehigh.cse216.law322.ExampleInstrumentedTest-useAppContext.txt"
+    }
+  }
+  output_artifact {
+    label {
+      label: "device-info"
+      namespace: "android"
+    }
+    source_path {
+      path: "/Users/laurenwasserman/Desktop/cse216_law322/mobile/android/app/build/outputs/androidTest-results/connected/Nexus_5X_API_24(AVD) - 7.0/device-info.pb"
+    }
+  }
+  output_artifact {
+    label {
+      label: "device-info.meminfo"
+      namespace: "android"
+    }
+    source_path {
+      path: "/Users/laurenwasserman/Desktop/cse216_law322/mobile/android/app/build/outputs/androidTest-results/connected/Nexus_5X_API_24(AVD) - 7.0/meminfo"
+    }
+  }
+  output_artifact {
+    label {
+      label: "device-info.cpuinfo"
+      namespace: "android"
+    }
+    source_path {
+      path: "/Users/laurenwasserman/Desktop/cse216_law322/mobile/android/app/build/outputs/androidTest-results/connected/Nexus_5X_API_24(AVD) - 7.0/cpuinfo"
+    }
+  }
+}
+test_result {
+  test_case {
+    test_class: "MainActivityTest"
+    test_package: "edu.lehigh.cse216.spring2022.sml3"
+    test_method: "mainActivityTest"
+    start_time {
+      seconds: 1644862178
+      nanos: 431000000
+    }
+    end_time {
+      seconds: 1644862181
+      nanos: 597000000
+    }
+  }
+  test_status: PASSED
+  output_artifact {
+    label {
+      label: "logcat"
+      namespace: "android"
+    }
+    source_path {
+      path: "/Users/laurenwasserman/Desktop/cse216_law322/mobile/android/app/build/outputs/androidTest-results/connected/Nexus_5X_API_24(AVD) - 7.0/logcat-edu.lehigh.cse216.spring2022.sml3.MainActivityTest-mainActivityTest.txt"
+    }
+  }
+  output_artifact {
+    label {
+      label: "device-info"
+      namespace: "android"
+    }
+    source_path {
+      path: "/Users/laurenwasserman/Desktop/cse216_law322/mobile/android/app/build/outputs/androidTest-results/connected/Nexus_5X_API_24(AVD) - 7.0/device-info.pb"
+    }
+  }
+  output_artifact {
+    label {
+      label: "device-info.meminfo"
+      namespace: "android"
+    }
+    source_path {
+      path: "/Users/laurenwasserman/Desktop/cse216_law322/mobile/android/app/build/outputs/androidTest-results/connected/Nexus_5X_API_24(AVD) - 7.0/meminfo"
+    }
+  }
+  output_artifact {
+    label {
+      label: "device-info.cpuinfo"
+      namespace: "android"
+    }
+    source_path {
+      path: "/Users/laurenwasserman/Desktop/cse216_law322/mobile/android/app/build/outputs/androidTest-results/connected/Nexus_5X_API_24(AVD) - 7.0/cpuinfo"
+    }
+  }
+}
+output_artifact {
+  label {
+    label: "test-results.log"
+    namespace: "com.google.testing.platform.runtime.android.driver.AndroidInstrumentationDriver"
+  }
+  source_path {
+    path: "/Users/laurenwasserman/Desktop/cse216_law322/mobile/android/app/build/outputs/androidTest-results/connected/Nexus_5X_API_24(AVD) - 7.0/testlog/test-results.log"
+  }
+  type: TEST_DATA
+  mime_type: "text/plain"
+}
