@@ -1,4 +1,4 @@
-package edu.lehigh.cse216.law322.backend;
+package edu.lehigh.cse216.group4.backend;
 
 /**
  * DataRowLite is for communicating back a subset of the information in a

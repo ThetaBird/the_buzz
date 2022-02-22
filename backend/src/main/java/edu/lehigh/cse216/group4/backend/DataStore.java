@@ -1,4 +1,4 @@
-package edu.lehigh.cse216.law322.backend;
+package edu.lehigh.cse216.group4.backend;
 
 import java.util.ArrayList;
 
@@ -13,23 +13,15 @@ import java.util.ArrayList;
  * web framework and there may be multiple concurrent accesses to the DataStore.
  */
 public class DataStore {
-    /**
-     * The rows of data in our DataStore
-     */
-    private ArrayList<DataRow> mRows;
 
-    /**
-     * A counter for keeping track of the next ID to assign to a new row
-     */
-    private int mCounter;
+    private Database db;
 
     /**
      * Construct the DataStore by resetting its counter and creating the
      * ArrayList for the rows of data.
      */
     DataStore() {
-        mCounter = 0;
-        mRows = new ArrayList<>();
+
     }
 
     /**
@@ -49,81 +41,83 @@ public class DataStore {
             return -1;
         // NB: we can safely assume that id is greater than the largest index in 
         //     mRows, and thus we can use the index-based add() method
-        int id = mCounter++;
-        DataRow data = new DataRow(id, title, content);
-        mRows.add(id, data);
-        return id;
+        //int id = mCounter++;
+        //DataRow data = new DataRow(id, title, content);
+        int ret = db.insertRow(title, content);
+        //mRows.add(id, data);
+        return ret;
     }
-
+    public synchronized int attachDB(Database db){
+        if(db == null)
+            return -1;
+        this.db = db;
+        return 0;
+    }
     /**
      * Get one complete row from the DataStore using its ID to select it
      * 
      * @param id The id of the row to select
      * @return A copy of the data in the row, if it exists, or null otherwise
      */
-    public synchronized DataRow readOne(int id) {
-        if (id >= mRows.size())
-            return null;
-        DataRow data = mRows.get(id);
+    public synchronized Database.RowData readOne(int id) {
+       // if (id >= mRows.size())
+       //     return null;
+        Database.RowData data = db.selectOne(id);
         if (data == null)
             return null;
-        return new DataRow(data);
+        return new Database.RowData(data);
     }
 
     /**
      * Get all of the ids and titles that are present in the DataStore
      * @return An ArrayList with all of the data
      */
-    public synchronized ArrayList<DataRowLite> readAll() {
-        ArrayList<DataRowLite> data = new ArrayList<>();
+    public synchronized ArrayList<Database.RowDataLite> readAll() {
+        ArrayList<Database.RowData> allRows = db.selectAll();
+        ArrayList<Database.RowDataLite> data = new ArrayList<Database.RowDataLite>();
         // NB: we copy the data, so that our ArrayList only has ids and titles
-        for (DataRow row : mRows) {
+        for (Database.RowData row : allRows) {
             if (row != null)
-                data.add(new DataRowLite(row));
+                data.add(new Database.RowDataLite(row));
         }
         return data;
     }
-
     /**
-    * Update the title and content of a row in the DataStore
-    *
-    * @param id The Id of the row to update
-    * @param title The new title for the row
-    * @param content The new content for the row
-    * @return a copy of the data in the row, if it exists, or null otherwise
-    */
-    public synchronized DataRow updateOne(int id, String title, String content) {
+     * Update the title and content of a row in the DataStore
+     *
+     * @param id The Id of the row to update
+     * @param title The new title for the row
+     * @param content The new content for the row
+     * @return a copy of the data in the row, if it exists, or null otherwise
+     */
+    public synchronized Database.RowData updateOne(int id, String title, String content) {
         // Do not update if we don't have valid data
         if (title == null || content == null)
             return null;
         // Only update if the current entry is valid (not null)
-        if (id >= mRows.size())
-            return null;
-        DataRow data = mRows.get(id);
+        //if (id >= mRows.size())
+        //    return null;
+        Database.RowData data = db.selectOne(id);
         if (data == null)
             return null;
         // Update and then return a copy of the data, as a DataRow
-        data.mTitle = title;
-        data.mContent = content;
-        return new DataRow(data);
+        data.mSubject = title;
+        data.mMessage = content;
+        int res = db.updateOne(id, content);
+        if(res == -1){return null;}
+        return new Database.RowData(data);
     }
 
     /**
-    * Delete a row from the DataStore
-    * 
-    * @param id The Id of the row to delete
-    * @return true if the row was deleted, false otherwise
-    */
+     * Delete a row from the DataStore
+     * 
+     * @param id The Id of the row to delete
+     * @return true if the row was deleted, false otherwise
+     */
     public synchronized boolean deleteOne(int id) {
-        // Deletion fails for an invalid Id or an Id that has already been 
-        // deleted
-        if (id >= mRows.size())
-            return false;
-        if (mRows.get(id) == null)
-            return false;
-        // Delete by setting to null, so that any Ids used by other clients
-        // still refer to the same positions in the ArrayList.
-        mRows.set(id, null);
+        int res = db.deleteRow(id);
+        if(res == -1){return false;}
         return true;
     }
+    
 }

@@ -1,6 +1,5 @@
-package edu.lehigh.cse216.law322.backend;
+package edu.lehigh.cse216.group4.backend;
 
-import java.util.Date;
 
 /**
  * DataRow holds a row of information.  A row of information consists of
@@ -28,11 +27,6 @@ public class DataRow {
      */
     public String mContent;
 
-    /**
-     * The creation date for this row of data.  Once it is set, it cannot be 
-     * changed
-     */
-    public final Date mCreated;
 
     /**
      * Create a new DataRow with the provided id and title/content, and a 
@@ -50,7 +44,7 @@ public class DataRow {
         mId = id;
         mTitle = title;
         mContent = content;
-        mCreated = new Date();
+
     }
 
     /**
@@ -61,6 +55,6 @@ public class DataRow {
         // NB: Strings and Dates are immutable, so copy-by-reference is safe
         mTitle = data.mTitle;
         mContent = data.mContent;
-        mCreated = data.mCreated;
+
     }
 }
