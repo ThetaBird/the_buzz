@@ -46,12 +46,17 @@ public class Database {
     /**
      * A prepared statement for creating the table in our database
      */
-    private PreparedStatement mCreateTable;
+    private PreparedStatement mCreateUserTable;
+    private PreparedStatement mCreateIdeaTable;
+    private PreparedStatement mCreateReactionTable;
+
 
     /**
      * A prepared statement for dropping the table in our database
      */
-    private PreparedStatement mDropTable;
+    private PreparedStatement mDropUserTable;
+    private PreparedStatement mDropIdeaTable;
+    private PreparedStatement mDropReactionTable;
 
     /**
      * RowData is like a struct in C: we use it to hold data, and we allow 
@@ -170,10 +175,31 @@ public class Database {
             // Note: no "IF NOT EXISTS" or "IF EXISTS" checks on table 
             // creation/deletion, so multiple executions will cause an exception
             
-            db.mCreateTable = db.mConnection.prepareStatement(
-                    "CREATE TABLE tblData (id SERIAL PRIMARY KEY, subject VARCHAR(50) "
-                    + "NOT NULL, message VARCHAR(500) NOT NULL)");
-            db.mDropTable = db.mConnection.prepareStatement("DROP TABLE tblData");
+            db.mCreateUserTable = db.mConnection.prepareStatement(
+                    "CREATE TABLE users (" + 
+                    "id SERIAL PRIMARY KEY, " + //id of user (TechDebt: turn into string id)
+                    "avatar VARCHAR, " + //file path to avatar of user (TechDebt: actually implement this)
+                    "name VARCHAR(50) NOT NULL, " + //Displayed name of user
+                    "passwordHash VARCHAR(64) NOT NULL, " + //encrypted hash string of password (TechDebt: actually implement this)
+                    "companyRoles SMALLINT) "); //position of user in company hierarchy
+            db.mDropUserTable = db.mConnection.prepareStatement("DROP TABLE users");
+
+            db.mCreateIdeaTable = db.mConnection.prepareStatement(
+                    "CREATE TABLE ideas (" + 
+                    "id SERIAL PRIMARY KEY, " + //id of idea (TechDebt: turn into string id)
+                    "user INTEGER NOT NULL, " + //id of user who posted the id
+                    "timestamp BIGINT NOT NULL, " + //time of creation in milliseconds
+                    "subject VARCHAR(64) NOT NULL, " + //subject of idea
+                    "content VARCHAR(500) NOT NULL " + //more descriptive content of idea
+                    "allowedRoles SMALLINT[] ) "); //array of company roles who can view this message
+            db.mDropIdeaTable = db.mConnection.prepareStatement("DROP TABLE ideas");
+
+            db.mCreateReactionTable = db.mConnection.prepareStatement(
+                    "CREATE TABLE reactions (" + 
+                    "idea INTEGER NOT NULL, " + //id of idea for which reactions are reacted
+                    "likes INTEGER[], " + //ids of users who liked
+                    "dislikes INTEGER[]) "); //ids of users who disliked
+            db.mDropReactionTable = db.mConnection.prepareStatement("DROP TABLE reactions");
 
             // Standard CRUD operations
             db.mDeleteOne = db.mConnection.prepareStatement("DELETE FROM tblData WHERE id = ?");
@@ -318,7 +344,7 @@ public class Database {
      */
     void createTable() {
         try {
-            mCreateTable.execute();
+            mCreateIdeaTable.execute();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -330,7 +356,7 @@ public class Database {
      */
     void dropTable() {
         try {
-            mDropTable.execute();
+            mDropIdeaTable.execute();
         } catch (SQLException e) {
             e.printStackTrace();
         }
