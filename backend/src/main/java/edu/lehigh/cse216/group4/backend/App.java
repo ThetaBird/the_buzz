@@ -1,6 +1,3 @@
-/*
-POSTGRES_IP=127.0.0.1 POSTGRES_PORT=5432 POSTGRES_USER=group4 POSTGRES_PASS=group4 mvn exec:java
-*/
 package edu.lehigh.cse216.group4.backend;
 
 // Import the Spark package, so that we can make use of the "get" function to 
@@ -8,11 +5,14 @@ package edu.lehigh.cse216.group4.backend;
 import spark.Spark;
 import java.util.Map;
 
+
 /**
  * For now, our app creates an HTTP server that can only get and add data.
  */
 public class App {
     public static void main(String[] args) {
+        
+        
         // dataStore holds all of the data that has been provided via HTTP 
         // requests
         //

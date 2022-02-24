@@ -22,11 +22,31 @@ public class Routes {
         // the data, embed it in a StructuredResponse, turn it into JSON, and 
         // return it.  If there's no data, we return "[]", so there's no need 
         // for error handling.
-        Spark.get("/messages", (request, response) -> {
+        Spark.get("/ideas", (request, response) -> {
             // ensure status 200 OK, with a MIME type of JSON
             response.status(200);
             response.type("application/json");
-            return gson.toJson(new StructuredResponse("ok", null, dataStore.readAll()));
+            return gson.toJson(new StructuredResponse("ok", null, dataStore.readAllIdeas()));
+        });
+
+        Spark.get("/users", (request, response) -> {
+            // ensure status 200 OK, with a MIME type of JSON
+            response.status(200);
+            response.type("application/json");
+            return gson.toJson(new StructuredResponse("ok", null, dataStore.readAllUsers()));
+        });
+
+        Spark.get("/user/:id", (request, response) -> {
+            int idx = Integer.parseInt(request.params("id"));
+            // ensure status 200 OK, with a MIME type of JSON
+            response.status(200);
+            response.type("application/json");
+            Database.RowData userData = dataStore.readUser(idx);
+            if (data == null) {
+                return gson.toJson(new StructuredResponse("error", idx + " not found", null));
+            } else {
+                return gson.toJson(new StructuredResponse("ok", null, userData));
+            }
         });
 
         // GET route that returns everything for a single row in the DataStore.
@@ -35,16 +55,16 @@ public class Routes {
         // ":id" isn't a number, Spark will reply with a status 500 Internal
         // Server Error.  Otherwise, we have an integer, and the only possible 
         // error is that it doesn't correspond to a row with data.
-        Spark.get("/messages/:id", (request, response) -> {
+        Spark.get("/idea/:id", (request, response) -> {
             int idx = Integer.parseInt(request.params("id"));
             // ensure status 200 OK, with a MIME type of JSON
             response.status(200);
             response.type("application/json");
-            Database.RowData data = dataStore.readOne(idx);
-            if (data == null) {
+            Database.RowData ideaData = dataStore.readIdea(idx);
+            if (ideaData == null) {
                 return gson.toJson(new StructuredResponse("error", idx + " not found", null));
             } else {
-                return gson.toJson(new StructuredResponse("ok", null, data));
+                return gson.toJson(new StructuredResponse("ok", null, ideaData));
             }
         });
 

@@ -5,11 +5,15 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Array;
 
 import java.util.ArrayList;
 
+import com.heroku.api.User;
+
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.*;
 
 public class Database {
     /**
@@ -17,46 +21,28 @@ public class Database {
      * be null.  Otherwise, there is a valid open connection
      */
     private Connection mConnection;
+    private static Clock clock;
 
-    /**
-     * A prepared statement for getting all data in the database
-     */
-    private PreparedStatement mSelectAll;
-
-    /**
-     * A prepared statement for getting one row from the database
-     */
-    private PreparedStatement mSelectOne;
-
-    /**
-     * A prepared statement for deleting a row from the database
-     */
-    private PreparedStatement mDeleteOne;
-
-    /**
-     * A prepared statement for inserting into the database
-     */
-    private PreparedStatement mInsertOne;
-
-    /**
-     * A prepared statement for updating a single row in the database
-     */
-    private PreparedStatement mUpdateOne;
-
-    /**
-     * A prepared statement for creating the table in our database
-     */
     private PreparedStatement mCreateUserTable;
-    private PreparedStatement mCreateIdeaTable;
-    private PreparedStatement mCreateReactionTable;
-
-
-    /**
-     * A prepared statement for dropping the table in our database
-     */
     private PreparedStatement mDropUserTable;
+    private PreparedStatement mCreateIdeaTable;
     private PreparedStatement mDropIdeaTable;
+    private PreparedStatement mCreateReactionTable;
     private PreparedStatement mDropReactionTable;
+
+    private PreparedStatement mDeleteIdea;
+    private PreparedStatement mInsertIdea;
+    private PreparedStatement mSelectIdea;
+    private PreparedStatement mSelectAllIdeas;
+    private PreparedStatement mUpdateIdea;
+
+    private PreparedStatement mInsertReactions;
+    private PreparedStatement mSelectReactions;
+    private PreparedStatement mUpdateReactions;
+
+    private PreparedStatement mInsertUser;
+    private PreparedStatement mSelectUser;
+    private PreparedStatement mUpdateUser;
 
     /**
      * RowData is like a struct in C: we use it to hold data, and we allow 
@@ -68,6 +54,54 @@ public class Database {
      * abstract representation of a row of the database.  RowData and the 
      * Database are tightly coupled: if one changes, the other should too.
      */
+    public static class IdeaRowData{
+        int ideaId;
+        int userId;
+        long timestamp;
+        String subject;
+        String content;
+        String attachment;
+        Integer[] allowedRoles;
+        public IdeaRowData(int ideaId, int userId, long timestamp, String subject, String content, String attachment, Array allowedRoles){
+            this.ideaId = ideaId;
+            this.userId = userId;
+            this.timestamp = timestamp;
+            this.subject = subject;
+            this.content = content;
+            this.attachment = attachment;
+            try{this.allowedRoles = (Integer[])allowedRoles.getArray();
+            }catch(SQLException e){this.allowedRoles = null;}
+        }
+    }
+    public static class UserRowData{
+        int userId;
+        String avatar;
+        String name;
+        String passwordHash;
+        Integer companyRole;
+        public UserRowData(int userId, String avatar, String name, String passwordHash, Integer companyRole){
+            this.userId = userId;
+            this.avatar = avatar;
+            this.name = name;
+            this.passwordHash = passwordHash;
+            this.companyRole = companyRole;
+        }
+    }
+    public static class ReactionRowData{
+        int ideaId;
+        Integer[] likes;
+        Integer[] dislikes;
+        public ReactionRowData(int ideaId, Array likes, Array dislikes){
+            this.ideaId = ideaId;
+
+            try{this.likes = (Integer[])likes.getArray();
+            }catch(SQLException e){this.likes = null;}
+
+            try{this.dislikes = (Integer[])dislikes.getArray();
+            }catch(SQLException e){this.dislikes = null;}
+            
+        }
+    }
     public static class RowData {
         /**
          * The ID of this row of the database
@@ -138,7 +172,10 @@ public class Database {
     static Database getDatabase(String db_url) {
         // Create an un-configured Database object
         Database db = new Database();
-
+        // create a Zone Id for Europe/Paris
+        ZoneId zoneId = ZoneId.of("EST");
+        // create Clock Object by passing zoneID
+        clock = Clock.system(zoneId);
         // Give the Database object a connection, fail if we cannot get one
         try {
             Class.forName("org.postgresql.Driver");
@@ -176,37 +213,47 @@ public class Database {
             // creation/deletion, so multiple executions will cause an exception
             
             db.mCreateUserTable = db.mConnection.prepareStatement(
-                    "CREATE TABLE users (" + 
-                    "id SERIAL PRIMARY KEY, " + //id of user (TechDebt: turn into string id)
+                "CREATE TABLE users (" + 
+                    "id SERIAL PRIMARY KEY, " + //id of user (TechDebt: turn into sha-1 id)
                     "avatar VARCHAR, " + //file path to avatar of user (TechDebt: actually implement this)
                     "name VARCHAR(50) NOT NULL, " + //Displayed name of user
-                    "passwordHash VARCHAR(64) NOT NULL, " + //encrypted hash string of password (TechDebt: actually implement this)
-                    "companyRoles SMALLINT) "); //position of user in company hierarchy
+                    "passwordHash VARCHAR(64) NOT NULL, " + //encrypted hash string of google password (TechDebt: actually implement this)
+                    "companyRole SMALLINT) "); //position of user in company hierarchy
             db.mDropUserTable = db.mConnection.prepareStatement("DROP TABLE users");
 
             db.mCreateIdeaTable = db.mConnection.prepareStatement(
-                    "CREATE TABLE ideas (" + 
-                    "id SERIAL PRIMARY KEY, " + //id of idea (TechDebt: turn into string id)
+                "CREATE TABLE ideas (" + 
+                    "id SERIAL PRIMARY KEY, " + //id of idea (TechDebt: turn into sha-1 id)
                     "user INTEGER NOT NULL, " + //id of user who posted the id
                     "timestamp BIGINT NOT NULL, " + //time of creation in milliseconds
                     "subject VARCHAR(64) NOT NULL, " + //subject of idea
                     "content VARCHAR(500) NOT NULL " + //more descriptive content of idea
+                    "attachment VARCHAR(50)" + //file path to any attachment (image, spreadsheet, etc.) for the idea. (TechDebt: actually implement this)
                     "allowedRoles SMALLINT[] ) "); //array of company roles who can view this message
             db.mDropIdeaTable = db.mConnection.prepareStatement("DROP TABLE ideas");
 
             db.mCreateReactionTable = db.mConnection.prepareStatement(
-                    "CREATE TABLE reactions (" + 
+                "CREATE TABLE reactions (" + 
                     "idea INTEGER NOT NULL, " + //id of idea for which reactions are reacted
                     "likes INTEGER[], " + //ids of users who liked
                     "dislikes INTEGER[]) "); //ids of users who disliked
             db.mDropReactionTable = db.mConnection.prepareStatement("DROP TABLE reactions");
 
             // Standard CRUD operations
-            db.mDeleteOne = db.mConnection.prepareStatement("DELETE FROM tblData WHERE id = ?");
-            db.mInsertOne = db.mConnection.prepareStatement("INSERT INTO tblData VALUES (default, ?, ?)");
-            db.mSelectAll = db.mConnection.prepareStatement("SELECT id, subject FROM tblData");
-            db.mSelectOne = db.mConnection.prepareStatement("SELECT * from tblData WHERE id=?");
-            db.mUpdateOne = db.mConnection.prepareStatement("UPDATE tblData SET message = ? WHERE id = ?");
+            db.mDeleteIdea = db.mConnection.prepareStatement("DELETE FROM ideas WHERE id = ?");
+            db.mInsertIdea = db.mConnection.prepareStatement("INSERT INTO ideas VALUES (default, ?, ?, ?, ?, ?, ?)");
+            db.mSelectIdea = db.mConnection.prepareStatement("SELECT * from ideas WHERE id = ?");
+            db.mSelectAllIdeas = db.mConnection.prepareStatement("SELECT * FROM ideas"); //TechDebt: Implement LIMIT and limit offset for lazy message loading
+            db.mUpdateIdea = db.mConnection.prepareStatement("UPDATE ideas SET subject = ?, content = ?, attachment = ?, allowedRoles = ? WHERE id = ?");
+
+            db.mInsertReactions =  db.mConnection.prepareStatement("INSERT INTO reactions VALUES (?, ?, ?)");
+            db.mSelectReactions = db.mConnection.prepareStatement("SELECT * from reactions WHERE idea = ?");
+            db.mUpdateReactions = db.mConnection.prepareStatement("UPDATE reactions SET likes = ?, dislikes = ? WHERE id = ?");
+
+            db.mInsertUser = db.mConnection.prepareStatement("INSERT INTO users VALUES (default, ?, ?, ?, ?)");
+            db.mSelectUser = db.mConnection.prepareStatement("SELECT * from users WHERE id = ?");
+            db.mUpdateUser = db.mConnection.prepareStatement("UPDATE users SET avatar = ?, name = ?, companyRole = ? WHERE id = ?");
+
         } catch (SQLException e) {
             System.err.println("Error creating prepared statement");
             e.printStackTrace();
@@ -241,37 +288,71 @@ public class Database {
         return true;
     }
 
-    /**
-     * Insert a row into the database
-     * 
-     * @param subject The subject for this new row
-     * @param message The message body for this new row
-     * 
-     * @return The number of rows that were inserted
-     */
-    int insertRow(String subject, String message) {
+    /*
+        FUNCTIONS FOR INSERTING ROWS (IDEA, REACTION, USER)
+    */
+    int insertIdea(int userId, String subject, String content, String attachment, Integer[] allowedRoles){
         int count = 0;
         try {
-            mInsertOne.setString(1, subject);
-            mInsertOne.setString(2, message);
-            count += mInsertOne.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+            long millis = clock.millis(); //timestamp
+
+            mInsertIdea.setInt(1,userId);
+            mInsertIdea.setLong(2, millis);
+            mInsertIdea.setString(3, subject);
+            mInsertIdea.setString(4, content);
+            mInsertIdea.setString(5, attachment);
+            Array roles = mConnection.createArrayOf("INTEGER",allowedRoles);
+            mInsertIdea.setArray(6, roles);
+            count += mInsertIdea.executeUpdate();
+        } catch (SQLException e){e.printStackTrace();}
+
+        return count;
+    }
+    int insertReaction(int ideaId, Integer[] likes, Integer[] dislikes){
+        int count = 0;
+        try {
+            mInsertReactions.setInt(1,ideaId);
+
+            Array likesArr = mConnection.createArrayOf("INTEGER",likes);
+            Array dislikesArr = mConnection.createArrayOf("INTEGER",dislikes);
+            mInsertIdea.setArray(2, likesArr);
+            mInsertIdea.setArray(3, dislikesArr);
+            count += mInsertReactions.executeUpdate();
+        } catch (SQLException e) {e.printStackTrace();}
+
+        return count;
+    }
+    int insertUser(String avatar, String name, String passwordHash, int companyRole){
+        int count = 0;
+        try {
+            mInsertUser.setString(1, avatar);
+            mInsertUser.setString(2, name);
+            mInsertUser.setString(3, passwordHash);
+            mInsertUser.setInt(4, companyRole);
+            count += mInsertUser.executeUpdate();
+        } catch (SQLException e){e.printStackTrace();}
+
         return count;
     }
 
-    /**
-     * Query the database for a list of all subjects and their IDs
-     * 
-     * @return All rows, as an ArrayList
-     */
-    ArrayList<RowData> selectAll() {
-        ArrayList<RowData> res = new ArrayList<RowData>();
+    /*
+        FUNCTIONS FOR SELECTING ROWS (IDEA, REACTION, USER)
+    */
+    ArrayList<IdeaRowData> selectAllIdeas(){
+        ArrayList<IdeaRowData> res = new ArrayList<IdeaRowData>();
         try {
-            ResultSet rs = mSelectAll.executeQuery();
+            ResultSet rs = mSelectAllIdeas.executeQuery();
             while (rs.next()) {
-                res.add(new RowData(rs.getInt("id"), rs.getString("subject"), null));
+                IdeaRowData idea = new IdeaRowData(
+                    rs.getInt("id"), 
+                    rs.getInt("user"),
+                    rs.getLong("timestamp"), 
+                    rs.getString("subject"), 
+                    rs.getString("content"), 
+                    rs.getString("attachment"),
+                    rs.getArray("allowedRoles"));
+
+                res.add(idea);
             }
             rs.close();
             return res;
@@ -281,84 +362,148 @@ public class Database {
         }
     }
 
-    /**
-     * Get all data for a specific row, by ID
-     * 
-     * @param id The id of the row being requested
-     * 
-     * @return The data for the requested row, or null if the ID was invalid
-     */
-    RowData selectOne(int id) {
-        RowData res = null;
+    IdeaRowData selectIdea(int ideaId){
+        IdeaRowData res = null;
         try {
-            mSelectOne.setInt(1, id);
-            ResultSet rs = mSelectOne.executeQuery();
+            mSelectIdea.setInt(1, ideaId);
+            ResultSet rs = mSelectIdea.executeQuery();
             if (rs.next()) {
-                res = new RowData(rs.getInt("id"), rs.getString("subject"), rs.getString("message"));
+                res = new IdeaRowData(
+                    rs.getInt("id"), 
+                    rs.getInt("user"),
+                    rs.getLong("timestamp"), 
+                    rs.getString("subject"), 
+                    rs.getString("content"), 
+                    rs.getString("attachment"),
+                    rs.getArray("allowedRoles"));
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        } catch (SQLException e){e.printStackTrace();}
         return res;
     }
 
-    /**
-     * Delete a row by ID
-     * 
-     * @param id The id of the row to delete
-     * 
-     * @return The number of rows that were deleted.  -1 indicates an error.
-     */
-    int deleteRow(int id) {
+    ReactionRowData selectReaction(int ideaId){
+        ReactionRowData res = null;
+        try {
+            mSelectIdea.setInt(1, ideaId);
+            ResultSet rs = mSelectReactions.executeQuery();
+            if (rs.next()) {
+                res = new ReactionRowData(
+                    rs.getInt("idea"), 
+                    rs.getArray("likes"),
+                    rs.getArray("dislikes"));
+            }
+        } catch (SQLException e){e.printStackTrace();}
+        return res;
+    }
+
+    UserRowData selectUser(int userId){
+        UserRowData res = null;
+        try {
+            mSelectUser.setInt(1, userId);
+            ResultSet rs = mSelectUser.executeQuery();
+            if (rs.next()) {
+                res = new UserRowData(
+                    rs.getInt("id"), 
+                    rs.getString("avatar"),
+                    rs.getString("name"),
+                    rs.getString("passwordHash"),
+                    rs.getInt("companyRole"));
+            }
+        } catch (SQLException e){e.printStackTrace();}
+        return res;
+    }
+
+    /*
+        FUNCTION FOR DELETING ROWS (IDEA)
+        ("Deleting" reactions is be handled by the update functions)
+    */
+    int deleteIdea(int ideaId){
         int res = -1;
-        try {
-            mDeleteOne.setInt(1, id);
-            res = mDeleteOne.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        try{
+            mDeleteIdea.setInt(1, ideaId);
+            res = mDeleteIdea.executeUpdate();
+        }catch(SQLException e){e.printStackTrace();}
         return res;
     }
 
-    /**
-     * Update the message for a row in the database
-     * 
-     * @param id The id of the row to update
-     * @param message The new message contents
-     * 
-     * @return The number of rows that were updated.  -1 indicates an error.
-     */
-    int updateOne(int id, String message) {
+    /*
+        FUNCTION FOR UPDATING ROWS (IDEA, REACTION, USER)
+    */
+    int updateIdea(IdeaRowData idea, String subject, String content, String attachment, Integer[] allowedRoles){
         int res = -1;
-        try {
-            mUpdateOne.setString(1, message);
-            mUpdateOne.setInt(2, id);
-            res = mUpdateOne.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        try{
+            mUpdateIdea.setString(1, subject);
+            mUpdateIdea.setString(2, content);
+            mUpdateIdea.setString(3, attachment);
+            Array roles = mConnection.createArrayOf("INTEGER",allowedRoles);
+            mUpdateIdea.setArray(4, roles);
+
+            mUpdateIdea.setInt(5, idea.ideaId);
+            res = mUpdateIdea.executeUpdate();
+        }catch(SQLException e){e.printStackTrace();}
         return res;
     }
-    /**
-     * Create tblData.  If it already exists, this will print an error
-     */
-    void createTable() {
-        try {
-            mCreateIdeaTable.execute();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+
+    int updateReaction(ReactionRowData reaction, Integer[] likes, Integer[] dislikes){
+        int res = -1;
+        try{
+            Array mLikes = mConnection.createArrayOf("INTEGER",likes);
+            Array mDislikes = mConnection.createArrayOf("INTEGER",dislikes);
+            mUpdateReactions.setArray(1, mLikes);
+            mUpdateReactions.setArray(2, mDislikes);
+
+            mUpdateReactions.setInt(3, reaction.ideaId);
+            res = mUpdateReactions.executeUpdate();
+        }catch(SQLException e){e.printStackTrace();}
+        return res;
     }
 
-    /**
-     * Remove tblData from the database.  If it does not exist, this will print
-     * an error.
-     */
-    void dropTable() {
-        try {
-            mDropIdeaTable.execute();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    int updateUser(UserRowData user, String avatar, String name, int companyRole){
+        int res = -1;
+        try{
+            mUpdateUser.setString(1, avatar);
+            mUpdateUser.setString(2, name);
+            mUpdateUser.setInt(3, companyRole);
+
+            mUpdateUser.setInt(4, user.userId);
+            res = mUpdateUser.executeUpdate();
+        }catch(SQLException e){e.printStackTrace();}
+        return res;
+    }
+
+    /*
+        FUNCTIONs FOR CREATING TABLES (IDEA, REACTION, USER)
+    */
+    void createIdeaTable(){
+        try {mCreateIdeaTable.execute();
+        }catch(SQLException e) {e.printStackTrace();}
+    }
+    
+    void createReactionTable(){
+        try {mCreateReactionTable.execute();
+        }catch(SQLException e) {e.printStackTrace();}
+    }
+
+    void createUserTable(){
+        try {mCreateUserTable.execute();
+        }catch(SQLException e) {e.printStackTrace();}
+    }
+
+     /*
+        FUNCTIONs FOR DROPPING TABLES (IDEA, REACTION, USER)
+    */
+    void dropIdeaTable(){
+        try {mDropIdeaTable.execute();
+        }catch(SQLException e) {e.printStackTrace();}
+    }
+    
+    void dropReactionTable(){
+        try {mDropReactionTable.execute();
+        }catch(SQLException e) {e.printStackTrace();}
+    }
+
+    void dropUserTable(){
+        try {mDropUserTable.execute();
+        }catch(SQLException e) {e.printStackTrace();}
     }
 }
