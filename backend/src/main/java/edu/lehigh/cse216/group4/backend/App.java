@@ -30,8 +30,11 @@ public class App {
         Database db = Database.getDatabase(db_url);
         if (db == null)
             return;
-        //db.dropTable();
-        //db.createTable();
+        
+
+        db.createIdeaTable();
+        db.createUserTable();
+        db.createReactionTable();
         
         //For Phase0, App.java is mostly unchanged. DB requests are passed over to dataStore (per usual), which is now heavily modified to communicate with POSTGRES.
         //Attach the created Database to dataStore, so that dataStore can read/write it

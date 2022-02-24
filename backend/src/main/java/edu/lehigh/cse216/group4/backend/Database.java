@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Array;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 //import com.heroku.api.User;
 
@@ -61,7 +62,7 @@ public class Database {
         String subject;
         String content;
         String attachment;
-        Integer[] allowedRoles;
+        //Integer[] allowedRoles;
         public IdeaRowData(int ideaId, int userId, long timestamp, String subject, String content, String attachment, Array allowedRoles){
             this.ideaId = ideaId;
             this.userId = userId;
@@ -69,8 +70,9 @@ public class Database {
             this.subject = subject;
             this.content = content;
             this.attachment = attachment;
-            try{this.allowedRoles = (Integer[])allowedRoles.getArray();
-            }catch(SQLException e){this.allowedRoles = null;}
+            //try{this.allowedRoles = (Integer[])allowedRoles.getArray();
+           // }catch(SQLException e){this.allowedRoles = null;}
+            //System.out.println(Arrays.toString(this.allowedRoles));
         }
         public IdeaRowData(IdeaRowData idea){
             this.ideaId = idea.ideaId;
@@ -79,7 +81,7 @@ public class Database {
             this.subject = idea.subject;
             this.content = idea.content;
             this.attachment = idea.attachment;
-            this.allowedRoles = idea.allowedRoles;
+            //this.allowedRoles = idea.allowedRoles;
         }
     }
     public static class UserRowData{
@@ -145,7 +147,7 @@ public class Database {
         // Create an un-configured Database object
         Database db = new Database();
         // create a Zone Id for Europe/Paris
-        ZoneId zoneId = ZoneId.of("EST");
+        ZoneId zoneId = ZoneId.of("-05:00");
         // create Clock Object by passing zoneID
         clock = Clock.system(zoneId);
         // Give the Database object a connection, fail if we cannot get one
@@ -185,7 +187,7 @@ public class Database {
             // creation/deletion, so multiple executions will cause an exception
             
             db.mCreateUserTable = db.mConnection.prepareStatement(
-                "CREATE TABLE [IF NOT EXISTS] users (" + 
+                "CREATE TABLE IF NOT EXISTS users (" + 
                     "id SERIAL PRIMARY KEY, " + //id of user (TechDebt: turn into sha-1 id)
                     "avatar VARCHAR, " + //file path to avatar of user (TechDebt: actually implement this)
                     "name VARCHAR(50) NOT NULL, " + //Displayed name of user
@@ -194,27 +196,24 @@ public class Database {
             db.mDropUserTable = db.mConnection.prepareStatement("DROP TABLE users");
 
             db.mCreateIdeaTable = db.mConnection.prepareStatement(
-                "CREATE TABLE [IF NOT EXISTS] ideas (" + 
+                "CREATE TABLE IF NOT EXISTS ideas (" + 
                     "id SERIAL PRIMARY KEY, " + //id of idea (TechDebt: turn into sha-1 id)
-                    "user INTEGER NOT NULL, " + //id of user who posted the id
+                    "userId INTEGER NOT NULL, " + //id of user who posted the id
                     "timestamp BIGINT NOT NULL, " + //time of creation in milliseconds
                     "subject VARCHAR(64) NOT NULL, " + //subject of idea
-                    "content VARCHAR(500) NOT NULL " + //more descriptive content of idea
-                    "attachment VARCHAR(50)" + //file path to any attachment (image, spreadsheet, etc.) for the idea. (TechDebt: actually implement this)
+                    "content VARCHAR(500) NOT NULL, " + //more descriptive content of idea
+                    "attachment VARCHAR(50)," + //file path to any attachment (image, spreadsheet, etc.) for the idea. (TechDebt: actually implement this)
                     "allowedRoles SMALLINT[] ) "); //array of company roles who can view this message
             db.mDropIdeaTable = db.mConnection.prepareStatement("DROP TABLE ideas");
 
             db.mCreateReactionTable = db.mConnection.prepareStatement(
-                "CREATE TABLE [IF NOT EXISTS] reactions (" + 
-                    "idea INTEGER NOT NULL, " + //id of idea for which reactions are reacted
+                "CREATE TABLE IF NOT EXISTS reactions (" + 
+                    "ideaId INTEGER NOT NULL, " + //id of idea for which reactions are reacted
                     "likes INTEGER[], " + //ids of users who liked
                     "dislikes INTEGER[]) "); //ids of users who disliked
             db.mDropReactionTable = db.mConnection.prepareStatement("DROP TABLE reactions");
 
-            //CREATE TABLES IF NOT ALREADY EXISTS
-            db.mCreateIdeaTable.executeQuery();
-            db.mCreateReactionTable.executeQuery();
-            db.mCreateUserTable.executeQuery();
+            
 
             // Standard CRUD operations
             db.mDeleteIdea = db.mConnection.prepareStatement("DELETE FROM ideas WHERE id = ?");
@@ -273,7 +272,7 @@ public class Database {
         try {
             long millis = clock.millis(); //timestamp
 
-            mInsertIdea.setInt(1,userId);
+            mInsertIdea.setInt(1, userId);
             mInsertIdea.setLong(2, millis);
             mInsertIdea.setString(3, subject);
             mInsertIdea.setString(4, content);
@@ -320,9 +319,10 @@ public class Database {
         try {
             ResultSet rs = mSelectAllIdeas.executeQuery();
             while (rs.next()) {
+                
                 IdeaRowData idea = new IdeaRowData(
                     rs.getInt("id"), 
-                    rs.getInt("user"),
+                    rs.getInt("userId"),
                     rs.getLong("timestamp"), 
                     rs.getString("subject"), 
                     rs.getString("content"), 
@@ -347,7 +347,7 @@ public class Database {
             if (rs.next()) {
                 res = new IdeaRowData(
                     rs.getInt("id"), 
-                    rs.getInt("user"),
+                    rs.getInt("userId"),
                     rs.getLong("timestamp"), 
                     rs.getString("subject"), 
                     rs.getString("content"), 

@@ -92,7 +92,7 @@ public class Routes {
 
         // PUT route for updating a row in the DataStore.  This is almost 
         // exactly the same as POST
-        Spark.put("/ideas/:id", (request, response) -> {
+        Spark.put("/idea/:id", (request, response) -> {
             // If we can't get an ID or can't parse the JSON, Spark will send
             // a status 500
             int idx = Integer.parseInt(request.params("id"));

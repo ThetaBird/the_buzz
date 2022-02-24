@@ -62,10 +62,11 @@ public class DataStore {
 
     public synchronized ArrayList<Database.IdeaRowData> readAllIdeas(){
         ArrayList<Database.IdeaRowData> allIdeas = db.selectAllIdeas();
+        ArrayList<Database.IdeaRowData> data = new ArrayList<Database.IdeaRowData>();
         for(Database.IdeaRowData idea: allIdeas){
-            if(idea != null){allIdeas.add(new Database.IdeaRowData(idea));}
+            if(idea != null){data.add(new Database.IdeaRowData(idea));}
         }
-        return allIdeas;
+        return data;
     }
 
     public synchronized Database.ReactionRowData readReaction(int ideaId){
@@ -90,7 +91,7 @@ public class DataStore {
         idea.subject = subject;
         idea.content = content;
         idea.attachment = attachment;
-        idea.allowedRoles = allowedRoles;
+        //idea.allowedRoles = allowedRoles;
 
         int res = db.updateIdea(ideaId, subject, content, attachment, allowedRoles);
         if(res == -1){return null;}
