@@ -24,100 +24,113 @@ public class DataStore {
 
     }
 
-    /**
-     * Add a new row to the DataStore
-     * 
-     * Note: we return -1 on an error.  There are many good ways to handle an 
-     * error, to include throwing an exception.  In robust code, returning -1 
-     * may not be the most appropriate technique, but it is sufficient for this 
-     * tutorial.
-     * 
-     * @param title The title for this newly added row
-     * @param content The content for this row
-     * @return the ID of the new row, or -1 if no row was created
-     */
-    public synchronized int createEntry(String title, String content) {
-        if (title == null || content == null)
-            return -1;
-        // NB: we can safely assume that id is greater than the largest index in 
-        //     mRows, and thus we can use the index-based add() method
-        //int id = mCounter++;
-        //DataRow data = new DataRow(id, title, content);
-        int ret = db.insertRow(title, content);
-        //mRows.add(id, data);
-        return ret;
-    }
     public synchronized int attachDB(Database db){
         if(db == null)
             return -1;
         this.db = db;
         return 0;
     }
-    /**
-     * Get one complete row from the DataStore using its ID to select it
-     * 
-     * @param id The id of the row to select
-     * @return A copy of the data in the row, if it exists, or null otherwise
-     */
-    public synchronized Database.RowData readOne(int id) {
-       // if (id >= mRows.size())
-       //     return null;
-        Database.RowData data = db.selectOne(id);
-        if (data == null)
-            return null;
-        return new Database.RowData(data);
+    /*
+        FUNCTIONS FOR CREATING IDEAS, REACTIONS, AND USERS
+    */
+    public synchronized int createIdea(int userId, String subject, String content, String attachment, Integer[] allowedRoles){
+        if(subject == null || content == null){return -1;}
+        int ret = db.insertIdea(userId, subject, content, attachment, allowedRoles);
+        return ret;
     }
 
-    /**
-     * Get all of the ids and titles that are present in the DataStore
-     * @return An ArrayList with all of the data
-     */
-    public synchronized ArrayList<Database.RowDataLite> readAll() {
-        ArrayList<Database.RowData> allRows = db.selectAll();
-        ArrayList<Database.RowDataLite> data = new ArrayList<Database.RowDataLite>();
-        // NB: we copy the data, so that our ArrayList only has ids and titles
-        for (Database.RowData row : allRows) {
-            if (row != null)
-                data.add(new Database.RowDataLite(row));
+    public synchronized int createReaction(int ideaId, Integer[] likes, Integer[] dislikes){
+        if(ideaId == 0){return -1;}
+        int ret = db.insertReaction(ideaId, likes, dislikes);
+        return ret;
+    }
+
+    public synchronized int createUser(String avatar, String name, String passwordHash, int companyRole){
+        if(name == null || passwordHash == null){return -1;}
+        int ret = db.insertUser(avatar, name, passwordHash, companyRole);
+        return ret;
+    }
+
+    /*
+        FUNCTIONS FOR GETTING IDEAS, REACTIONS, AND USERS
+    */
+    public synchronized Database.IdeaRowData readIdea(int ideaId){
+        Database.IdeaRowData idea = db.selectIdea(ideaId);
+        if(idea == null){return null;}
+        return new Database.IdeaRowData(idea);
+    }
+
+    public synchronized ArrayList<Database.IdeaRowData> readAllIdeas(){
+        ArrayList<Database.IdeaRowData> allIdeas = db.selectAllIdeas();
+        for(Database.IdeaRowData idea: allIdeas){
+            if(idea != null){allIdeas.add(new Database.IdeaRowData(idea));}
         }
-        return data;
-    }
-    /**
-     * Update the title and content of a row in the DataStore
-     *
-     * @param id The Id of the row to update
-     * @param title The new title for the row
-     * @param content The new content for the row
-     * @return a copy of the data in the row, if it exists, or null otherwise
-     */
-    public synchronized Database.RowData updateOne(int id, String title, String content) {
-        // Do not update if we don't have valid data
-        if (title == null || content == null)
-            return null;
-        // Only update if the current entry is valid (not null)
-        //if (id >= mRows.size())
-        //    return null;
-        Database.RowData data = db.selectOne(id);
-        if (data == null)
-            return null;
-        // Update and then return a copy of the data, as a DataRow
-        data.mSubject = title;
-        data.mMessage = content;
-        int res = db.updateOne(id, content);
-        if(res == -1){return null;}
-        return new Database.RowData(data);
+        return allIdeas;
     }
 
-    /**
-     * Delete a row from the DataStore
-     * 
-     * @param id The Id of the row to delete
-     * @return true if the row was deleted, false otherwise
-     */
-    public synchronized boolean deleteOne(int id) {
-        int res = db.deleteRow(id);
+    public synchronized Database.ReactionRowData readReaction(int ideaId){
+        Database.ReactionRowData reaction = db.selectReaction(ideaId);
+        if(reaction == null){return null;}
+        return new Database.ReactionRowData(reaction);
+    }
+
+    public synchronized Database.UserRowData readUser(int userId){
+        Database.UserRowData user = db.selectUser(userId);
+        if(user == null){return null;}
+        return new Database.UserRowData(user);
+    }
+
+    /*
+        FUNCTIONS FOR EDITING IDEAS, REACTIONS, AND USERS
+    */
+    public synchronized Database.IdeaRowData updateIdea(int ideaId, String subject, String content, String attachment, Integer[] allowedRoles){
+        Database.IdeaRowData idea = readIdea(ideaId);
+        if(idea == null || subject == null || content == null){return null;}
+        
+        idea.subject = subject;
+        idea.content = content;
+        idea.attachment = attachment;
+        idea.allowedRoles = allowedRoles;
+
+        int res = db.updateIdea(ideaId, subject, content, attachment, allowedRoles);
+        if(res == -1){return null;}
+
+        return new Database.IdeaRowData(idea);
+    }
+
+    public synchronized Database.ReactionRowData updateReaction(int ideaId, Integer[] likes, Integer[] dislikes){
+        Database.ReactionRowData reaction = readReaction(ideaId);
+        if(reaction == null || (likes == null && dislikes == null)){return null;}
+
+        reaction.likes = likes;
+        reaction.dislikes = dislikes;
+
+        int res = db.updateReaction(ideaId, likes, dislikes);
+        if(res == -1){return null;}
+
+        return new Database.ReactionRowData(reaction);
+    }
+
+    public synchronized Database.UserRowData updateUser(int userId, String avatar, String name, int companyRole){
+        Database.UserRowData user = readUser(userId);
+        if(user == null || name == null){return null;}
+
+        user.avatar = avatar;
+        user.name = name;
+        user.companyRole = companyRole;
+
+        int res = db.updateUser(userId, avatar, name, companyRole);
+        if(res == -1){return null;}
+
+        return new Database.UserRowData(user);
+    }
+
+    /*
+        FUNCTION FOR DELETING IDEAS
+    */
+    public synchronized boolean deleteIdea(int ideaId){
+        int res = db.deleteIdea(ideaId);
         if(res == -1){return false;}
         return true;
     }
-    
 }

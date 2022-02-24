@@ -9,7 +9,7 @@ import java.sql.Array;
 
 import java.util.ArrayList;
 
-import com.heroku.api.User;
+//import com.heroku.api.User;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -72,6 +72,15 @@ public class Database {
             try{this.allowedRoles = (Integer[])allowedRoles.getArray();
             }catch(SQLException e){this.allowedRoles = null;}
         }
+        public IdeaRowData(IdeaRowData idea){
+            this.ideaId = idea.ideaId;
+            this.userId = idea.userId;
+            this.timestamp = idea.timestamp;
+            this.subject = idea.subject;
+            this.content = idea.content;
+            this.attachment = idea.attachment;
+            this.allowedRoles = idea.allowedRoles;
+        }
     }
     public static class UserRowData{
         int userId;
@@ -85,6 +94,13 @@ public class Database {
             this.name = name;
             this.passwordHash = passwordHash;
             this.companyRole = companyRole;
+        }
+        public UserRowData(UserRowData user){
+            this.userId = user.userId;
+            this.avatar = user.avatar;
+            this.name = user.name;
+            this.passwordHash = user.passwordHash;
+            this.companyRole = user.companyRole;
         }
     }
     public static class ReactionRowData{
@@ -101,54 +117,10 @@ public class Database {
             }catch(SQLException e){this.dislikes = null;}
             
         }
-    }
-    public static class RowData {
-        /**
-         * The ID of this row of the database
-         */
-        int mId;
-        /**
-         * The subject stored in this row
-         */
-        String mSubject;
-        /**
-         * The message stored in this row
-         */
-        String mMessage;
-
-
-        /**
-         * Construct a RowData object by providing values for its fields
-         */
-        public RowData(int id, String subject, String message) {
-            mId = id;
-            mSubject = subject;
-            mMessage = message;
-        }
-        /**
-         * Construct a RowData object by providing an existing RowData
-         */
-        public RowData(RowData data) {
-            mId = data.mId;
-            mSubject = data.mSubject;
-            mMessage = data.mMessage;
-        }
-    }
-    public static class RowDataLite {
-        /**
-         * The ID of this row of the database
-         */
-        int mId;
-        /**
-         * The subject stored in this row
-         */
-        String mSubject;
-        /**
-         * Construct a RowDataLite object by providing values for its fields
-         */
-        public RowDataLite(RowData data) {
-            mId = data.mId;
-            mSubject = data.mSubject;
+        public ReactionRowData(ReactionRowData reaction){
+            this.ideaId = reaction.ideaId;
+            this.likes = reaction.likes;
+            this.dislikes = reaction.dislikes;
         }
     }
     /**
@@ -213,7 +185,7 @@ public class Database {
             // creation/deletion, so multiple executions will cause an exception
             
             db.mCreateUserTable = db.mConnection.prepareStatement(
-                "CREATE TABLE users (" + 
+                "CREATE TABLE [IF NOT EXISTS] users (" + 
                     "id SERIAL PRIMARY KEY, " + //id of user (TechDebt: turn into sha-1 id)
                     "avatar VARCHAR, " + //file path to avatar of user (TechDebt: actually implement this)
                     "name VARCHAR(50) NOT NULL, " + //Displayed name of user
@@ -222,7 +194,7 @@ public class Database {
             db.mDropUserTable = db.mConnection.prepareStatement("DROP TABLE users");
 
             db.mCreateIdeaTable = db.mConnection.prepareStatement(
-                "CREATE TABLE ideas (" + 
+                "CREATE TABLE [IF NOT EXISTS] ideas (" + 
                     "id SERIAL PRIMARY KEY, " + //id of idea (TechDebt: turn into sha-1 id)
                     "user INTEGER NOT NULL, " + //id of user who posted the id
                     "timestamp BIGINT NOT NULL, " + //time of creation in milliseconds
@@ -233,11 +205,16 @@ public class Database {
             db.mDropIdeaTable = db.mConnection.prepareStatement("DROP TABLE ideas");
 
             db.mCreateReactionTable = db.mConnection.prepareStatement(
-                "CREATE TABLE reactions (" + 
+                "CREATE TABLE [IF NOT EXISTS] reactions (" + 
                     "idea INTEGER NOT NULL, " + //id of idea for which reactions are reacted
                     "likes INTEGER[], " + //ids of users who liked
                     "dislikes INTEGER[]) "); //ids of users who disliked
             db.mDropReactionTable = db.mConnection.prepareStatement("DROP TABLE reactions");
+
+            //CREATE TABLES IF NOT ALREADY EXISTS
+            db.mCreateIdeaTable.executeQuery();
+            db.mCreateReactionTable.executeQuery();
+            db.mCreateUserTable.executeQuery();
 
             // Standard CRUD operations
             db.mDeleteIdea = db.mConnection.prepareStatement("DELETE FROM ideas WHERE id = ?");
@@ -429,7 +406,7 @@ public class Database {
     /*
         FUNCTION FOR UPDATING ROWS (IDEA, REACTION, USER)
     */
-    int updateIdea(IdeaRowData idea, String subject, String content, String attachment, Integer[] allowedRoles){
+    int updateIdea(int ideaId, String subject, String content, String attachment, Integer[] allowedRoles){
         int res = -1;
         try{
             mUpdateIdea.setString(1, subject);
@@ -438,13 +415,13 @@ public class Database {
             Array roles = mConnection.createArrayOf("INTEGER",allowedRoles);
             mUpdateIdea.setArray(4, roles);
 
-            mUpdateIdea.setInt(5, idea.ideaId);
+            mUpdateIdea.setInt(5, ideaId);
             res = mUpdateIdea.executeUpdate();
         }catch(SQLException e){e.printStackTrace();}
         return res;
     }
 
-    int updateReaction(ReactionRowData reaction, Integer[] likes, Integer[] dislikes){
+    int updateReaction(int ideaId, Integer[] likes, Integer[] dislikes){
         int res = -1;
         try{
             Array mLikes = mConnection.createArrayOf("INTEGER",likes);
@@ -452,20 +429,20 @@ public class Database {
             mUpdateReactions.setArray(1, mLikes);
             mUpdateReactions.setArray(2, mDislikes);
 
-            mUpdateReactions.setInt(3, reaction.ideaId);
+            mUpdateReactions.setInt(3, ideaId);
             res = mUpdateReactions.executeUpdate();
         }catch(SQLException e){e.printStackTrace();}
         return res;
     }
 
-    int updateUser(UserRowData user, String avatar, String name, int companyRole){
+    int updateUser(int userId, String avatar, String name, int companyRole){
         int res = -1;
         try{
             mUpdateUser.setString(1, avatar);
             mUpdateUser.setString(2, name);
             mUpdateUser.setInt(3, companyRole);
 
-            mUpdateUser.setInt(4, user.userId);
+            mUpdateUser.setInt(4, userId);
             res = mUpdateUser.executeUpdate();
         }catch(SQLException e){e.printStackTrace();}
         return res;
