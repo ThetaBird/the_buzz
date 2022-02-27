@@ -7,104 +7,19 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Map;
+
 /**
- * App is our basic admin app.  For now, it is a demonstration of the six key 
- * operations on a database: connect, insert, update, query, delete, disconnect
+ * App is our basic admin app.  For now, all it does is connect to the database
+ * and then disconnect
  */
 public class App {
-
     /**
-     * Print the menu for our program
-     */
-    static void menu() {
-        System.out.println("Main Menu");
-        System.out.println("  [T] Create tblData");
-        System.out.println("  [D] Drop tblData");
-        System.out.println("  [1] Query for a specific row");
-        System.out.println("  [*] Query for all rows");
-        System.out.println("  [-] Delete a row");
-        System.out.println("  [+] Insert a new row");
-        System.out.println("  [~] Update a row");
-        System.out.println("  [q] Quit Program");
-        System.out.println("  [?] Help (this message)");
-    }
-
-    /**
-     * Ask the user to enter a menu option; repeat until we get a valid option
-     * 
-     * @param in A BufferedReader, for reading from the keyboard
-     * 
-     * @return The character corresponding to the chosen menu option
-     */
-    static char prompt(BufferedReader in) {
-        // The valid actions:
-        String actions = "TD1*-+~q?";
-
-        // We repeat until a valid single-character option is selected        
-        while (true) {
-            System.out.print("[" + actions + "] :> ");
-            String action;
-            try {
-                action = in.readLine();
-            } catch (IOException e) {
-                e.printStackTrace();
-                continue;
-            }
-            if (action.length() != 1)
-                continue;
-            if (actions.contains(action)) {
-                return action.charAt(0);
-            }
-            System.out.println("Invalid Command");
-        }
-    }
-
-    /**
-     * Ask the user to enter a String message
-     * 
-     * @param in A BufferedReader, for reading from the keyboard
-     * @param message A message to display when asking for input
-     * 
-     * @return The string that the user provided.  May be "".
-     */
-    static String getString(BufferedReader in, String message) {
-        String s;
-        try {
-            System.out.print(message + " :> ");
-            s = in.readLine();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "";
-        }
-        return s;
-    }
-
-    /**
-     * Ask the user to enter an integer
-     * 
-     * @param in A BufferedReader, for reading from the keyboard
-     * @param message A message to display when asking for input
-     * 
-     * @return The integer that the user provided.  On error, it will be -1
-     */
-    static int getInt(BufferedReader in, String message) {
-        int i = -1;
-        try {
-            System.out.print(message + " :> ");
-            i = Integer.parseInt(in.readLine());
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-        }
-        return i;
-    }
-
-    /**
-     * The main routine runs a loop that gets a request from the user and
-     * processes it
-     * 
-     * @param argv Command-line options.  Ignored by this program.
+     * The main routine reads arguments from the environment and then uses those
+     * arguments to connect to the database.
      */
     public static void main(String[] argv) {
         // get the Postgres configuration from the environment
@@ -114,74 +29,45 @@ public class App {
         String user = env.get("POSTGRES_USER");
         String pass = env.get("POSTGRES_PASS");
 
-        // Get a fully-configured connection to the database, or exit 
-        // immediately
-        Database db = Database.getDatabase(ip, port, user, pass);
-        if (db == null)
-            return;
+        // Some students find that they need the following lines 
+        // *before DriverManager.getConnection* in order to get the postgres
+        // driver to load
 
-        // Start our basic command-line interpreter:
-        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-        while (true) {
-            // Get the user's request, and do it
-            //
-            // NB: for better testability, each action should be a separate
-            //     function call
-            char action = prompt(in);
-            if (action == '?') {
-                menu();
-            } else if (action == 'q') {
-                break;
-            } else if (action == 'T') {
-                db.createTable();
-            } else if (action == 'D') {
-                db.dropTable();
-            } else if (action == '1') {
-                int id = getInt(in, "Enter the row ID");
-                if (id == -1)
-                    continue;
-                Database.RowData res = db.selectOne(id);
-                if (res != null) {
-                    System.out.println("  [" + res.mId + "] " + res.mSubject);
-                    System.out.println("  --> " + res.mMessage);
-                }
-            } else if (action == '*') {
-                ArrayList<Database.RowData> res = db.selectAll();
-                if (res == null)
-                    continue;
-                System.out.println("  Current Database Contents");
-                System.out.println("  -------------------------");
-                for (Database.RowData rd : res) {
-                    System.out.println("  [" + rd.mId + "] " + rd.mSubject);
-                }
-            } else if (action == '-') {
-                int id = getInt(in, "Enter the row ID");
-                if (id == -1)
-                    continue;
-                int res = db.deleteRow(id);
-                if (res == -1)
-                    continue;
-                System.out.println("  " + res + " rows deleted");
-            } else if (action == '+') {
-                String subject = getString(in, "Enter the subject");
-                String message = getString(in, "Enter the message");
-                if (subject.equals("") || message.equals(""))
-                    continue;
-                int res = db.insertRow(subject, message);
-                System.out.println(res + " rows added");
-            } else if (action == '~') {
-                int id = getInt(in, "Enter the row ID :> ");
-                if (id == -1)
-                    continue;
-                String newMessage = getString(in, "Enter the new message");
-                int res = db.updateOne(id, newMessage);
-                if (res == -1)
-                    continue;
-                System.out.println("  " + res + " rows updated");
+        // try {
+        //     Class.forName("org.postgresql.Driver");
+        // } catch (ClassNotFoundException cnfe) {
+        //     System.out.println("Unable to find postgresql driver");
+        //     return;
+        // }
+
+        // conn is a connection to the database.  In this simple example, it is
+        // a local variable, though in a realistic program it might not be
+        Connection conn = null;
+
+        // Connect to the database or fail
+        System.out.print("Connecting to " + ip + ":" + port);
+        try {
+            // Open a connection, fail if we cannot get one
+            conn = DriverManager.getConnection("jdbc:postgresql://" + ip + ":" + port + "/", user, pass);
+            if (conn == null) {
+                System.out.println("\n\tError: DriverManager.getConnection() returned a null object");
+                return;
             }
+        } catch (SQLException e) {
+            System.out.println("\n\tError: DriverManager.getConnection() threw a SQLException");
+            e.printStackTrace();
+            return;
         }
-        // Always remember to disconnect from the database when the program 
-        // exits
-        db.disconnect();
+        System.out.println(" ... successfully connected");
+
+        System.out.print("Disconnecting from database");
+        try {
+            conn.close();
+        } catch (SQLException e) {
+            System.out.println("\n\tError: close() threw a SQLException");
+            e.printStackTrace();
+            return;
+        }
+        System.out.println(" ...  connection successfully closed");
     }
 }
