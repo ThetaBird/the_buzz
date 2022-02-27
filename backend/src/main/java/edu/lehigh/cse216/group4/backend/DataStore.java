@@ -105,13 +105,10 @@ public class DataStore {
         if(idea == null){return null;}
         Database.ReactionRowData reaction = readReaction(ideaId);
         if(reaction == null){
-            System.out.println("No Reaction");
             int newId = createReaction(ideaId);
-            System.out.println(newId);
-            reaction = readReaction(newId);
-            System.out.println(reaction.ideaId);
+            if(newId == 0){return null;}
+            reaction = readReaction(ideaId);
         }
-        System.out.println("Reaction cont'd");
         ArrayList<Integer> likes = reactionArrayList(reaction.likes);
         ArrayList<Integer> dislikes = reactionArrayList(reaction.dislikes);
         Integer user = Integer.valueOf(userId);
