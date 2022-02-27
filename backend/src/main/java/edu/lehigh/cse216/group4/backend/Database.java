@@ -226,14 +226,13 @@ public class Database {
             db.mSelectAllIdeas = db.mConnection.prepareStatement("SELECT * FROM ideas"); //TechDebt: Implement LIMIT and limit offset for lazy message loading
             db.mUpdateIdea = db.mConnection.prepareStatement("UPDATE ideas SET subject = ?, content = ?, attachment = ?, allowedRoles = ? WHERE id = ?");
 
-            db.mInsertReactions =  db.mConnection.prepareStatement("INSERT INTO reactions VALUES (?, default, default)");
+            db.mInsertReactions =  db.mConnection.prepareStatement("INSERT INTO reactions VALUES (?, ?, ?)");
             db.mSelectReactions = db.mConnection.prepareStatement("SELECT * from reactions WHERE ideaId = ?");
             db.mUpdateReactions = db.mConnection.prepareStatement("UPDATE reactions SET likes = ?, dislikes = ? WHERE ideaId = ?");
 
             db.mInsertUser = db.mConnection.prepareStatement("INSERT INTO users VALUES (default, ?, ?, ?, ?)");
             db.mSelectUser = db.mConnection.prepareStatement("SELECT * from users WHERE id = ?");
             db.mUpdateUser = db.mConnection.prepareStatement("UPDATE users SET avatar = ?, name = ?, companyRole = ? WHERE id = ?");
-
         } catch (SQLException e) {
             System.err.println("Error creating prepared statement");
             e.printStackTrace();
@@ -290,8 +289,12 @@ public class Database {
     }
     int insertReaction(int ideaId){
         int count = 0;
+        Integer[] emptyArr = new Integer[]{};
         try {
+            Array reactions = mConnection.createArrayOf("INTEGER",emptyArr);
             mInsertReactions.setInt(1,ideaId);
+            mInsertReactions.setArray(2, reactions);
+            mInsertReactions.setArray(3, reactions);
             count += mInsertReactions.executeUpdate();
         } catch (SQLException e) {e.printStackTrace();}
 
