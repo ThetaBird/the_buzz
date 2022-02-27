@@ -4,12 +4,13 @@ package edu.lehigh.cse216.group4.backend;
 // create an HTTP GET route
 import spark.Spark;
 import java.util.Map;
-
+import com.google.gson.*;
 
 /**
  * For now, our app creates an HTTP server that can only get and add data.
  */
 public class App {
+    final static Gson gson = new Gson();
     public static void main(String[] args) {
         
         
@@ -63,6 +64,25 @@ public class App {
         }
         
         Routes.setRoutes(dataStore);
+
+        //String testJSON = "{'avatar':'ayooo.png','name':'John Doe','passwordHash':'feefgbvgrvf','companyRole':1}";
+        //RequestUser req = gson.fromJson(testJSON, RequestUser.class);
+        //Short i = 1;
+        //int newId = dataStore.createUser("test.png", "John Doe", "frfrfefrf", i);
+        //Database.UserRowData userData = dataStore.readUser(newId);
+        //System.out.println(req.avatar);
+        //System.out.println(req.name);
+        //System.out.println(req.passwordHash);
+        //System.out.println(req.companyRole);
+
+        //int newId = dataStore.createUser(req.avatar, req.name, req.passwordHash, req.companyRole);
+        //System.out.println(newId);
+        //Database.IdeaRowData ideaData = dataStore.readIdea(1);
+        //System.out.println("TEST");
+        //System.out.println(ideaData.allowedRoles);
+
+        //Database.ReactionRowData result = dataStore.updateReaction(1, 1, 1);
+        //System.out.println(result.ideaId);
     }
     /**
      * Get an integer environment varible if it exists, and otherwise return the

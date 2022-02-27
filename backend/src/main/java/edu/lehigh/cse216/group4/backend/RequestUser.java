@@ -4,5 +4,5 @@ public class RequestUser {
     public String avatar;
     public String name;
     public String passwordHash;
-    public int companyRole;
+    public Short companyRole;
 }

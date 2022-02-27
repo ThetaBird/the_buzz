@@ -2,6 +2,7 @@ package edu.lehigh.cse216.group4.backend;
 
 import java.util.ArrayList;
 
+
 /**
  * DataStore provides access to a set of objects, and makes sure that each has
  * a unique identifier that remains unique even after the object is deleted.
@@ -33,19 +34,19 @@ public class DataStore {
     /*
         FUNCTIONS FOR CREATING IDEAS, REACTIONS, AND USERS
     */
-    public synchronized int createIdea(int userId, String subject, String content, String attachment, Integer[] allowedRoles){
+    public synchronized int createIdea(int userId, String subject, String content, String attachment, Short[] allowedRoles){
         if(subject == null || content == null){return -1;}
         int ret = db.insertIdea(userId, subject, content, attachment, allowedRoles);
         return ret;
     }
 
-    public synchronized int createReaction(int ideaId, Integer[] likes, Integer[] dislikes){
+    public synchronized int createReaction(int ideaId){
         if(ideaId == 0){return -1;}
-        int ret = db.insertReaction(ideaId, likes, dislikes);
+        int ret = db.insertReaction(ideaId);
         return ret;
     }
 
-    public synchronized int createUser(String avatar, String name, String passwordHash, int companyRole){
+    public synchronized int createUser(String avatar, String name, String passwordHash, Short companyRole){
         if(name == null || passwordHash == null){return -1;}
         int ret = db.insertUser(avatar, name, passwordHash, companyRole);
         return ret;
@@ -84,14 +85,14 @@ public class DataStore {
     /*
         FUNCTIONS FOR EDITING IDEAS, REACTIONS, AND USERS
     */
-    public synchronized Database.IdeaRowData updateIdea(int ideaId, String subject, String content, String attachment, Integer[] allowedRoles){
+    public synchronized Database.IdeaRowData updateIdea(int ideaId, String subject, String content, String attachment, Short[] allowedRoles){
         Database.IdeaRowData idea = readIdea(ideaId);
         if(idea == null || subject == null || content == null){return null;}
         
         idea.subject = subject;
         idea.content = content;
         idea.attachment = attachment;
-        //idea.allowedRoles = allowedRoles;
+        idea.allowedRoles = allowedRoles;
 
         int res = db.updateIdea(ideaId, subject, content, attachment, allowedRoles);
         if(res == -1){return null;}
@@ -99,20 +100,45 @@ public class DataStore {
         return new Database.IdeaRowData(idea);
     }
 
-    public synchronized Database.ReactionRowData updateReaction(int ideaId, Integer[] likes, Integer[] dislikes){
+    public synchronized Database.ReactionRowData updateReaction(int ideaId, int userId, int reactionType){
+        Database.IdeaRowData idea = readIdea(ideaId);
+        if(idea == null){return null;}
         Database.ReactionRowData reaction = readReaction(ideaId);
-        if(reaction == null || (likes == null && dislikes == null)){return null;}
+        if(reaction == null){
+            System.out.println("No Reaction");
+            int newId = createReaction(ideaId);
+            System.out.println(newId);
+            reaction = readReaction(newId);
+            System.out.println(reaction.ideaId);
+        }
+        System.out.println("Reaction cont'd");
+        ArrayList<Integer> likes = reactionArrayList(reaction.likes);
+        ArrayList<Integer> dislikes = reactionArrayList(reaction.dislikes);
+        Integer user = Integer.valueOf(userId);
+        switch(reactionType){
+            case -1: //dislike toggle
+                if(dislikes.indexOf(user) == -1){dislikes.add(user);}
+                else{dislikes.remove(user);}
+                break;
+            case 0: //remove either
+                if(likes.indexOf(user) != -1){likes.remove(user);}
+                if(dislikes.indexOf(user) != -1){dislikes.remove(user);}
+                break;
+            case 1: //like toggle
+                if(likes.indexOf(user) == -1){likes.add(user);}
+                else{likes.remove(user);}
+                break;  
+        }
 
-        reaction.likes = likes;
-        reaction.dislikes = dislikes;
-
-        int res = db.updateReaction(ideaId, likes, dislikes);
+        Integer[] likesArr = reactionIntegerArray(likes);
+        Integer[] dislikesArr = reactionIntegerArray(dislikes);
+        int res = db.updateReaction(ideaId, likesArr, dislikesArr);
         if(res == -1){return null;}
 
         return new Database.ReactionRowData(reaction);
     }
 
-    public synchronized Database.UserRowData updateUser(int userId, String avatar, String name, int companyRole){
+    public synchronized Database.UserRowData updateUser(int userId, String avatar, String name, Short companyRole){
         Database.UserRowData user = readUser(userId);
         if(user == null || name == null){return null;}
 
@@ -133,5 +159,24 @@ public class DataStore {
         int res = db.deleteIdea(ideaId);
         if(res == -1){return false;}
         return true;
+    }
+
+    /*
+        CONVERT INTEGER[] TO ARRAYLIST<INTEGER> AND VICE VERSA, for convenience
+    */
+    static ArrayList<Integer> reactionArrayList(Integer[] arr){
+        ArrayList<Integer> toRet = new ArrayList<Integer>();
+        for(Integer i: arr){
+            toRet.add(i);
+        }
+        return toRet;
+    }
+
+    static Integer[] reactionIntegerArray(ArrayList<Integer> arrlist){
+        Integer[] toRet = new Integer[arrlist.size()];
+        for(int i = 0; i < arrlist.size(); i++){
+            toRet[i] = arrlist.get(i);
+        }
+        return toRet;
     }
 }

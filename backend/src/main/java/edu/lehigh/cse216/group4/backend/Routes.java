@@ -1,5 +1,6 @@
 package edu.lehigh.cse216.group4.backend;
 import spark.Spark;
+
 import com.google.gson.*;
 
 public class Routes {
@@ -22,7 +23,7 @@ public class Routes {
         // the data, embed it in a StructuredResponse, turn it into JSON, and 
         // return it.  If there's no data, we return "[]", so there's no need 
         // for error handling.
-        Spark.get("/ideas", (request, response) -> {
+        Spark.get("/api/ideas", (request, response) -> {
             // ensure status 200 OK, with a MIME type of JSON
             response.status(200);
             response.type("application/json");
@@ -36,7 +37,7 @@ public class Routes {
             return gson.toJson(new StructuredResponse("ok", null, dataStore.readAllUsers()));
         });
         */
-        Spark.get("/user/:id", (request, response) -> {
+        Spark.get("/api/user/:id", (request, response) -> {
             int idx = Integer.parseInt(request.params("id"));
             // ensure status 200 OK, with a MIME type of JSON
             response.status(200);
@@ -55,7 +56,7 @@ public class Routes {
         // ":id" isn't a number, Spark will reply with a status 500 Internal
         // Server Error.  Otherwise, we have an integer, and the only possible 
         // error is that it doesn't correspond to a row with data.
-        Spark.get("/idea/:id", (request, response) -> {
+        Spark.get("/api/idea/:id", (request, response) -> {
             int idx = Integer.parseInt(request.params("id"));
             // ensure status 200 OK, with a MIME type of JSON
             response.status(200);
@@ -67,12 +68,23 @@ public class Routes {
                 return gson.toJson(new StructuredResponse("ok", null, ideaData));
             }
         });
-
+        Spark.get("/api/idea/:id/reactions", (request, response) -> {
+            int idx = Integer.parseInt(request.params("id"));
+            // ensure status 200 OK, with a MIME type of JSON
+            response.status(200);
+            response.type("application/json");
+            Database.ReactionRowData reactionData = dataStore.readReaction(idx);
+            if (reactionData == null) {
+                return gson.toJson(new StructuredResponse("error", idx + " not found", null));
+            } else {
+                return gson.toJson(new StructuredResponse("ok", null, reactionData));
+            }
+        });
         // POST route for adding a new element to the DataStore.  This will read
         // JSON from the body of the request, turn it into a SimpleRequest 
         // object, extract the title and message, insert them, and return the 
         // ID of the newly created row.
-        Spark.post("/ideas", (request, response) -> {
+        Spark.post("/api/ideas", (request, response) -> {
             // NB: if gson.Json fails, Spark will reply with status 500 Internal 
             // Server Error
             RequestIdea req = gson.fromJson(request.body(), RequestIdea.class);
@@ -90,9 +102,40 @@ public class Routes {
             }
         });
 
+        Spark.post("/api/users", (request, response) -> {
+            // NB: if gson.Json fails, Spark will reply with status 500 Internal 
+            // Server Error
+            RequestUser req = gson.fromJson(request.body(), RequestUser.class);
+            // ensure status 200 OK, with a MIME type of JSON
+            // NB: even on error, we return 200, but with a JSON object that
+            //     describes the error.
+            response.status(200);
+            response.type("application/json");
+            // NB: createEntry checks for null title and message
+            int newId = dataStore.createUser(req.avatar, req.name, req.passwordHash, req.companyRole);
+            if (newId == -1) {
+                return gson.toJson(new StructuredResponse("error", "error performing insertion", null));
+            } else {
+                return gson.toJson(new StructuredResponse("ok", "" + newId, null));
+            }
+        });
+
+        Spark.post("/api/idea/:id/reactions", (request, response) -> {
+            int idx = Integer.parseInt(request.params("id"));
+            // ensure status 200 OK, with a MIME type of JSON
+            RequestReaction req = gson.fromJson(request.body(), RequestReaction.class);
+            response.status(200);
+            response.type("application/json");
+            Database.ReactionRowData result = dataStore.updateReaction(req.ideaId, req.userId, req.type);
+            if (result == null) {
+                return gson.toJson(new StructuredResponse("error", "unable to update row " + idx, null));
+            } else {
+                return gson.toJson(new StructuredResponse("ok", null, result));
+            }
+        });
         // PUT route for updating a row in the DataStore.  This is almost 
         // exactly the same as POST
-        Spark.put("/idea/:id", (request, response) -> {
+        Spark.put("/api/idea/:id", (request, response) -> {
             // If we can't get an ID or can't parse the JSON, Spark will send
             // a status 500
             int idx = Integer.parseInt(request.params("id"));
@@ -109,7 +152,7 @@ public class Routes {
         });
 
         // DELETE route for removing a row from the DataStore
-        Spark.delete("/ideas/:id", (request, response) -> {
+        Spark.delete("/api/idea/:id", (request, response) -> {
             // If we can't get an ID, Spark will send a status 500
             int idx = Integer.parseInt(request.params("id"));
             // ensure status 200 OK, with a MIME type of JSON
