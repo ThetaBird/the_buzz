@@ -5,5 +5,5 @@ public class RequestIdea {
     public String subject;
     public String content;
     public String attachment;
-    public Integer[] allowedRoles;
+    public Short[] allowedRoles;
 }

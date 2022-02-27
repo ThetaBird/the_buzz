@@ -8,7 +8,6 @@ import java.sql.SQLException;
 import java.sql.Array;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 //import com.heroku.api.User;
 
@@ -62,7 +61,7 @@ public class Database {
         String subject;
         String content;
         String attachment;
-        //Integer[] allowedRoles;
+        Short[] allowedRoles;
         public IdeaRowData(int ideaId, int userId, long timestamp, String subject, String content, String attachment, Array allowedRoles){
             this.ideaId = ideaId;
             this.userId = userId;
@@ -70,9 +69,12 @@ public class Database {
             this.subject = subject;
             this.content = content;
             this.attachment = attachment;
-            //try{this.allowedRoles = (Integer[])allowedRoles.getArray();
-           // }catch(SQLException e){this.allowedRoles = null;}
-            //System.out.println(Arrays.toString(this.allowedRoles));
+            
+            try{
+                //Short[] roles = (Short[])allowedRoles.getArray();
+                this.allowedRoles = (Short[])allowedRoles.getArray();
+           }catch(SQLException e){e.printStackTrace();}
+            System.out.println(this.allowedRoles);
         }
         public IdeaRowData(IdeaRowData idea){
             this.ideaId = idea.ideaId;
@@ -81,7 +83,7 @@ public class Database {
             this.subject = idea.subject;
             this.content = idea.content;
             this.attachment = idea.attachment;
-            //this.allowedRoles = idea.allowedRoles;
+            this.allowedRoles = idea.allowedRoles;
         }
     }
     public static class UserRowData{
@@ -89,8 +91,8 @@ public class Database {
         String avatar;
         String name;
         String passwordHash;
-        Integer companyRole;
-        public UserRowData(int userId, String avatar, String name, String passwordHash, Integer companyRole){
+        Short companyRole;
+        public UserRowData(int userId, String avatar, String name, String passwordHash, Short companyRole){
             this.userId = userId;
             this.avatar = avatar;
             this.name = name;
@@ -107,16 +109,18 @@ public class Database {
     }
     public static class ReactionRowData{
         int ideaId;
-        Integer[] likes;
-        Integer[] dislikes;
+        Integer[] likes = new Integer[]{};
+        Integer[] dislikes = new Integer[]{};
         public ReactionRowData(int ideaId, Array likes, Array dislikes){
             this.ideaId = ideaId;
 
-            try{this.likes = (Integer[])likes.getArray();
-            }catch(SQLException e){this.likes = null;}
+            try{
+                if(likes != null){this.likes = (Integer[])likes.getArray();}
+            }catch(SQLException e){e.printStackTrace();}
 
-            try{this.dislikes = (Integer[])dislikes.getArray();
-            }catch(SQLException e){this.dislikes = null;}
+            try{
+                if(dislikes != null){this.dislikes = (Integer[])dislikes.getArray();}
+            }catch(SQLException e){e.printStackTrace();}
             
         }
         public ReactionRowData(ReactionRowData reaction){
@@ -188,7 +192,7 @@ public class Database {
             
             db.mCreateUserTable = db.mConnection.prepareStatement(
                 "CREATE TABLE IF NOT EXISTS users (" + 
-                    "id SERIAL PRIMARY KEY, " + //id of user (TechDebt: turn into sha-1 id)
+                    "id SERIAL PRIMARY KEY, " + //id of user (TechDebt: turn into timestamp-based id)
                     "avatar VARCHAR, " + //file path to avatar of user (TechDebt: actually implement this)
                     "name VARCHAR(50) NOT NULL, " + //Displayed name of user
                     "passwordHash VARCHAR(64) NOT NULL, " + //encrypted hash string of google password (TechDebt: actually implement this)
@@ -197,7 +201,7 @@ public class Database {
 
             db.mCreateIdeaTable = db.mConnection.prepareStatement(
                 "CREATE TABLE IF NOT EXISTS ideas (" + 
-                    "id SERIAL PRIMARY KEY, " + //id of idea (TechDebt: turn into sha-1 id)
+                    "id SERIAL PRIMARY KEY, " + //id of idea (TechDebt: turn into timestamp-based id)
                     "userId INTEGER NOT NULL, " + //id of user who posted the id
                     "timestamp BIGINT NOT NULL, " + //time of creation in milliseconds
                     "subject VARCHAR(64) NOT NULL, " + //subject of idea
@@ -222,9 +226,9 @@ public class Database {
             db.mSelectAllIdeas = db.mConnection.prepareStatement("SELECT * FROM ideas"); //TechDebt: Implement LIMIT and limit offset for lazy message loading
             db.mUpdateIdea = db.mConnection.prepareStatement("UPDATE ideas SET subject = ?, content = ?, attachment = ?, allowedRoles = ? WHERE id = ?");
 
-            db.mInsertReactions =  db.mConnection.prepareStatement("INSERT INTO reactions VALUES (?, ?, ?)");
-            db.mSelectReactions = db.mConnection.prepareStatement("SELECT * from reactions WHERE idea = ?");
-            db.mUpdateReactions = db.mConnection.prepareStatement("UPDATE reactions SET likes = ?, dislikes = ? WHERE id = ?");
+            db.mInsertReactions =  db.mConnection.prepareStatement("INSERT INTO reactions VALUES (?, default, default)");
+            db.mSelectReactions = db.mConnection.prepareStatement("SELECT * from reactions WHERE ideaId = ?");
+            db.mUpdateReactions = db.mConnection.prepareStatement("UPDATE reactions SET likes = ?, dislikes = ? WHERE ideaId = ?");
 
             db.mInsertUser = db.mConnection.prepareStatement("INSERT INTO users VALUES (default, ?, ?, ?, ?)");
             db.mSelectUser = db.mConnection.prepareStatement("SELECT * from users WHERE id = ?");
@@ -267,7 +271,7 @@ public class Database {
     /*
         FUNCTIONS FOR INSERTING ROWS (IDEA, REACTION, USER)
     */
-    int insertIdea(int userId, String subject, String content, String attachment, Integer[] allowedRoles){
+    int insertIdea(int userId, String subject, String content, String attachment, Short[] allowedRoles){
         int count = 0;
         try {
             long millis = clock.millis(); //timestamp
@@ -284,27 +288,22 @@ public class Database {
 
         return count;
     }
-    int insertReaction(int ideaId, Integer[] likes, Integer[] dislikes){
+    int insertReaction(int ideaId){
         int count = 0;
         try {
             mInsertReactions.setInt(1,ideaId);
-
-            Array likesArr = mConnection.createArrayOf("INTEGER",likes);
-            Array dislikesArr = mConnection.createArrayOf("INTEGER",dislikes);
-            mInsertIdea.setArray(2, likesArr);
-            mInsertIdea.setArray(3, dislikesArr);
             count += mInsertReactions.executeUpdate();
         } catch (SQLException e) {e.printStackTrace();}
 
         return count;
     }
-    int insertUser(String avatar, String name, String passwordHash, int companyRole){
+    int insertUser(String avatar, String name, String passwordHash, Short companyRole){
         int count = 0;
         try {
             mInsertUser.setString(1, avatar);
             mInsertUser.setString(2, name);
             mInsertUser.setString(3, passwordHash);
-            mInsertUser.setInt(4, companyRole);
+            mInsertUser.setShort(4, companyRole);
             count += mInsertUser.executeUpdate();
         } catch (SQLException e){e.printStackTrace();}
 
@@ -361,11 +360,11 @@ public class Database {
     ReactionRowData selectReaction(int ideaId){
         ReactionRowData res = null;
         try {
-            mSelectIdea.setInt(1, ideaId);
+            mSelectReactions.setInt(1, ideaId);
             ResultSet rs = mSelectReactions.executeQuery();
             if (rs.next()) {
                 res = new ReactionRowData(
-                    rs.getInt("idea"), 
+                    rs.getInt("ideaId"), 
                     rs.getArray("likes"),
                     rs.getArray("dislikes"));
             }
@@ -384,7 +383,7 @@ public class Database {
                     rs.getString("avatar"),
                     rs.getString("name"),
                     rs.getString("passwordHash"),
-                    rs.getInt("companyRole"));
+                    rs.getShort("companyRole"));
             }
         } catch (SQLException e){e.printStackTrace();}
         return res;
@@ -406,13 +405,13 @@ public class Database {
     /*
         FUNCTION FOR UPDATING ROWS (IDEA, REACTION, USER)
     */
-    int updateIdea(int ideaId, String subject, String content, String attachment, Integer[] allowedRoles){
+    int updateIdea(int ideaId, String subject, String content, String attachment, Short[] allowedRoles){
         int res = -1;
         try{
             mUpdateIdea.setString(1, subject);
             mUpdateIdea.setString(2, content);
             mUpdateIdea.setString(3, attachment);
-            Array roles = mConnection.createArrayOf("INTEGER",allowedRoles);
+            Array roles = mConnection.createArrayOf("SMALLINT",allowedRoles);
             mUpdateIdea.setArray(4, roles);
 
             mUpdateIdea.setInt(5, ideaId);
@@ -435,12 +434,12 @@ public class Database {
         return res;
     }
 
-    int updateUser(int userId, String avatar, String name, int companyRole){
+    int updateUser(int userId, String avatar, String name, Short companyRole){
         int res = -1;
         try{
             mUpdateUser.setString(1, avatar);
             mUpdateUser.setString(2, name);
-            mUpdateUser.setInt(3, companyRole);
+            mUpdateUser.setShort(3, companyRole);
 
             mUpdateUser.setInt(4, userId);
             res = mUpdateUser.executeUpdate();
