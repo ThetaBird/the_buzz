@@ -61,7 +61,7 @@ public class Database {
         String subject;
         String content;
         String attachment;
-        Short[] allowedRoles;
+        Short[] allowedRoles = {};
         public IdeaRowData(int ideaId, int userId, long timestamp, String subject, String content, String attachment, Array allowedRoles){
             this.ideaId = ideaId;
             this.userId = userId;
@@ -72,7 +72,7 @@ public class Database {
             
             try{
                 //Short[] roles = (Short[])allowedRoles.getArray();
-                this.allowedRoles = (Short[])allowedRoles.getArray();
+                if(allowedRoles != null){this.allowedRoles = (Short[])allowedRoles.getArray();}
            }catch(SQLException e){e.printStackTrace();}
             System.out.println(this.allowedRoles);
         }
