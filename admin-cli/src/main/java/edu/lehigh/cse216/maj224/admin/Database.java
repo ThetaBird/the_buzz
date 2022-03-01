@@ -131,16 +131,33 @@ public class Database {
             // Note: no "IF NOT EXISTS" or "IF EXISTS" checks on table 
             // creation/deletion, so multiple executions will cause an exception
             db.mCreateTable = db.mConnection.prepareStatement(
-                    "CREATE TABLE tblData (id SERIAL PRIMARY KEY, subject VARCHAR(50) "
-                    + "NOT NULL, message VARCHAR(500) NOT NULL)");
-            db.mDropTable = db.mConnection.prepareStatement("DROP TABLE tblData");
+                "CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, name VARCHAR(50) NOT NULL"
+                + "avatar VARCHAR NOT NULL,"
+                + "password_hash VARCHAR(64) NOT NULL,"
+                + "company_role SMALLINT NOT NULL");
+            db.mCreateTable = db.mConnection.prepareStatement(
+                "CREATE TABLE IF NOT EXISTS ideas (id SERIAL PRIMARY KEY,"
+                + "user_id INTEGER NOT NULL,"
+                + "time_stamp BIGINT NOT NULL"
+                + "subject VARCHAR(64) NOT NULL,"
+                + "content VARCHAR(500) NOT NULL,"
+                + "attachment VARCHAR(50) NOT NULL,"
+                + "FOREIGN KEY(id) REFERENCES users(id)");
+            db.mCreateTable = db.mConnection.prepareStatement(
+                "CREATE TABLE IF NOT EXISTS likes (post_user_id SERIAL PRIMARY KEY,"
+                + "post_num INTEGER NOT NULL,"
+                + "likes_users_id INTEGER[] NOT NULL,"
+                + "disliked_users_id INTEGER[] NOT NULL");
+            db.mDropTable = db.mConnection.prepareStatement("DROP TABLE users");
+            db.mDropTable = db.mConnection.prepareStatement("DROP TABLE idea");
+            db.mDropTable = db.mConnection.prepareStatement("DROP TABLE like"); 
 
             // Standard CRUD operations
-            db.mDeleteOne = db.mConnection.prepareStatement("DELETE FROM tblData WHERE id = ?");
+            /*db.mDeleteOne = db.mConnection.prepareStatement("DELETE FROM tblData WHERE id = ?");
             db.mInsertOne = db.mConnection.prepareStatement("INSERT INTO tblData VALUES (default, ?, ?)");
             db.mSelectAll = db.mConnection.prepareStatement("SELECT id, subject FROM tblData");
             db.mSelectOne = db.mConnection.prepareStatement("SELECT * from tblData WHERE id=?");
-            db.mUpdateOne = db.mConnection.prepareStatement("UPDATE tblData SET message = ? WHERE id = ?");
+            db.mUpdateOne = db.mConnection.prepareStatement("UPDATE tblData SET message = ? WHERE id = ?"); */
         } catch (SQLException e) {
             System.err.println("Error creating prepared statement");
             e.printStackTrace();
