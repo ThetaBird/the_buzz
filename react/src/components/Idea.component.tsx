@@ -14,6 +14,7 @@ type State = {
   message: string;
 }
 export default class Idea extends Component<Props, State> {
+//export default class Idea extends React.Component<{}, { value: string }>{
     constructor(props: Props) {
         super(props);
         this.getIdea = this.getIdea.bind(this);
@@ -21,20 +22,20 @@ export default class Idea extends Component<Props, State> {
             currentIdea: {
                 ideaId: null,
                 userId: null,
-                timestamp: "",
+                timestamp: null,
                 subject: "",
                 content: "",
                 attachment: "",
-                allowedRoles: ""
+                allowedRoles: null
             },
             message: "",
         };
     }
     componentDidMount() {
-        this.getIdea(this.props.match.params.ideaId);
+        this.getIdea(Number(this.props.match.params.ideaId));
     }
-    getIdea(id: string) {
-        IdeaService.findById(id)
+    getIdea(ideaId: number) {
+        IdeaService.findById(this.props.match.params.ideaId)
             .then((response: any) => {
             this.setState({
                 currentIdea: response.data,

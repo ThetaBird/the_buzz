@@ -9,7 +9,7 @@ type State = IdeaData & {
 export default class Create extends Component<Props, State> {
     constructor(props: Props) {
         super(props);
-        this.onChangeUserId = this.onChangeUserId.bind(this);
+        this.onChangeIdeaId = this.onChangeIdeaId.bind(this);
         this.onChangeSubject = this.onChangeSubject.bind(this);
         this.onChangeContent = this.onChangeContent.bind(this);
         this.onChangeAttachment = this.onChangeAttachment.bind(this);
@@ -17,9 +17,9 @@ export default class Create extends Component<Props, State> {
         this.saveIdea = this.saveIdea.bind(this);
         this.newIdea = this.newIdea.bind(this);
         this.state = {
-            ideaId: null,
+            ideaId: "",
             userId: null,
-            timestamp: "",
+            timestamp: null,
             subject: "",
             content: "",
             attachment: "",
@@ -27,8 +27,8 @@ export default class Create extends Component<Props, State> {
             submitted: false
         };
     }
-    onChangeUserId(e: React.ChangeEvent<HTMLInputElement>) {
-        this.setState({userId: e.target.value});
+    onChangeIdeaId(e: React.ChangeEvent<HTMLInputElement>) {
+        this.setState({ideaId: e.target.value});
     }
     onChangeSubject(e: React.ChangeEvent<HTMLInputElement>) {
         this.setState({subject: e.target.value});
@@ -44,10 +44,11 @@ export default class Create extends Component<Props, State> {
     }
     saveIdea() {
         const data: IdeaData = {
-            ideaId: '001',
-            //should set it to a random number
-            userId: this.state.userId,
-            timestamp: '10:00:00',
+            //should maybe generate a random number for this
+            ideaId: this.state.ideaId,
+            //should get the id of the user
+            userId: "001",
+            timestamp: 0o10,
             //set to a real time
             subject: this.state.subject,
             content: this.state.content,
@@ -57,7 +58,7 @@ export default class Create extends Component<Props, State> {
     IdeaService.create(data)
       .then((response: any) => {
         this.setState({
-            userId: response.data.userId,
+            ideaId: response.data.ideaId,
             subject: response.data.subject,
             content: response.data.content,
             attachment: response.data.attachment,
@@ -72,9 +73,9 @@ export default class Create extends Component<Props, State> {
     }
     newIdea() {
         this.setState({
-            ideaId: null,
+            ideaId: "",
             userId: null,
-            timestamp: "",
+            timestamp: null,
             subject: "",
             content: "",
             attachment: "",
@@ -83,7 +84,7 @@ export default class Create extends Component<Props, State> {
         });
     }
     render() {
-        const { submitted, userId, subject, content, attachment, allowedRoles } = this.state;
+        const { submitted, ideaId, subject, content, attachment, allowedRoles } = this.state;
         return (
             <div className="submit-form">
             {submitted ? (

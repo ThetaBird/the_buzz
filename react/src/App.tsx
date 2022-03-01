@@ -1,3 +1,6 @@
+//https://www.bezkoder.com/react-typescript-axios/
+//used a lot of this code for setting up react folder
+
 import * as React from "react";
 //import { useQuery, useMutation } from "react-query";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -10,7 +13,8 @@ import IdeaService from "./services/IdeaService"
 import Create from "./components/Create.component"
 import Idea from "./components/Idea.component"
 import IdeasList from "./components/IdeasList.component"
-//import
+
+//const backendUrl = "https://cse216-group4-app.herokuapp.com";
 
 /** App has one property: a number */
 //type AppProps = { num: number }

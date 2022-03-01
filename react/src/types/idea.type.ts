@@ -1,7 +1,7 @@
 export default interface IdeaData {
-  ideaId: any | null,
-  userId: any,
-  timestamp: any,
+  ideaId?: string | any,
+  userId?: number | any,
+  timestamp: number,
   subject: string,
   content: string,
   attachment: string,

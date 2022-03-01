@@ -1,3 +1,4 @@
+
 import * as React from "react";
 import axios from "axios";
 //import React, { useState, useEffect } from "react";
@@ -16,11 +17,11 @@ const apiClient = axios.create({
     const response = await apiClient.get<Idea[]>("/ideas");
     return response.data;
   }
-  const findById = async (id: any) => {
-    const response = await apiClient.get<Idea>(`/ideas/${id}`);
+  const findById = async (ideaId: string) => {
+    const response = await apiClient.get<Idea>(`/ideas/${ideaId}`);
     return response.data;
   }
-  const create = async ({ userId, subject, content, attachment, allowedRoles }: Idea) => {
+  const create = async ({ ideaId, subject, content, attachment, allowedRoles }: Idea) => {
     const response = await apiClient.post<any>("/ideas", { subject, content });
     return response.data;
   }
