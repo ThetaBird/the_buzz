@@ -46,10 +46,13 @@ Example:
 }
 
 # POST EXAMPLES
-curl -s https://cse216-group4-test.herokuapp.com/api/idea/1/reactions -X POST -d "{'ideaId':1,'userId':3,'type':-1}" (types: -1 = Toggle dislike, 1 = Toggle like, 0 = remove either)
+curl -s https://cse216-group4-app.herokuapp.com/api/idea/1/reactions -X POST -d "{'ideaId':1,'userId':3,'type':-1}" (types: -1 = Toggle dislike, 1 = Toggle like, 0 = remove either)
 
+curl -s https://cse216-group4-app.herokuapp.com/api/idea/1 -X PUT -d "{'subject':'HelloUpdated','content':'WorldUpdated','attachment':'attachmentUpdated.png','allowedRoles':[1,2] }"
 
+curl -s https://cse216-group4-app.herokuapp.com/api/idea/1 -X DELETE
 
-curl -s https://cse216-group4-test.herokuapp.com/api/ideas -X POST -d "{'userId':1, 'subject': 'Hello', 'content': 'World', attachment:'test','allowedRoles':[1]}"
+curl -s https://cse216-group4-app.herokuapp.com/api/ideas -X POST -d "{'userId':1, 'subject': 'Hello', 'content': 'World', attachment:'test','allowedRoles':[1]}"
 
-curl -s https://cse216-group4-test.herokuapp.com/api/users -X POST -d "{'avatar':'test.png','name':'John Doe','passwordHash':'feefgbvgrvf','companyRole':1}"
+curl -s https://cse216-group4-app.herokuapp.com/api/users -X POST -d "{'avatar':'test.png','name':'John Doe','passwordHash':'feefgbvgrvf','companyRole':1}"
+
