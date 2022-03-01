@@ -10,6 +10,14 @@ void main() {
   runApp(const MyApp());
 }
 
+class AddLikes{
+  static int likes = 0;
+
+  static void increment() => likes++;
+
+  static void decrement() => likes--;
+}
+
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -26,6 +34,7 @@ class _MyAppState extends State<MyApp> {
     futureAlbum = fetchAlbum();
   }
 
+  var myliked = false;
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -42,9 +51,7 @@ class _MyAppState extends State<MyApp> {
           actions: [
             IconButton(
               //tooltip: localization.starterAppTooltipFavorite,
-              icon: const Icon(
-                Icons.favorite,
-              ),
+              icon: const Icon(Icons.favorite),
               onPressed: () {},
             ),
             IconButton(
@@ -94,7 +101,19 @@ class _MyAppState extends State<MyApp> {
                         return const CircularProgressIndicator();
                       },
                     ),
-                    subtitle: Text("T2,$index"),
+                    subtitle: FutureBuilder<Album>(
+                      future: futureAlbum,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return Text(snapshot.data!.content);
+                        } else if (snapshot.hasError) {
+                          return Text('${snapshot.error}');
+                        }
+
+                        // By default, show a loading spinner.
+                        return const CircularProgressIndicator();
+                      },
+                    ),
                     trailing: Container(
                       child: Column(
                         children: [
@@ -120,7 +139,7 @@ class _MyAppState extends State<MyApp> {
 
 Future<Album> fetchAlbum() async {
   final response = await http
-      .get(Uri.parse('https://cse216-group4-app.herokuapp.com/idea/1'));
+      .get(Uri.parse('https://cse216-group4-app.herokuapp.com/api/idea/:id'));
 
   if (response.statusCode == 200) {
     // If the server did return a 200 OK response,
@@ -135,14 +154,17 @@ Future<Album> fetchAlbum() async {
 
 class Album {
   final String userId;
+  final String content;
 
   const Album({
     required this.userId,
+    required this.content,
   });
 
   factory Album.fromJson(Map<String, dynamic> json) {
     return Album(
       userId: json['userId'],
+      content: json['content'],
     );
   }
 }
