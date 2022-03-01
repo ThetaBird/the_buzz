@@ -1,70 +1,66 @@
 import * as React from "react";
+//import { useQuery, useMutation } from "react-query";
+import "bootstrap/dist/css/bootstrap.min.css";
 import { HashRouter as Router, Route, Link, Switch } from 'react-router-dom';
-import { Counter } from "./Counter";
-import { GlobalCounter } from "./GlobalCounter";
-import { Hello } from "./Hello";
-import {Url} from "./Url";
-import {Net} from "./Net";
-import {TwoWay} from "./TwoWay";
+//import create from "./components/Create.component";
+//import ideaslist from "./components/IdeasList.component";
+//import idea from "./components/Idea.component";
+//import IdeaData from './types/idea'
+import IdeaService from "./services/IdeaService"
+import Create from "./components/Create.component"
+import Idea from "./components/Idea.component"
+import IdeasList from "./components/IdeasList.component"
 
 /** App has one property: a number */
-type AppProps = { num: number }
+//type AppProps = { num: number }
 
-export class App extends React.Component<AppProps> {
+/*const App: React.FC = () => {
+    const [getId, setGetId] = useState("");
+    const [getTitle, setGetTitle] = useState("");
+    const [getResult, setGetResult] = useState<string | null>(null);
+    const fortmatResponse = (res: any) => {
+      return JSON.stringify(res, null, 2);
+    };*/
+
+class App extends React.Component {
     /** The global state for this component is a counter */
-    state = { num: 0 };
+    //state = { num: 0 };
 
     /**
      * When the component mounts, we need to set the initial value of its
      * counter
      */
-    componentDidMount = () => { this.setState({ num: this.props.num }); }
+    //componentDidMount = () => { this.setState({ num: this.props.num }); }
 
     /** Get the current value of the counter */
-    getNum = () => this.state.num;
+    //getNum = () => this.state.num;
 
     /** Set the counter value */
-    setNum = (num: number) => this.setState({ num });
+    //setNum = (num: number) => this.setState({ num });
 
     /** render the component */
     render() {
+        //const App: React.FC = () => {
         return (
             <Router>
                 <div>
                     <nav>
-                        <Link to="/">Hello (1)</Link>
-                        &nbsp;|&nbsp;
-                        <Link to="/hello">Hello (2)</Link>
+                        <Link to="/ideas">See All Ideas</Link>
 
-                        <Link to="/url/1">Url (1)</Link>
-                        &nbsp;|&nbsp;
-                        <Link to="/url/2">Url (2)</Link>
+                        <Link to="/add">Post Ideas</Link>
 
-                        <Link to="/counter">Counter</Link>
+                        <Link to="/ideas">See Last Idea</Link>
 
-                        <Link to="/globalcounter">Global Counter</Link>
-
-                        <Link to="/net">Network</Link>
-
-                        <Link to="/twoway">Two-Way</Link>
                     </nav>
                     <Switch>
-                        <Route exact path="/" component={Hello} />
-                        <Route exact path="/hello" render={() => <Hello message={"There"} />} /> 
-                        <Route path="/url/:num" component={Url} />
-                        <Route exact path="/counter" component={Counter} />
-                        <Route exact path="/globalcounter" render={() => <GlobalCounter getNum={this.getNum} setNum={this.setNum} />} />
-                        <Route exact path="/net" component={Net} />
-                        <Route exact path="/twoway" component={TwoWay} />
+                        <Route exact path={["/", "/ideas"]} component={IdeasList} />
+                        <Route exact path="/add" component={Create} />
+                        <Route path ="/ideas/:id"component={Idea} />
                     </Switch>
-                    <div>
-                        &copy; 2021
-                    </div>
-                    <div>
-                        &copy; 2021 &mdash; The global counter value is {this.state.num}
-                     </div>    
                 </div>
             </Router>
         );
+        //}
     }
 }
+export default App;
