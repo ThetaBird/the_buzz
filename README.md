@@ -1,5 +1,13 @@
-**Routes, parameters, and returns**
-# GET
+# The Buzz
+The Buzz is our company's social media platform where employees of the company can post ideas and receive/give feedback on those ideas.
+
+# Phase 1
+The Buzz currently is a web system and mobile app currently on [Heroku](https://cse216-group4-app.herokuapp.com/) that lets users post short messages, known as ideas, and like other users' ideas.
+The backend also currently supports a dislike system, although that has yet to be integrated into the rest of the project.
+There is also a separate java program under admin-cli, which can create and drop tables from a database as needed.
+
+# Routes, parameters, and returns
+## GET
 https://cse216-group4-app.herokuapp.com/api/ideas
 ^ Returns a list of all ideas in the payload
 
@@ -45,14 +53,11 @@ Example:
     }
 }
 
-# POST EXAMPLES
-curl -s https://cse216-group4-app.herokuapp.com/api/idea/1/reactions -X POST -d "{'ideaId':1,'userId':3,'type':-1}" (types: -1 = Toggle dislike, 1 = Toggle like, 0 = remove either)
+## POST EXAMPLES
+curl -s https://cse216-group4-test.herokuapp.com/api/idea/1/reactions -X POST -d "{'ideaId':1,'userId':3,'type':-1}" (types: -1 = Toggle dislike, 1 = Toggle like, 0 = remove either)
 
-curl -s https://cse216-group4-app.herokuapp.com/api/idea/1 -X PUT -d "{'subject':'HelloUpdated','content':'WorldUpdated','attachment':'attachmentUpdated.png','allowedRoles':[1,2] }"
 
-curl -s https://cse216-group4-app.herokuapp.com/api/idea/1 -X DELETE
 
-curl -s https://cse216-group4-app.herokuapp.com/api/ideas -X POST -d "{'userId':1, 'subject': 'Hello', 'content': 'World', attachment:'test','allowedRoles':[1]}"
+curl -s https://cse216-group4-test.herokuapp.com/api/ideas -X POST -d "{'userId':1, 'subject': 'Hello', 'content': 'World', attachment:'test','allowedRoles':[1]}"
 
-curl -s https://cse216-group4-app.herokuapp.com/api/users -X POST -d "{'avatar':'test.png','name':'John Doe','passwordHash':'feefgbvgrvf','companyRole':1}"
-
+curl -s https://cse216-group4-test.herokuapp.com/api/users -X POST -d "{'avatar':'test.png','name':'John Doe','passwordHash':'feefgbvgrvf','companyRole':1}"
