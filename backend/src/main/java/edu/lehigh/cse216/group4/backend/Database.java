@@ -139,11 +139,7 @@ public class Database {
     /**
      * Get a fully-configured connection to the database
      * 
-     * @param ip   The IP address of the database server
-     * @param port The port on the database server to which connection requests
-     *             should be sent
-     * @param user The user ID to use when connecting
-     * @param pass The password to use when connecting
+     * @param db_url   The URL address of the database server
      * 
      * @return A Database object, or null if we cannot connect properly
      */
@@ -270,6 +266,17 @@ public class Database {
     /*
         FUNCTIONS FOR INSERTING ROWS (IDEA, REACTION, USER)
     */
+
+    /**
+     * Insert an idea row into POSTGRESQL
+     * 
+     * @param userId The ID of the user that posted the idea
+     * @param subject The subject of the idea
+     * @param content The idea content, builds off subject in more detail
+     * @param attachment Filepath to any image or other file that the user wants to attach to the idea
+     * @param allowedRoles Company roles that are allowed to view this idea
+     * @return integer; status of operation
+     */
     int insertIdea(int userId, String subject, String content, String attachment, Short[] allowedRoles){
         int count = 0;
         try {
@@ -287,6 +294,12 @@ public class Database {
 
         return count;
     }
+
+    /**
+     * Insert a reaction row into POSTGRESQL
+     * @param ideaId ID of idea for reaction row
+     * @return integer; status of operation
+     */
     int insertReaction(int ideaId){
         int count = 0;
         Integer[] emptyArr = new Integer[]{};
@@ -300,6 +313,16 @@ public class Database {
 
         return count;
     }
+
+    /**
+     * Insert a user row into POSTGRESQL
+     * 
+     * @param avatar filepath to avatar image for user
+     * @param name display name of user
+     * @param passwordHash encrypted string of user password
+     * @param companyRole role in the company
+     * @return int, status of operation
+     */
     int insertUser(String avatar, String name, String passwordHash, Short companyRole){
         int count = 0;
         try {
@@ -316,6 +339,12 @@ public class Database {
     /*
         FUNCTIONS FOR SELECTING ROWS (IDEA, REACTION, USER)
     */
+
+    /**
+     * Read all ideas from POSTGRESQL.
+     * 
+     * @return an ArrayList of IdeaRowData containing all valid idea rows.
+     */
     ArrayList<IdeaRowData> selectAllIdeas(){
         ArrayList<IdeaRowData> res = new ArrayList<IdeaRowData>();
         try {
@@ -341,6 +370,12 @@ public class Database {
         }
     }
 
+    /**
+     * Read a single idea row from POSTGRESQL given an ID.
+     * 
+     * @param ideaId ID of the idea that you want to find in the DB
+     * @return null if no idea found, IdeaRowData if idea found.
+     */
     IdeaRowData selectIdea(int ideaId){
         IdeaRowData res = null;
         try {
@@ -360,6 +395,12 @@ public class Database {
         return res;
     }
 
+    /**
+     * Read an idea row for an idea from POSTGRESQL given its ID
+     * 
+     * @param ideaId the ID of the idea that you want to get a reaction from.
+     * @return null if no reaction found, ReactionRowData if reaction fouund.
+     */
     ReactionRowData selectReaction(int ideaId){
         ReactionRowData res = null;
         try {
@@ -375,6 +416,12 @@ public class Database {
         return res;
     }
 
+    /**
+     * Read a single user from POSTGRESQL given a user ID
+     * 
+     * @param userId the ID of the user you want to pull information from
+     * @return null if no user found, UserRowData if user found.
+     */
     UserRowData selectUser(int userId){
         UserRowData res = null;
         try {
@@ -408,6 +455,17 @@ public class Database {
     /*
         FUNCTION FOR UPDATING ROWS (IDEA, REACTION, USER)
     */
+
+    /**
+     * Update the idea row in POSTGRESQL given an existing idea id and changeable parameters
+     * 
+     * @param ideaId id of the idea to update
+     * @param subject current or updated subject of idea
+     * @param content current or updated content of idea
+     * @param attachment current or updated attachment of idea
+     * @param allowedRoles current or updated allowed roles of idea
+     * @return Updated idea object, containing latest values.
+     */
     int updateIdea(int ideaId, String subject, String content, String attachment, Short[] allowedRoles){
         int res = -1;
         try{
@@ -423,6 +481,14 @@ public class Database {
         return res;
     }
 
+    /**
+     * Update a reaction row in POSTGRESQL
+     * 
+     * @param ideaId id of the idea for which the reaction is for
+     * @param likes integer array of user IDs who liked the idea
+     * @param dislikes integer array of user IDs who disliked the idea
+     * @return
+     */
     int updateReaction(int ideaId, Integer[] likes, Integer[] dislikes){
         int res = -1;
         try{
@@ -437,6 +503,15 @@ public class Database {
         return res;
     }
 
+    /**
+     * Update a user row in POSTGRESQL
+     * 
+     * @param userId user ID of the user you want to update
+     * @param avatar current or updated avatar filepath
+     * @param name current or updated display name
+     * @param companyRole current or updated role in the company
+     * @return a UserRowData containing the new user information
+     */
     int updateUser(int userId, String avatar, String name, Short companyRole){
         int res = -1;
         try{
