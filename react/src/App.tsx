@@ -10,6 +10,7 @@ import IdeaService from "./services/IdeaService"
 import Create from "./components/Create.component"
 import Idea from "./components/Idea.component"
 import IdeasList from "./components/IdeasList.component"
+//import
 
 /** App has one property: a number */
 //type AppProps = { num: number }
