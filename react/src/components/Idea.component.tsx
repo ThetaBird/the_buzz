@@ -20,7 +20,7 @@ export default class Idea extends Component<Props, State> {
         this.getIdea = this.getIdea.bind(this);
         this.state = {
             currentIdea: {
-                ideaId: null,
+                ideaId: "",
                 userId: null,
                 timestamp: null,
                 subject: "",
@@ -32,11 +32,11 @@ export default class Idea extends Component<Props, State> {
         };
     }
     componentDidMount() {
-        this.getIdea(Number(this.props.match.params.ideaId));
+        this.getIdea(this.props.match.params.ideaId);
     }
-    getIdea(ideaId: number) {
-        IdeaService.findById(this.props.match.params.ideaId)
-            .then((response: any) => {
+    getIdea(ideaId: string) {
+        IdeaService.findById(ideaId)
+        .then((response: any) => {
             this.setState({
                 currentIdea: response.data,
             });
@@ -46,28 +46,11 @@ export default class Idea extends Component<Props, State> {
             console.log(e);
         });
     }
-    render(){
+    /*render(){
         const { currentIdea } = this.state;
         return (
-            <div className="col-md-6">
-            {currentIdea ? (
-                <div>
-                    <h4>Idea</h4>
-                    <div>
-                        <label>
-                            <strong>Content:</strong>
-                        </label>{" "}
-                        {currentIdea.content}
-                    </div>
-                </div>
-            ): (
-                <div>
-                    <br />
-                        <p>Please post an idea</p>  
-                </div>          
-            )}
-            </div>
+        
         );
-    }
+    }*/
 }
 

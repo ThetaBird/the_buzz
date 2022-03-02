@@ -1,0 +1,9 @@
+[
+    "ideaId:1",
+    "userId:1",
+    "timestamp:1645681889349",
+    "subject:Hello",
+    "content:World",
+    "attachment:test",
+    "allowedRoles:[1]"
+]

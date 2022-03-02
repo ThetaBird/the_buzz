@@ -7,6 +7,8 @@ module.exports = {
     entry: path.resolve(__dirname, "../", "src", 'index.tsx'),
     target: "web",
     output: {
+        //added this in
+        publicPath: '/',
         path: path.resolve(__dirname, "../build"),
         filename: 'bundle.js'
     },

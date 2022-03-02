@@ -37,7 +37,7 @@ export default class IdeasList extends Component<Props, State>{
     });
   }
   retrieveIdeas() {
-    IdeaService.findAll()
+    IdeaService.getAll()
       .then((response: any) => {
         this.setState({
           ideas: response.data
