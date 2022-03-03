@@ -1,5 +1,4 @@
 package edu.lehigh.cse216.maj224.admin;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.IOException;
@@ -12,6 +11,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Map;
 
+
 /**
  * App is our basic admin app.  For now, all it does is connect to the database
  * and then disconnect
@@ -21,7 +21,11 @@ public class App {
      * The main routine reads arguments from the environment and then uses those
      * arguments to connect to the database.
      */
-    public static void main(String[] argv) {
+   public static void main(String[] argv) {
+
+        AppTest testOne = new AppTest("Test One");
+        testOne.testApp();
+
         // get the Postgres configuration from the environment
         Map<String, String> env = System.getenv();
         String ip = env.get("POSTGRES_IP");
@@ -70,4 +74,4 @@ public class App {
         }
         System.out.println(" ...  connection successfully closed");
     }
-}
+} 
