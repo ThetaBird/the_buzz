@@ -1,18 +1,20 @@
 import { Component, ChangeEvent } from "react";
-import IdeaService from "../services/IdeaService";
+//import IdeaService from "../services/IdeaService";
 import { Link } from "react-router-dom";
 import IdeaData from "../types/idea.type";
 import React = require("react");
 
-type Props = {};
+//var ideaList: IdeasList
+/*type Props = {};
 type State = {
   ideas: Array<IdeaData>,
   currentIdea: IdeaData | null,
   currentIndex: number,
   searchId: number | string
-};
-export default class IdeasList extends Component<Props, State>{
-  constructor(props: Props) {
+};*/
+//export default class IdeasList extends Component<Props, State>{
+//class IdeasList{
+  /*constructor(props: Props) {
     super(props);
     this.onChangeSearchId = this.onChangeSearchId.bind(this);
     this.retrieveIdeas = this.retrieveIdeas.bind(this);
@@ -157,5 +159,33 @@ export default class IdeasList extends Component<Props, State>{
         </div>
       </div>    
         ); 
-    }
-}
+    }*/
+  /*refresh() {
+    // Issue a GET, and then pass the result to update()
+    $.ajax({
+      type: "GET",
+      url: "/ideas",
+      dataType: "json",
+      success: ideaList.update
+    });
+  }
+
+  /**
+   * update is the private method used by refresh() to update messageList
+   */
+  /*private update(data: any) {
+      $("#ideaList").html("<table>");
+      for (let i = 0; i < data.mData.length; ++i) {
+          $("#ideaList").append("<tr><td>" + data.mData[i].title + data.mData[i].subject + data.mData[i].content + data.mData[i].attachment + data.mData[i].allowedRoles +
+              "</td>" + ideaList.buttons(data.mData[i].ideaId) + "</tr>");
+      }
+      $("#ideaList").append("</table>");
+  }*/
+
+  /**
+   * buttons() doesn't do anything yet
+   */
+  /*private buttons(id: string): string {
+      return "";
+  }
+}*/

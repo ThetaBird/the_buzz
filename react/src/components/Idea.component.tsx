@@ -1,21 +1,23 @@
 import { Component, ChangeEvent, ReactNode } from "react";
 import { RouteComponentProps } from 'react-router-dom';
-import IdeaService from "../services/IdeaService";
+//import IdeaService from "../services/IdeaService";
 import IdeaData from "../types/idea.type";
 import { Link } from "react-router-dom";
 import React = require("react");
 
-interface RouterProps { // type for `match.params`
+/*interface RouterProps { // type for `match.params`
   ideaId: string; // must be type `string` since value comes from the URL
 }
 type Props = RouteComponentProps<RouterProps>;
 type State = {
   currentIdea: IdeaData;
   message: string;
-}
-export default class Idea extends Component<Props, State> {
+}*/
+//var idea: Idea
+//export default class Idea extends Component<Props, State> {
 //export default class Idea extends React.Component<{}, { value: string }>{
-    constructor(props: Props) {
+//class Idea{
+    /*constructor(props: Props) {
         super(props);
         this.getIdea = this.getIdea.bind(this);
         this.state = {
@@ -30,8 +32,8 @@ export default class Idea extends Component<Props, State> {
             },
             message: "",
         };
-    }
-    componentDidMount() {
+    }*/
+    /*componentDidMount() {
         this.getIdea(this.props.match.params.ideaId);
     }
     getIdea(ideaId: string) {
@@ -52,5 +54,5 @@ export default class Idea extends Component<Props, State> {
         
         );
     }*/
-}
+//}
 

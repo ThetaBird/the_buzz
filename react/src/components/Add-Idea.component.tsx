@@ -1,31 +1,32 @@
+var $: any;
 import { Component, ChangeEvent } from "react";
 import React = require("react");
-import $ from 'jquery';
-import IdeaService from "../services/IdeaService";
+//import IdeaService from "../services/IdeaService";
 import IdeaData from '../types/idea.type';
 //import { randomInt } from "node:crypto";
 import { render } from "react-dom";
 //var $: any;
-//var newIdea: newIdea;
-type Props = {};
+var AddIdea: addIdea;
+/*type Props = {};
 type State = IdeaData & {
   submitted: boolean
-};
-export default class AddIdea extends Component<Props, State> {
-    [x: string]: any;
-    constructor(props: Props) {
-        super(props);
-        jQuery("#addCancel").click(this.clearForm);
-        jQuery("#addButton").click(this.submitForm);
-        this.onSubmitResponse = this.onSubmitResponse.bind(this);
-        this.onChangeIdeaId = this.onChangeIdeaId.bind(this);
-        this.onChangeSubject = this.onChangeSubject.bind(this);
-        this.onChangeContent = this.onChangeContent.bind(this);
-        this.onChangeAttachment = this.onChangeAttachment.bind(this);
-        this.onChangeAllowedRoles = this.onChangeAllowedRoles.bind(this);
+};*/
+//export default class AddIdea extends Component<Props, State> {
+class addIdea{
+    //[x: string]: any;
+    constructor() {
+        //super(props);
+        $("#addCancel").click(this.clearForm);
+        $("#addButton").click(this.submitForm);
+        //this.onSubmitResponse = this.onSubmitResponse.bind(this);
+        //this.onChangeIdeaId = this.onChangeIdeaId.bind(this);
+        //this.onChangeSubject = this.onChangeSubject.bind(this);
+        //this.onChangeContent = this.onChangeContent.bind(this);
+        //this.onChangeAttachment = this.onChangeAttachment.bind(this);
+        //this.onChangeAllowedRoles = this.onChangeAllowedRoles.bind(this);
         //this.saveIdea = this.saveIdea.bind(this);
-        this.newIdea = this.newIdea.bind(this);
-        this.state = {
+        //this.newIdea = this.newIdea.bind(this);
+        /*this.state = {
             ideaId: "",
             userId: null,
             timestamp: null,
@@ -34,16 +35,17 @@ export default class AddIdea extends Component<Props, State> {
             attachment: "",
             allowedRoles: null,
             submitted: false
-        };
+        };*/
     }
     /**
      * Clear the form's input fields
      */
      clearForm() {
-        jQuery("#newSubject").val("");
-        jQuery("#newContent").val("");
-        jQuery("#newAttachment").val("");
-        jQuery("#allowedRoles").val("");
+        //$("ideaId").val("");
+        $("#newSubject").val("");
+        $("#newContent").val("");
+        $("#newAttachment").val("");
+        $("#allowedRoles").val("");
     }
 
     /**
@@ -54,27 +56,27 @@ export default class AddIdea extends Component<Props, State> {
         // that neither is empty
         //can you generate a random number? can't use crypto package won't run
         let ideaId = '001';
-        let subject = "" + jQuery("#newSubject").val();
+        let subject = "" + $("#newSubject").val();
         if (subject === "") {
             window.alert("Error: subject is not valid");
             return;
         }
-	    let content = "" + jQuery("#newContent").val();
+	    let content = "" + $("#newContent").val();
             if (content === "") {
                 window.alert("Error: Content is not valid");
                 return;
             }
-        let attachment = "" + jQuery("#newAttachment").val();
+        let attachment = "" + $("#newAttachment").val();
         if (attachment === "") {
             window.alert("Error: Attachment is not valid");
             return;
         }
-        let allowedRoles = "" + jQuery("#allowedRoles").val();
+        let allowedRoles = "" + $("#allowedRoles").val();
         if (allowedRoles === "") {
             window.alert("Error: allowedRoles is not valid");
             return;
         }
-        const data: IdeaData = {
+        /*const data: IdeaData = {
             ideaId: this.state.ideaId,
             //should get the id of the user
             userId: "001",
@@ -100,6 +102,13 @@ export default class AddIdea extends Component<Props, State> {
         })
         .catch((e: Error) => {
             console.log(e);
+        });*/
+        $.ajax({
+            type: "POST",
+            url: "/ideas",
+            dataType: "json",
+            data: JSON.stringify({ subject: subject, content: content, attachment: attachment, allowedRoles: allowedRoles }),
+            success: AddIdea.onSubmitResponse
         });
     }
     /**
@@ -108,14 +117,14 @@ export default class AddIdea extends Component<Props, State> {
      *
      * @param data The object returned by the server
      */
-    onSubmitResponse(e: React.ChangeEvent<HTMLInputElement>) {
+    private onSubmitResponse(data: any) {
         // If we get an "ok" message, clear the form
-        if (e.target.value=== "ok") {
-            this.newIdea();
+        if (data.mStatus=== "ok") {
+            this.clearForm();
         }
         // Handle explicit errors with a detailed popup message
-        else if (e.target.value === "error") {
-            window.alert("The server replied with an error:\n" + e.target.value);
+        else if (data.mStatus === "error") {
+            window.alert("The server replied with an error:\n" + data.mMessage);
         }
         // Handle other errors with a less-detailed popup message
         else {
@@ -123,7 +132,7 @@ export default class AddIdea extends Component<Props, State> {
         }
     }
     
-    onChangeIdeaId(e: React.ChangeEvent<HTMLInputElement>) {
+    /*onChangeIdeaId(e: React.ChangeEvent<HTMLInputElement>) {
         this.setState({ideaId: e.target.value});
     }
     onChangeSubject(e: React.ChangeEvent<HTMLInputElement>) {
@@ -137,7 +146,7 @@ export default class AddIdea extends Component<Props, State> {
     }
     onChangeAllowedRoles(e: React.ChangeEvent<HTMLInputElement>) {
         this.setState({allowedRoles: e.target.value});
-    }
+    }*/
     /*saveIdea() {
         const data: IdeaData = {
             //should maybe generate a random number for this
@@ -167,7 +176,7 @@ export default class AddIdea extends Component<Props, State> {
             console.log(e);
         });
     } */
-    newIdea() {
+    /*newIdea() {
         this.setState({
             ideaId: "",
             userId: null,
@@ -248,5 +257,5 @@ export default class AddIdea extends Component<Props, State> {
     )}
     </div>
     );
-  }
+  }*/
 }

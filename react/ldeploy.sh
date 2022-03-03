@@ -24,13 +24,14 @@ cp node_modules/jquery/dist/jquery.min.js $TARGETFOLDER
 node_modules/typescript/bin/tsc app.tsx --strict --outFile $TARGETFOLDER/app.java
 
 # step 5: compile tests and copy tests to the local deploy folder
-# node_modules/typescript/bin/tsc apptest.ts --strict --outFile $TARGETFOLDER/apptest.js
-# cp spec_runner.html $TARGETFOLDER
-# cp node_modules/jasmine-core/lib/jasmine-core/jasmine.css $TARGETFOLDER
-# cp node_modules/jasmine-core/lib/jasmine-core/jasmine.js $TARGETFOLDER
-# cp node_modules/jasmine-core/lib/jasmine-core/boot0.js $TARGETFOLDER
-# cp node_modules/jasmine-core/lib/jasmine-core/boot1.js $TARGETFOLDER
-# cp node_modules/jasmine-core/lib/jasmine-core/jasmine-html.js $TARGETFOLDER
+node_modules/typescript/bin/tsc apptest.ts --strict --outFile $TARGETFOLDER/apptest.js
+cp spec_runner.html $TARGETFOLDER
+cp node_modules/jasmine-core/lib/jasmine-core/jasmine.css $TARGETFOLDER
+cp node_modules/jasmine-core/lib/jasmine-core/jasmine.js $TARGETFOLDER
+cp node_modules/jasmine-core/lib/jasmine-core/boot0.js $TARGETFOLDER
+cp node_modules/jasmine-core/lib/jasmine-core/boot1.js $TARGETFOLDER
+cp node_modules/jasmine-core/lib/jasmine-core/jasmine-html.js $TARGETFOLDER
+cp app.css $TARGETFOLDER/$WEBFOLDERNAME
 
 # step 6: launch the server.  Be sure to disable caching
 # (Note: we don't currently use -s for silent operation)
