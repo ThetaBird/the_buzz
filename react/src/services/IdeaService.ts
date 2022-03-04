@@ -80,11 +80,11 @@ const apiClient = axios.create({
     const response = await apiClient.get<IdeaData[]>("/ideas");
     return response.data;
   }
-  const findById = async (ideaId: any) => {
-    const response = await apiClient.get<IdeaData>(`/ideas/${ideaId}`);
+  const findById = async (id: any) => {
+    const response = await apiClient.get<IdeaData>(`/ideas/${id}`);
     return response.data;
   }
-  const create = async ({ subject, content, attachment, allowedRoles }: IdeaData) => {
+  const create = async ({ userId, subject, content, attachment, allowedRoles }: IdeaData) => {
     const response = await apiClient.post<IdeaData>("/ideas", { subject, content, attachment, allowedRoles });
     return response.data;
   }

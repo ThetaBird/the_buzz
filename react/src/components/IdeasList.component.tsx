@@ -1,26 +1,33 @@
 import { Component, ChangeEvent } from "react";
-//import IdeaService from "../services/IdeaService";
+import IdeaService from "../services/IdeaService";
 import { Link } from "react-router-dom";
 import IdeaData from "../types/idea.type";
 import React = require("react");
-
-//var ideaList: IdeasList
-/*type Props = {};
+var $: any;
+type Props = {};
 type State = {
   ideas: Array<IdeaData>,
   currentIdea: IdeaData | null,
   currentIndex: number,
   searchId: number | string
-};*/
-//export default class IdeasList extends Component<Props, State>{
-//class IdeasList{
-  /*constructor(props: Props) {
+};
+
+export class IdeasList extends Component<Props, State>{
+  static refresh() {
+      throw new Error("Method not implemented.");
+  }
+  static refreshList: any;
+  constructor(props: Props) {
     super(props);
+    $("#delbtn").click(this.clickDelete);
+    $("#editbtn").click(this.clickEdit);
     this.onChangeSearchId = this.onChangeSearchId.bind(this);
     this.retrieveIdeas = this.retrieveIdeas.bind(this);
     this.refreshList = this.refreshList.bind(this);
     this.setActiveIdea = this.setActiveIdea.bind(this);
     this.searchId = this.searchId.bind(this);
+    this.update = this.update.bind(this);
+    this.buttons = this.buttons.bind(this);
     this.state = {
       ideas: [],
       currentIdea: null,
@@ -79,8 +86,71 @@ type State = {
         console.log(e);
       });
   }
+  /*refresh() {
+      return $.ajax({
+          method: "GET",
+          url: "https://cse216-group4-app.herokuapp.com/api/ideas",
+          dataType: "application/json",
+          data: JSON.stringify({ ideaId: data.ideaId, userId: data.userId, timestamp: data.timestamp, subject: data.subject, content: data.content, attachment: data.attachment, allowedRoles: data.allowedRoles }),
+          success: ideaList.update
+      });
+    }*/
   
-    render() {
+    /**
+     * update is the private method used by refresh() to update messageList
+     */
+  update(data: any) {
+      $("#IdeasList").html("<table>");
+      for (let i = 0; i < data.mData.length; ++i) {
+          $("#IdeasList > tbody").append("<tr><td>" + data.mData[i].ideaId + "</td>" + data.mData[i].userId + data.mData[i].timestamp + data.mData[i].title + data.mData[i].subject + data.mData[i].content + data.mData[i].attachment + data.mData[i].allowedRoles +
+          "</td>" + this.buttons(data.mData[i].ideaId) + "</tr>");
+      }
+      $("#IdeasList").append("</table>");
+      // Find all of the delete buttons, and set their behavior
+      $(".delbtn").click(this.clickDelete);
+      $(".editbtn").click(this.clickEdit);
+  }
+  
+    /**
+     * buttons() doesn't do anything yet
+     */
+  buttons(id: string): string {
+    return "<td><button class='editbtn' data-value='" + id
+    + "'>Edit</button></td>"
+    + "<td><button class='delbtn' data-value='" + id
+    + "'>Delete</button></td>";
+  }
+  /**
+  * clickDelete is the code we run in response to a click of a delete button
+  */
+  clickDelete() {
+    // for now, just print the ID that goes along with the data in the row
+    // whose "delete" button was clicked
+    let id = $(this).data("value");
+    return $.ajax({
+        method: "DELETE",
+        url: "https://cse216-group4-app.herokuapp.com/api/ideas/:" + id,
+        dataType: "application/json",
+          // TODO: we should really have a function that looks at the return
+          //       value and possibly prints an error message.
+        success: this.refreshList
+    });
+  }
+  /**
+  * clickEdit is the code we run in response to a click of a delete button
+  */
+  private clickEdit() {
+      // as in clickDelete, we need the ID of the row
+      let id = $(this).data("value");
+      return $.ajax({
+          method: "GET",
+          url: "https://cse216-group4-app.herokuapp.com/api/idea/:" + id,
+          dataType: "application/json",
+          success: this.update
+      });
+  }
+  
+  render() {
         return (
           <div className="list row">
           <div className="col-md-8">
@@ -104,7 +174,7 @@ type State = {
           </div>
         </div>
         <div className="col-md-6">
-          <h4>Ideas List</h4>
+          <h4>All Ideas</h4>
           <ul className="list-group">
             {this.state.ideas &&
               this.state.ideas.map((idea: IdeaData, index: number) => (
@@ -127,6 +197,12 @@ type State = {
               <h4>Idea</h4>
               <div>
                 <label>
+                  <strong>UserId:</strong>
+                </label>{" "}
+                {this.state.currentIdea.userId}
+              </div>
+              <div>
+                <label>
                   <strong>Subject:</strong>
                 </label>{" "}
                 {this.state.currentIdea.subject}
@@ -143,8 +219,14 @@ type State = {
                 </label>{" "}
                 {this.state.currentIdea.attachment}
               </div>
+              <div>
+                <label>
+                  <strong>AllowedRoles:</strong>
+                </label>{" "}
+                {this.state.currentIdea.allowedRoles}
+              </div>
               <Link
-                to={"/ideas/" + this.state.currentIdea.ideaId}
+                to={"/ideas/" + this.state.currentIdea.userId}
                 className="badge badge-warning"
               >
                 Edit
@@ -159,7 +241,8 @@ type State = {
         </div>
       </div>    
         ); 
-    }*/
+  }
+}
   /*refresh() {
     // Issue a GET, and then pass the result to update()
     $.ajax({

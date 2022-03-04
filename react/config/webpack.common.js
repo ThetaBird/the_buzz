@@ -6,6 +6,8 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 module.exports = {
     entry: path.resolve(__dirname, "../", "src", 'index.tsx'),
     target: "web",
+    //added in
+    stats: { children: true },
     output: {
         //added this in
         //publicPath: '/',
@@ -20,7 +22,7 @@ module.exports = {
 
     module: {
         rules: [
-            { test: /\.(ts|tsx)$/, loader: 'ts-loader', exclude: /node_modules/ },
+            { test: /\.ts|tsx$/, loader: 'ts-loader', exclude: /node_modules/ },
             { test: /\.css$/, use: ["style-loader", "css-loader"] }
         ]
     },

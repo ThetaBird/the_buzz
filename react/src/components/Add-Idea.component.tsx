@@ -1,97 +1,118 @@
 var $: any;
 import { Component, ChangeEvent } from "react";
 import React = require("react");
-//import IdeaService from "../services/IdeaService";
+import IdeaService from "../services/IdeaService";
 import IdeaData from '../types/idea.type';
 //import { randomInt } from "node:crypto";
 import { render } from "react-dom";
-//var $: any;
-var AddIdea: addIdea;
-/*type Props = {};
+//var AddIdea: addIdea;
+type Props = {};
 type State = IdeaData & {
   submitted: boolean
-};*/
-//export default class AddIdea extends Component<Props, State> {
-class addIdea{
-    //[x: string]: any;
-    constructor() {
-        //super(props);
+};
+//deleted default class
+export class AddIdea extends Component<Props, State> {
+/**
+ * NewEntryForm encapsulates all of the code for the form for adding an entry
+ */
+//class addIdea {
+    /**
+     * To initialize the object, we say what method of NewEntryForm should be
+     * run in response to each of the form's buttons being clicked.
+     */
+     constructor(props: Props) {
+        super(props);
         $("#addCancel").click(this.clearForm);
         $("#addButton").click(this.submitForm);
-        //this.onSubmitResponse = this.onSubmitResponse.bind(this);
-        //this.onChangeIdeaId = this.onChangeIdeaId.bind(this);
-        //this.onChangeSubject = this.onChangeSubject.bind(this);
-        //this.onChangeContent = this.onChangeContent.bind(this);
-        //this.onChangeAttachment = this.onChangeAttachment.bind(this);
-        //this.onChangeAllowedRoles = this.onChangeAllowedRoles.bind(this);
-        //this.saveIdea = this.saveIdea.bind(this);
-        //this.newIdea = this.newIdea.bind(this);
-        /*this.state = {
+        this.onSubmitResponse = this.onSubmitResponse.bind(this);
+        this.onChangeUserId = this.onChangeUserId.bind(this);
+        this.onChangeSubject = this.onChangeSubject.bind(this);
+        this.onChangeContent = this.onChangeContent.bind(this);
+        this.onChangeAttachment = this.onChangeAttachment.bind(this);
+        this.onChangeAllowedRoles = this.onChangeAllowedRoles.bind(this);
+        //this.saveTutorial = this.saveTutorial.bind(this);
+        //this.newTutorial = this.newTutorial.bind(this);
+        this.state = {
             ideaId: "",
-            userId: null,
+            userId: "",
             timestamp: null,
             subject: "",
             content: "",
             attachment: "",
-            allowedRoles: null,
+            allowedRoles: "",
             submitted: false
-        };*/
+        };
     }
+
     /**
      * Clear the form's input fields
      */
-     clearForm() {
-        //$("ideaId").val("");
+    clearForm() {
+        $("newUserId").val("");
         $("#newSubject").val("");
         $("#newContent").val("");
         $("#newAttachment").val("");
-        $("#allowedRoles").val("");
+        $("#newAllowedRoles").val("");
     }
 
     /**
      * Check if the input fields are both valid, and if so, do an AJAX call.
      */
-     submitForm() {
+    submitForm() {
         // get the values of the two fields, force them to be strings, and check 
         // that neither is empty
-        //can you generate a random number? can't use crypto package won't run
-        let ideaId = '001';
-        let subject = "" + $("#newSubject").val();
-        if (subject === "") {
+        let id = "" + $("#newUserId").val("");
+        let sub = "" + $("#newSubject").val("");
+        let cont = "" + $("#newContent").val("");
+        let att = "" + $("#newAttachment").val("");
+        let ar = "" + $("#newAllowedRoles").val("");
+        if(id === ""){
+            window.alert("Error: User ID is not valid");
+            return;
+        }
+        if (sub === "") {
             window.alert("Error: subject is not valid");
             return;
         }
-	    let content = "" + $("#newContent").val();
-            if (content === "") {
-                window.alert("Error: Content is not valid");
-                return;
-            }
-        let attachment = "" + $("#newAttachment").val();
-        if (attachment === "") {
+        if (cont === "") {
+            window.alert("Error: Content is not valid");
+            return;
+        }
+        if (att === "") {
             window.alert("Error: Attachment is not valid");
             return;
         }
-        let allowedRoles = "" + $("#allowedRoles").val();
-        if (allowedRoles === "") {
+        if (ar === "") {
             window.alert("Error: allowedRoles is not valid");
             return;
         }
-        /*const data: IdeaData = {
-            ideaId: this.state.ideaId,
+        // set up an AJAX post.  When the server replies, the result will go to
+        // onSubmitResponse
+        /*return $.ajax({
+            method: "POST",
+            url: "https://cse216-group4-test.herokuapp.com/api/ideas",
+            //url: "http://localhost:8080/api/ideas",
+            dataType: "application/json",
+            //data: JSON.stringify({ userId: id, subject: sub, content: cont, attachment: att, allowedRoles: ar }),
+            data: "../public/ideas.json",
+            success: AddIdea.onSubmitResponse
+        });*/
+        const data: IdeaData = {
+            //should maybe generate a random number for this
+            ideaId:  "001",
             //should get the id of the user
-            userId: "001",
+            userId: id,
             timestamp: 0o10,
             //set to a real time
-            subject: this.state.subject,
-            content: this.state.content,
-            attachment: this.state.attachment,
-            allowedRoles: this.state.allowedRoles
-        }
+            subject: sub,
+            content: cont,
+            attachment: att,
+            allowedRoles: ar
+        };
         IdeaService.create(data)
         .then((response: any) => {
             this.setState({
-                ideaId: response.data.ideaId,
-                userId: response.data.userId,
+                userId: response.data.ideaId,
                 subject: response.data.subject,
                 content: response.data.content,
                 attachment: response.data.attachment,
@@ -102,38 +123,22 @@ class addIdea{
         })
         .catch((e: Error) => {
             console.log(e);
-        });*/
-        $.ajax({
-            type: "POST",
-            url: "/ideas",
-            dataType: "json",
-            data: JSON.stringify({ subject: subject, content: content, attachment: attachment, allowedRoles: allowedRoles }),
-            success: AddIdea.onSubmitResponse
         });
     }
+
     /**
-     * onSubmitResponse runs when the AJAX call in submitForm() returns a
+     * onSubmitResponse runs when the AJAX call in submitForm() returns a 
      * result.
-     *
+     * 
      * @param data The object returned by the server
      */
-    private onSubmitResponse(data: any) {
-        // If we get an "ok" message, clear the form
-        if (data.mStatus=== "ok") {
-            this.clearForm();
-        }
-        // Handle explicit errors with a detailed popup message
-        else if (data.mStatus === "error") {
-            window.alert("The server replied with an error:\n" + data.mMessage);
-        }
-        // Handle other errors with a less-detailed popup message
-        else {
-            window.alert("Unspecified error");
-        }
+    onSubmitResponse(e: React.ChangeEvent<HTMLInputElement>) {
+        this.clearForm();
     }
+ // end class NewEntryForm
     
-    /*onChangeIdeaId(e: React.ChangeEvent<HTMLInputElement>) {
-        this.setState({ideaId: e.target.value});
+    onChangeUserId(e: React.ChangeEvent<HTMLInputElement>) {
+        this.setState({userId: e.target.value});
     }
     onChangeSubject(e: React.ChangeEvent<HTMLInputElement>) {
         this.setState({subject: e.target.value});
@@ -146,7 +151,7 @@ class addIdea{
     }
     onChangeAllowedRoles(e: React.ChangeEvent<HTMLInputElement>) {
         this.setState({allowedRoles: e.target.value});
-    }*/
+    }
     /*saveIdea() {
         const data: IdeaData = {
             //should maybe generate a random number for this
@@ -188,9 +193,9 @@ class addIdea{
             submitted: false
         });
         //this.clearForm();
-    }
+    }*/
     render() {
-        const { submitted, ideaId, subject, content, attachment, allowedRoles } = this.state;
+        const { submitted, userId, subject, content, attachment, allowedRoles } = this.state;
         return (
             <div className="submit-form">
             {submitted ? (
@@ -202,6 +207,18 @@ class addIdea{
                 </div>
             ) : (
             <div>
+            <div className="form-group">
+                <label htmlFor="userId">subject</label>
+                <input
+                    type="text"
+                    className="form-control"
+                    id="userId"
+                    required
+                    value={userId}
+                    onChange={this.onChangeUserId}
+                    name="userId"
+                />
+            </div>
             <div className="form-group">
                 <label htmlFor="subject">subject</label>
                 <input
@@ -257,5 +274,6 @@ class addIdea{
     )}
     </div>
     );
-  }*/
+    }
 }
+//export default AddIdea;

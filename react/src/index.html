@@ -5,8 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Example TypesScript React App</title>
-  <link rel="stylesheet" href="../public/style.css" />
+  <title>Group 4 App</title>
+  <link rel="stylesheet" href="./style.css" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
   <link rel="stylesheet" href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" /> 
   <link href="https://fonts.googleapis.com/css?family=Fresca" rel="stylesheet">
@@ -15,29 +15,38 @@
 </head>
 
 <body>
-  <div id="addElement">
+  <div id="addIdea">
     <h3>Add a New Idea</h3>
+    <label>UserId</label>
+    <input type="text" id="newUserId" />
     <label>Subject</label>
     <input type="text" id="newSubject" />
     <label>Content</label>
-    <textarea id="newContent"></textarea>
+    <input type="text" id="newContent" />
+    <label>Attachment</label>
+    <input type="text" id="newAttachment" />
+    <label>AllowedRoles</label>
+    <input type="text" id="newAllowedRoles" />
     <button id="addButton">Add</button>
     <button id="addCancel">Cancel</button>
   </div>
-  <div id="editElement">
+  <div id="editIdea">
     <h3>Edit an Idea Entry</h3>
-    <label>Title</label>
+    <label>Subject</label>
     <input type="text" id="editSubject" />
     <label>Content</label>
-    <textarea id="editContent"></textarea>
+    <input type="text" id="editContent" />
+    <label>Attachment</label>
+    <input type="text" id="editAttachment" />
+    <label>AllowedRoles</label>
+    <input type="text" id="editAllowedRoles" />
     <span id="editCreated"></span>
     <input type="hidden" id="editId" />
     <button id="editButton">Update</button>
     <button id="editCancel">Cancel</button>
   </div>
-  <div id="showElements">
+  <div id="showIdeas">
     <h3>All Ideas</h3>
-    <button id="showFormButton">Add Idea</button>
     <div id="IdeasList"></div>
   </div>
 </body>
