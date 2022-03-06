@@ -10,7 +10,7 @@ void main() {
   runApp(const MyApp());
 }
 
-class AddLikes{
+class AddLikes {
   static int likes = 0;
 
   static void increment() => likes++;
@@ -83,7 +83,7 @@ class _MyAppState extends State<MyApp> {
             restorationId: 'Comment:',
             padding: const EdgeInsets.symmetric(vertical: 8),
             children: [
-              for (int index = 1; index < 6; index++)
+              for (int index = 1; index < 7; index++)
                 ListTile(
                     leading: ExcludeSemantics(
                       child: CircleAvatar(child: Text('$index')),
@@ -122,9 +122,11 @@ class _MyAppState extends State<MyApp> {
                             icon: const Icon(
                               Icons.thumb_up,
                             ),
-                            onPressed: () {},
+                            onPressed: () {
+                              AddLikes.increment();
+                            },
                           ),
-                          Text("111"),
+                          Text("${AddLikes.likes}"),
                         ],
                       ),
                     )),
