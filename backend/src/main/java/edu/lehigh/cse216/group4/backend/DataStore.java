@@ -191,6 +191,7 @@ public class DataStore {
             case -1: //dislike toggle
                 if(dislikes.indexOf(user) == -1){dislikes.add(user);}
                 else{dislikes.remove(user);}
+                if(likes.indexOf(user)!= -1){likes.remove(user);}
                 break;
             case 0: //remove either
                 if(likes.indexOf(user) != -1){likes.remove(user);}
@@ -199,6 +200,7 @@ public class DataStore {
             case 1: //like toggle
                 if(likes.indexOf(user) == -1){likes.add(user);}
                 else{likes.remove(user);}
+                if(dislikes.indexOf(user)!= -1){dislikes.remove(user);}
                 break;  
         }
 
