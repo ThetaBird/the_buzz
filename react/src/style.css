@@ -1,5 +1,23 @@
-.green {
-    color: green;
+.primary {
+    background-color: #1c1c1c;    
+}
+.spartan{
+    font-family: 'League Spartan', sans-serif;
+    text-decoration: none;
+}
+.ideaUser{
+    margin-left: 0px;
+    padding-top: 10px;
+}
+.ideaSubject{
+    margin-left: 10px;
+}
+.ideaContent{
+    margin-left: 10px;
+}
+.ideaBox {
+    background-color: beige;
+    margin-bottom: 20px;
 }
 
 body {

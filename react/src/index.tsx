@@ -4,4 +4,7 @@ import * as ReactDOM from "react-dom";
 import { App } from "./App"
 import "./style.css"
 
-ReactDOM.render(<App num={21} />, document.getElementById('app'));
+let data = {
+    token:""
+}
+ReactDOM.render(<App data={data} />, document.getElementById('app'));
