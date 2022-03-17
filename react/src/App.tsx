@@ -13,7 +13,9 @@ type AppProps = {
 
 export class App extends React.Component<AppProps> {
     /** The global state for this component is a counter */
-    state = { token: null };
+    state = { 
+        token: null 
+    };
 
     /**
      * When the component mounts, we need to set the initial value of its
@@ -31,24 +33,29 @@ export class App extends React.Component<AppProps> {
     render() {
         return (
             <Router>
-                <div>
-                    <nav id="navHeader" className="container-fluid p-3 primary text-white text-left">
-                        <Link className="text-white spartan p-2" to="/">Home</Link>
-                        <Link className="text-white spartan p-2" to="/profile">Profile</Link>
-                        <Link className="text-white spartan p-2" to="/employees">Employees</Link>
-                        {/* Also profile indicator, w/ avatar and name w/ logout option */}
-                    </nav>
-                    <Switch>
-                        <Route exact path="/" component={Hello} />
-                        <Route exact path="/ideas" component={IdeaList} />
-                        <Route exact path="/ideas/new" component={Hello} />
-                        
-                        <Route exact path="/profile" component={Hello} />
-                        <Route exact path="/settings" component={Hello} />
-                        <Route exact path="/employees" component={Hello} />
-                    </Switch>
+                <div className="row container-fluid">
+                    <div className="col-sm-2 p-3 primary text-white text-center ">
+                        <nav id="navHeader" className="position-fixed text-start">
+                            <Link className="text-white spartan p-2" to="/">Home</Link>
+                            <Link className="text-white spartan p-2" to="/profile">Profile</Link>
+                            <Link className="text-white spartan p-2" to="/employees">Employees</Link>
+                            {/* Also profile indicator, w/ avatar and name w/ logout option */}
+                        </nav>
+                    </div>
+                    
+                    <div className="col-sm-8">
+                        <Switch>
+                            <Route exact path="/" component={Hello} />
+                            <Route exact path="/ideas" component={IdeaList}/>
+                            <Route exact path="/ideas/*" component={IdeaList}/>    
+                            <Route exact path="/profile" component={Hello} />
+                            <Route exact path="/settings" component={Hello} />
+                            <Route exact path="/employees" component={Hello} />
+                        </Switch>
+                    </div>
 
-                    <Route path="/ideas/:id" component={Hello} />   
+                    
+                      
                 </div>
             </Router>
         );

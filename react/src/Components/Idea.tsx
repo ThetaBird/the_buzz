@@ -9,7 +9,8 @@ type IdeaProps = {
         subject: string,
         content: string,
         attachment: string,
-        allowedRoles: number[]
+        allowedRoles: number[],
+        key: string
     }
     
 }
@@ -24,10 +25,11 @@ export class Idea extends React.Component<IdeaProps>{
             content: "null",
             attachment: "null",
             allowedRoles: []
-        }
+        },
      };
      parseDate(){
         let date = new Date(this.props.data.timestamp);
+        this.props.data.key = this.props.data.timestamp;
         this.props.data.timestamp = 
         (date.getMonth()+1)+
         "/"+date.getDate()+
@@ -37,22 +39,25 @@ export class Idea extends React.Component<IdeaProps>{
         ":"+date.getSeconds();
         //console.log(this.props.data.timestamp);
      }
-     render() {
-         //console.log(this.props);
-         this.parseDate();
-         return(
-        <div className='spartan ideaBox'>
-            <div className="row h6 text-start ideaUser">
-                <div className="col-sm-1">@User{this.props.data.userId}</div>
-                <div className="col-sm-3">{this.props.data.timestamp}</div>
+     addClass = (_e: React.MouseEvent<HTMLDivElement>) => {
+        console.log(_e);
+    }
+    render() {
+        //console.log(this.props);
+        this.parseDate();
+        return(
+            <div id={this.props.data.key} onClick={this.addClass} className="shadow-sm ideaContainer">
+                <div className="row h6 text-start ideaUser">
+                    <div className="col-sm-1">@User{this.props.data.userId}</div>
+                    <div className="col-sm-3">{this.props.data.timestamp}</div>
+                    </div>
+                <div className="row">
+                    <div className="col-sm-8 h3 ideaSubject">{this.props.data.subject}</div>
+                    <div className="col-sm-2 text-end">Likes/Dislikes</div>
                 </div>
-            <div className="row">
-                <div className="col-sm-4 h3 ideaSubject">{this.props.data.subject}</div>
-                <div className="col-sm-2 text-end">Likes/Dislikes</div>
+                <div className="row">
+                    <div className='col-md-8 ideaContent'>{this.props.data.content}</div>
+                </div>
             </div>
-            <div className="row">
-                <div className='col-md-8 ideaContent'>{this.props.data.content}</div>
-            </div>
-        </div>
-     );}
+        );}
 }
