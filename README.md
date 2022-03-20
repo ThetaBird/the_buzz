@@ -61,3 +61,8 @@ curl -s https://cse216-group4-test.herokuapp.com/api/idea/1/reactions -X POST -d
 curl -s https://cse216-group4-test.herokuapp.com/api/ideas -X POST -d "{'userId':1, 'subject': 'Hello', 'content': 'World', attachment:'test','allowedRoles':[1]}"
 
 curl -s https://cse216-group4-test.herokuapp.com/api/users -X POST -d "{'avatar':'test.png','name':'John Doe','passwordHash':'feefgbvgrvf','companyRole':1}"
+
+
+#Phase2
+
+OAuth 2.0 Client ID: "527976125196-fnsdi7e3ml8n8ukjo02o8nec88rgnhfe.apps.googleusercontent.com"
