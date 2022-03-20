@@ -9,6 +9,10 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+
+
+
+
 public class RequestTest extends TestCase{
     /**
      * Create the test case
@@ -63,12 +67,13 @@ public class RequestTest extends TestCase{
     }
     public void testUserConstructor(){
         int userId = 1;
+        String note = "Test note";
         String avatar = "TestAvatar";
         String name = "Test Name";
         String passwordHash = "Test Hash";
         Short companyRole = 1;
 
-        UserRowData d = new UserRowData(userId, avatar, name, passwordHash, companyRole);
+        UserRowData d = new UserRowData(userId,note, avatar, name, passwordHash, companyRole);
 
         assertTrue(d.userId == userId);
         assertTrue(d.avatar.equals(avatar));
@@ -78,12 +83,13 @@ public class RequestTest extends TestCase{
     }
     public void testUserCopyConstructor(){
         int userId = 1;
+        String note = "Test note";
         String avatar = "TestAvatar";
         String name = "Test Name";
         String passwordHash = "Test Hash";
         Short companyRole = 1;
 
-        UserRowData d = new UserRowData(userId, avatar, name, passwordHash, companyRole);
+        UserRowData d = new UserRowData(userId, note , avatar, name, passwordHash, companyRole);
         UserRowData d2 = new UserRowData(d);
 
         assertTrue(d.userId == d2.userId);

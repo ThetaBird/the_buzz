@@ -86,14 +86,20 @@ public class Database {
             this.allowedRoles = idea.allowedRoles;
         }
     }
+
+
+
+
     public static class UserRowData{
         int userId;
+        String note;
         String avatar;
         String name;
         String passwordHash;
         Short companyRole;
-        public UserRowData(int userId, String avatar, String name, String passwordHash, Short companyRole){
+        public UserRowData(int userId, String note , String avatar, String name, String passwordHash, Short companyRole){
             this.userId = userId;
+            this.note = note;
             this.avatar = avatar;
             this.name = name;
             this.passwordHash = passwordHash;
@@ -101,6 +107,7 @@ public class Database {
         }
         public UserRowData(UserRowData user){
             this.userId = user.userId;
+            this.note = user.note;
             this.avatar = user.avatar;
             this.name = user.name;
             this.passwordHash = user.passwordHash;
@@ -189,6 +196,7 @@ public class Database {
             db.mCreateUserTable = db.mConnection.prepareStatement(
                 "CREATE TABLE IF NOT EXISTS users (" + 
                     "id SERIAL PRIMARY KEY, " + //id of user (TechDebt: turn into timestamp-based id)
+                    "note VARCHAR" +
                     "avatar VARCHAR, " + //file path to avatar of user (TechDebt: actually implement this)
                     "name VARCHAR(50) NOT NULL, " + //Displayed name of user
                     "passwordHash VARCHAR(64) NOT NULL, " + //encrypted hash string of google password (TechDebt: actually implement this)
@@ -217,7 +225,7 @@ public class Database {
 
             // Standard CRUD operations
             db.mDeleteIdea = db.mConnection.prepareStatement("DELETE FROM ideas WHERE id = ?");
-            db.mInsertIdea = db.mConnection.prepareStatement("INSERT INTO ideas VALUES (default, ?, ?, ?, ?, ?, ?)");
+            db.mInsertIdea = db.mConnection.prepareStatement("INSERT INTO ideas VALUES (default, ?, ?, ?, ?, ?, ?)"); //??//
             db.mSelectIdea = db.mConnection.prepareStatement("SELECT * from ideas WHERE id = ?");
             db.mSelectAllIdeas = db.mConnection.prepareStatement("SELECT * FROM ideas"); //TechDebt: Implement LIMIT and limit offset for lazy message loading
             db.mUpdateIdea = db.mConnection.prepareStatement("UPDATE ideas SET subject = ?, content = ?, attachment = ?, allowedRoles = ? WHERE id = ?");
@@ -226,9 +234,9 @@ public class Database {
             db.mSelectReactions = db.mConnection.prepareStatement("SELECT * from reactions WHERE ideaId = ?");
             db.mUpdateReactions = db.mConnection.prepareStatement("UPDATE reactions SET likes = ?, dislikes = ? WHERE ideaId = ?");
 
-            db.mInsertUser = db.mConnection.prepareStatement("INSERT INTO users VALUES (default, ?, ?, ?, ?)");
+            db.mInsertUser = db.mConnection.prepareStatement("INSERT INTO users VALUES (default, ?, ?, ?, ?, ?)"); //??//
             db.mSelectUser = db.mConnection.prepareStatement("SELECT * from users WHERE id = ?");
-            db.mUpdateUser = db.mConnection.prepareStatement("UPDATE users SET avatar = ?, name = ?, companyRole = ? WHERE id = ?");
+            db.mUpdateUser = db.mConnection.prepareStatement("UPDATE users SET note = ? , avatar = ?, name = ?, companyRole = ? WHERE id = ?");
         } catch (SQLException e) {
             System.err.println("Error creating prepared statement");
             e.printStackTrace();
@@ -323,13 +331,14 @@ public class Database {
      * @param companyRole role in the company
      * @return int, status of operation
      */
-    int insertUser(String avatar, String name, String passwordHash, Short companyRole){
+    int insertUser(String note ,String avatar, String name, String passwordHash, Short companyRole){
         int count = 0;
         try {
-            mInsertUser.setString(1, avatar);
-            mInsertUser.setString(2, name);
-            mInsertUser.setString(3, passwordHash);
-            mInsertUser.setShort(4, companyRole);
+            mInsertUser.setString(1, note );
+            mInsertUser.setString(2, avatar);          
+            mInsertUser.setString(3, name);
+            mInsertUser.setString(4, passwordHash);
+            mInsertUser.setShort(5, companyRole);
             count += mInsertUser.executeUpdate();
         } catch (SQLException e){e.printStackTrace();}
 
@@ -430,6 +439,7 @@ public class Database {
             if (rs.next()) {
                 res = new UserRowData(
                     rs.getInt("id"), 
+                    rs.getString("note"),
                     rs.getString("avatar"),
                     rs.getString("name"),
                     rs.getString("passwordHash"),
@@ -507,19 +517,21 @@ public class Database {
      * Update a user row in POSTGRESQL
      * 
      * @param userId user ID of the user you want to update
+     * @param note current or updated user note
      * @param avatar current or updated avatar filepath
      * @param name current or updated display name
      * @param companyRole current or updated role in the company
      * @return a UserRowData containing the new user information
      */
-    int updateUser(int userId, String avatar, String name, Short companyRole){
+    int updateUser(int userId, String note , String avatar, String name, Short companyRole){
         int res = -1;
         try{
-            mUpdateUser.setString(1, avatar);
-            mUpdateUser.setString(2, name);
-            mUpdateUser.setShort(3, companyRole);
+            mUpdateUser.setString(1, note);
+            mUpdateUser.setString(2, avatar);
+            mUpdateUser.setString(3, name);
+            mUpdateUser.setShort(4, companyRole);
 
-            mUpdateUser.setInt(4, userId);
+            mUpdateUser.setInt(5, userId);
             res = mUpdateUser.executeUpdate();
         }catch(SQLException e){e.printStackTrace();}
         return res;

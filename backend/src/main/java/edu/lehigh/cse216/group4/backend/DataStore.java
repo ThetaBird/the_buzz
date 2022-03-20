@@ -78,9 +78,9 @@ public class DataStore {
      * @param companyRole role in the company
      * @return Integer; -1 if not enough information to create idea, 0 if insertion fail, and 1 if insertion success.
      */
-    public synchronized int createUser(String avatar, String name, String passwordHash, Short companyRole){
+    public synchronized int createUser(String note ,String avatar, String name, String passwordHash, Short companyRole){
         if(name == null || passwordHash == null){return -1;}
-        int ret = db.insertUser(avatar, name, passwordHash, companyRole);
+        int ret = db.insertUser(note , avatar, name, passwordHash, companyRole);
         return ret;
     }
 
@@ -224,7 +224,7 @@ public class DataStore {
      * @param companyRole current or updated role in the company
      * @return a UserRowData containing the new user information
      */
-    public synchronized Database.UserRowData updateUser(int userId, String avatar, String name, Short companyRole){
+    public synchronized Database.UserRowData updateUser(int userId, String note , String avatar, String name, Short companyRole){
         Database.UserRowData user = readUser(userId);
         if(user == null || name == null){return null;}
 
@@ -232,7 +232,7 @@ public class DataStore {
         user.name = name;
         user.companyRole = companyRole;
 
-        int res = db.updateUser(userId, avatar, name, companyRole);
+        int res = db.updateUser(userId, note , avatar, name, companyRole);
         if(res == -1){return null;}
 
         return new Database.UserRowData(user);

@@ -105,14 +105,14 @@ public class Routes {
         Spark.post("/api/users", (request, response) -> {
             // NB: if gson.Json fails, Spark will reply with status 500 Internal 
             // Server Error
-            RequestUser req = gson.fromJson(request.body(), RequestUser.class);
+            RequestUser req = gson.fromJson(request.body(), RequestUser.class); //??// Database.UserRowData//
             // ensure status 200 OK, with a MIME type of JSON
             // NB: even on error, we return 200, but with a JSON object that
             //     describes the error.
             response.status(200);
             response.type("application/json");
             // NB: createEntry checks for null title and message
-            int newId = dataStore.createUser(req.avatar, req.name, req.passwordHash, req.companyRole);
+            int newId = dataStore.createUser(req.note , req.avatar, req.name, req.passwordHash, req.companyRole);
             if (newId == -1) {
                 return gson.toJson(new StructuredResponse("error", "error performing insertion", null));
             } else {
