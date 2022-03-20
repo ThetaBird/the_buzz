@@ -109,7 +109,7 @@ public class DataStore {
         ArrayList<Database.IdeaRowData> allIdeas = db.selectAllIdeas();
         ArrayList<Database.IdeaRowData> data = new ArrayList<Database.IdeaRowData>();
         for(Database.IdeaRowData idea: allIdeas){
-            if(idea != null){data.add(new Database.IdeaRowData(idea));}
+            if(idea != null){data.add(new Database.IdeaRowData(idea));} //??//
         }
         return data;
     }
@@ -163,7 +163,7 @@ public class DataStore {
         int res = db.updateIdea(ideaId, subject, content, attachment, allowedRoles);
         if(res == -1){return null;}
 
-        return new Database.IdeaRowData(idea);
+        return new Database.IdeaRowData(idea);  //??//
     }
 
     /**

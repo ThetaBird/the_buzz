@@ -15,7 +15,7 @@ public class Routes {
 
     public static void setRoutes(DataStore dataStore){
         // Set up a route for serving the main page
-        Spark.get("/", (req, res) -> {
+        Spark.get("/", (req, res) -> {  //??//
             res.redirect("/index.html");
             return "";
         });
@@ -122,6 +122,7 @@ public class Routes {
 
         Spark.post("/api/idea/:id/reactions", (request, response) -> {
             int idx = Integer.parseInt(request.params("id"));
+            //System.out.println(idx);
             // ensure status 200 OK, with a MIME type of JSON
             RequestReaction req = gson.fromJson(request.body(), RequestReaction.class);
             response.status(200);
