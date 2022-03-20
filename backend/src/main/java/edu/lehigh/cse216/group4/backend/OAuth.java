@@ -23,7 +23,7 @@ public class OAuth {
 
     public static final String CLIENT_ID = "527976125196-fnsdi7e3ml8n8ukjo02o8nec88rgnhfe.apps.googleusercontent.com";
 
-    public static String OAuthNow(String OAutKey) throws GeneralSecurityException, IOException {
+    public static String OAuthAuthorize(String OAutKey) throws GeneralSecurityException, IOException {
         JsonFactory jsonFactory = new GsonFactory();
         NetHttpTransport transport = GoogleNetHttpTransport.newTrustedTransport();
         GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory)
@@ -51,10 +51,8 @@ public class OAuth {
             String locale = (String) payload.get("locale");
             String familyName = (String) payload.get("family_name");
             String givenName = (String) payload.get("given_name");
-            //test
             return email;
-            // Use or store profile information
-            // ...
+
 
         } else {
             System.out.println("Invalid ID token.");
