@@ -55,6 +55,7 @@ public class Database {
      * abstract representation of a row of the database.  RowData and the 
      * Database are tightly coupled: if one changes, the other should too.
      */
+    
     public static class IdeaRowData{
         long ideaId;
         int userId; //email
@@ -101,7 +102,8 @@ public class Database {
         String name;
         String passwordHash;
         Short companyRole;
-        public UserRowData(int userId, String note , String avatar, String name, String passwordHash, Short companyRole){
+
+        public UserRowData(int userId, String note , String email, String name, String passwordHash, Short companyRole){
             this.userId = userId;
             this.note = note;
             this.email = email;
@@ -202,7 +204,7 @@ public class Database {
                     "id SERIAL PRIMARY KEY, " + //id of user (TechDebt: turn into timestamp-based id)
                     "note VARCHAR," +
                     "token VARCHAR," +
-                    "email VARCHAR, " + //file path to avatar of user (TechDebt: actually implement this)
+                    "email VARCHAR, " + //file path to email of user (TechDebt: actually implement this)
                     "name VARCHAR(50) NOT NULL, " + //Displayed name of user
                     "passwordHash VARCHAR(64) NOT NULL, " + //encrypted hash string of google password (TechDebt: actually implement this)
                     "companyRole SMALLINT) "); //position of user in company hierarchy
@@ -242,7 +244,7 @@ public class Database {
             db.mInsertUser = db.mConnection.prepareStatement("INSERT INTO users VALUES (default, ?, ?, ?, ?, ?)"); //??//
             db.mSelectUser = db.mConnection.prepareStatement("SELECT * from users WHERE id = ?");
             db.mSelectUserByToken = db.mConnection.prepareStatement("SELECT * from users WHERE token = ?");
-            db.mUpdateUser = db.mConnection.prepareStatement("UPDATE users SET note = ? , avatar = ?, name = ?, companyRole = ? WHERE id = ?");
+            db.mUpdateUser = db.mConnection.prepareStatement("UPDATE users SET note = ? , email = ?, name = ?, companyRole = ? WHERE id = ?");
         } catch (SQLException e) {
             System.err.println("Error creating prepared statement");
             e.printStackTrace();
@@ -332,17 +334,17 @@ public class Database {
     /**
      * Insert a user row into POSTGRESQL
      * 
-     * @param avatar filepath to avatar image for user
+     * @param email filepath to email image for user
      * @param name display name of user
      * @param passwordHash encrypted string of user password
      * @param companyRole role in the company
      * @return int, status of operation
      */
-    int insertUser(String note ,String avatar, String name, String passwordHash, Short companyRole){
+    int insertUser(String note ,String email, String name, String passwordHash, Short companyRole){
         int count = 0;
         try {
             mInsertUser.setString(1, note );
-            mInsertUser.setString(2, avatar);          
+            mInsertUser.setString(2, email);          
             mInsertUser.setString(3, name);
             mInsertUser.setString(4, passwordHash);
             mInsertUser.setShort(5, companyRole);
@@ -447,7 +449,7 @@ public class Database {
                 res = new UserRowData(
                     rs.getInt("id"), 
                     rs.getString("note"),
-                    rs.getString("avatar"),
+                    rs.getString("email"),
                     rs.getString("name"),
                     rs.getString("passwordHash"),
                     rs.getShort("companyRole"));
@@ -525,16 +527,16 @@ public class Database {
      * 
      * @param userId user ID of the user you want to update
      * @param note current or updated user note
-     * @param avatar current or updated avatar filepath
+     * @param email current or updated email filepath
      * @param name current or updated display name
      * @param companyRole current or updated role in the company
      * @return a UserRowData containing the new user information
      */
-    int updateUser(int userId, String note , String avatar, String name, Short companyRole){
+    int updateUser(int userId, String note , String email, String name, Short companyRole){
         int res = -1;
         try{
             mUpdateUser.setString(1, note);
-            mUpdateUser.setString(2, avatar);
+            mUpdateUser.setString(2, email);
             mUpdateUser.setString(3, name);
             mUpdateUser.setShort(4, companyRole);
 

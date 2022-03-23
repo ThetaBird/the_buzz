@@ -174,11 +174,25 @@ public class Routes {
             }
         });
 
+        
+
         Spark.post("/api/auth", (req, res) -> {
             RequestOAuth reqOAuth = gson.fromJson(req.body(), RequestOAuth.class);
             System.out.println(reqOAuth.id_token);
             String accessKey = reqOAuth.id_token;
             return OAuth.OAuthAuthorize(accessKey);//return section key
         });
+
+
+
+
+
+
+
+
+
+
+
     }
+
 }
