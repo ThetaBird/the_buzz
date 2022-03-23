@@ -5,11 +5,9 @@ package edu.lehigh.cse216.group4.backend;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
-
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken.Payload;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
@@ -21,9 +19,9 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 
 public class OAuth {
 
-    public static final String CLIENT_ID = "527976125196-fnsdi7e3ml8n8ukjo02o8nec88rgnhfe.apps.googleusercontent.com";
+    public static final String CLIENT_ID = "841253943983-23js8dkv8houcvggnt3trl09v83270am.apps.googleusercontent.com";
 
-    public static String OAuthAuthorize(String OAutKey) throws GeneralSecurityException, IOException {
+    public static String OAuthAuthorize(String AcessKey) throws GeneralSecurityException, IOException {
         JsonFactory jsonFactory = new GsonFactory();
         NetHttpTransport transport = GoogleNetHttpTransport.newTrustedTransport();
         GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory)
@@ -34,8 +32,9 @@ public class OAuth {
                 .build();
 
         // (Receive idTokenString by HTTPS POST)
-
-        GoogleIdToken idToken = verifier.verify(OAutKey);
+        System.out.println(AcessKey);
+        GoogleIdToken idToken = verifier.verify(AcessKey);
+        System.out.println(idToken);
         if (idToken != null) {
             Payload payload = idToken.getPayload();
 
@@ -52,6 +51,7 @@ public class OAuth {
             String familyName = (String) payload.get("family_name");
             String givenName = (String) payload.get("given_name");
             return email;
+
 
 
         } else {

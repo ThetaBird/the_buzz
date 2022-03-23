@@ -35,7 +35,12 @@ public class DataStore {
         this.db = db;
         return 0;
     }
-
+    public synchronized int verifyToken(String token){
+        /**
+         * code to verify token, return 0 if not found in database
+         */
+        return 0;
+    }
     /*
         FUNCTIONS FOR CREATING IDEAS, REACTIONS, AND USERS
     */
@@ -62,7 +67,7 @@ public class DataStore {
      * @param ideaId ID of the idea that the reaction row is for.
      * @return Integer; -1 if not enough information to create idea, 0 if insertion fail, and 1 if insertion success.
      */
-    public synchronized int createReaction(int ideaId){
+    public synchronized int createReaction(long ideaId){
         if(ideaId == 0){return -1;}
         int ret = db.insertReaction(ideaId);
         return ret;
@@ -72,15 +77,15 @@ public class DataStore {
      * Insert a user row into the database
      * 
      * 
-     * @param avatar filepath to avatar image for user
+     * @param email filepath to email image for user
      * @param name display name of user
      * @param passwordHash encrypted string of user password
      * @param companyRole role in the company
      * @return Integer; -1 if not enough information to create idea, 0 if insertion fail, and 1 if insertion success.
      */
-    public synchronized int createUser(String note ,String avatar, String name, String passwordHash, Short companyRole){
+    public synchronized int createUser(String note ,String email, String name, String passwordHash, Short companyRole){
         if(name == null || passwordHash == null){return -1;}
-        int ret = db.insertUser(note , avatar, name, passwordHash, companyRole);
+        int ret = db.insertUser(note , email, name, passwordHash, companyRole);
         return ret;
     }
 
@@ -94,7 +99,14 @@ public class DataStore {
      * @param ideaId ID of the idea that you want to find in the DB
      * @return null if no idea found, IdeaRowData if idea found.
      */
-    public synchronized Database.IdeaRowData readIdea(int ideaId){
+    public synchronized Database.IdeaRowData readIdea(long ideaId){
+        /**
+         * Verify legitimate token
+         * if(tokenIsNotLegitimate){
+         * return
+         * }
+         */
+        
         Database.IdeaRowData idea = db.selectIdea(ideaId);
         if(idea == null){return null;}
         return new Database.IdeaRowData(idea);
@@ -120,7 +132,7 @@ public class DataStore {
      * @param ideaId the ID of the idea that you want to get a reaction from.
      * @return null if no reaction found, ReactionRowData if reaction fouund.
      */
-    public synchronized Database.ReactionRowData readReaction(int ideaId){
+    public synchronized Database.ReactionRowData readReaction(long ideaId){
         Database.ReactionRowData reaction = db.selectReaction(ideaId);
         if(reaction == null){return null;}
         return new Database.ReactionRowData(reaction);
@@ -151,7 +163,7 @@ public class DataStore {
      * @param allowedRoles current or updated allowed roles of idea
      * @return Updated idea object, containing latest values.
      */
-    public synchronized Database.IdeaRowData updateIdea(int ideaId, String subject, String content, String attachment, Short[] allowedRoles){
+    public synchronized Database.IdeaRowData updateIdea(long ideaId, String subject, String content, String attachment, Short[] allowedRoles){
         Database.IdeaRowData idea = readIdea(ideaId);
         if(idea == null || subject == null || content == null){return null;}
         
@@ -175,7 +187,7 @@ public class DataStore {
      * @param reactionType -1 for toggling a dislike, 0 for clearing reactions, 1 for toggling a like
      * @return Updated reaction row for idea, or a new reaction row if one didn't exist
      */
-    public synchronized Database.ReactionRowData updateReaction(int ideaId, int userId, int reactionType){
+    public synchronized Database.ReactionRowData updateReaction(long ideaId, int userId, int reactionType){
         Database.IdeaRowData idea = readIdea(ideaId);
         if(idea == null){return null;}
         Database.ReactionRowData reaction = readReaction(ideaId);
@@ -219,20 +231,20 @@ public class DataStore {
      * Update a user row in the DB
      * 
      * @param userId user ID of the user you want to update
-     * @param avatar current or updated avatar filepath
+     * @param email current or updated email filepath
      * @param name current or updated display name
      * @param companyRole current or updated role in the company
      * @return a UserRowData containing the new user information
      */
-    public synchronized Database.UserRowData updateUser(int userId, String note , String avatar, String name, Short companyRole){
+    public synchronized Database.UserRowData updateUser(int userId, String note , String email, String name, Short companyRole){
         Database.UserRowData user = readUser(userId);
         if(user == null || name == null){return null;}
 
-        user.avatar = avatar;
+        user.email = email;
         user.name = name;
         user.companyRole = companyRole;
 
-        int res = db.updateUser(userId, note , avatar, name, companyRole);
+        int res = db.updateUser(userId, note , email, name, companyRole);
         if(res == -1){return null;}
 
         return new Database.UserRowData(user);
@@ -247,7 +259,7 @@ public class DataStore {
      * @param ideaId ID of the idea row you want to remove
      * @return false if if operatin fail, true if operation success.
      */
-    public synchronized boolean deleteIdea(int ideaId){
+    public synchronized boolean deleteIdea(long ideaId){
         int res = db.deleteIdea(ideaId);
         if(res == -1){return false;}
         return true;

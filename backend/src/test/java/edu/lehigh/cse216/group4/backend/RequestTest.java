@@ -68,32 +68,32 @@ public class RequestTest extends TestCase{
     public void testUserConstructor(){
         int userId = 1;
         String note = "Test note";
-        String avatar = "TestAvatar";
+        String email = "Testemail";
         String name = "Test Name";
         String passwordHash = "Test Hash";
         Short companyRole = 1;
 
-        UserRowData d = new UserRowData(userId,note, avatar, name, passwordHash, companyRole);
+        UserRowData d = new UserRowData(userId,note, email, name, passwordHash, companyRole);
 
         assertTrue(d.userId == userId);
-        assertTrue(d.avatar.equals(avatar));
+        assertTrue(d.email.equals(email));
         assertTrue(d.name.equals(name));
         assertTrue(d.passwordHash.equals(passwordHash));
         assertTrue(d.companyRole.equals(companyRole));
     }
     public void testUserCopyConstructor(){
         int userId = 1;
-        String note = "Test note";
-        String avatar = "TestAvatar";
+        String note = "Test note"; 
+        String email = "Testemail";
         String name = "Test Name";
         String passwordHash = "Test Hash";
         Short companyRole = 1;
 
-        UserRowData d = new UserRowData(userId, note , avatar, name, passwordHash, companyRole);
+        UserRowData d = new UserRowData(userId, note , email, name, passwordHash, companyRole);
         UserRowData d2 = new UserRowData(d);
 
         assertTrue(d.userId == d2.userId);
-        assertTrue(d.avatar.equals(d2.avatar));
+        assertTrue(d.email.equals(d2.email));
         assertTrue(d.name.equals(d2.name));
         assertTrue(d.passwordHash.equals(d2.passwordHash));
         assertTrue(d.companyRole.equals(d2.companyRole));

@@ -1,4 +1,5 @@
 package edu.lehigh.cse216.group4.backend;
+
 import spark.Spark;
 
 import com.google.gson.*;
@@ -9,7 +10,7 @@ public class Routes {
     //
     // NB: it must be final, so that it can be accessed from our lambdas
     //
-    // NB: Gson is thread-safe.  See 
+    // NB: Gson is thread-safe. See
     // https://stackoverflow.com/questions/10380835/is-it-ok-to-use-gson-instance-as-a-static-field-in-a-model-bean-reuse
     final static Gson gson = new Gson();
 
@@ -38,7 +39,7 @@ public class Routes {
         });
         */
         Spark.get("/api/user/:id", (request, response) -> {
-            int idx = Integer.parseInt(request.params("id"));
+             int idx = Integer.parseInt(request.params("id"));
             // ensure status 200 OK, with a MIME type of JSON
             response.status(200);
             response.type("application/json");
@@ -56,11 +57,15 @@ public class Routes {
         // ":id" isn't a number, Spark will reply with a status 500 Internal
         // Server Error.  Otherwise, we have an integer, and the only possible 
         // error is that it doesn't correspond to a row with data.
-        Spark.get("/api/idea/:id", (request, response) -> {
-            int idx = Integer.parseInt(request.params("id"));
+        Spark.get("/api/idea/:id?token", (request, response) -> {
+            long idx = Integer.parseInt(request.params("id"));
+            String token = request.queryParams("token");
             // ensure status 200 OK, with a MIME type of JSON
             response.status(200);
             response.type("application/json");
+            int validToken = dataStore.verifyToken(token);
+            if(validToken == 0){/** return error */}
+
             Database.IdeaRowData ideaData = dataStore.readIdea(idx);
             if (ideaData == null) {
                 return gson.toJson(new StructuredResponse("error", idx + " not found", null));
@@ -121,7 +126,7 @@ public class Routes {
         });
 
         Spark.post("/api/idea/:id/reactions", (request, response) -> {
-            int idx = Integer.parseInt(request.params("id"));
+            long idx = Long.parseLong(request.params("id"));
             //System.out.println(idx);
             // ensure status 200 OK, with a MIME type of JSON
             RequestReaction req = gson.fromJson(request.body(), RequestReaction.class);
@@ -139,7 +144,7 @@ public class Routes {
         Spark.put("/api/idea/:id", (request, response) -> {
             // If we can't get an ID or can't parse the JSON, Spark will send
             // a status 500
-            int idx = Integer.parseInt(request.params("id"));
+            long idx = Long.parseLong(request.params("id"));
             RequestIdea req = gson.fromJson(request.body(), RequestIdea.class);
             // ensure status 200 OK, with a MIME type of JSON
             response.status(200);
@@ -155,7 +160,7 @@ public class Routes {
         // DELETE route for removing a row from the DataStore
         Spark.delete("/api/idea/:id", (request, response) -> {
             // If we can't get an ID, Spark will send a status 500
-            int idx = Integer.parseInt(request.params("id"));
+            long idx = Long.parseLong(request.params("id"));
             // ensure status 200 OK, with a MIME type of JSON
             response.status(200);
             response.type("application/json");
@@ -167,6 +172,13 @@ public class Routes {
             } else {
                 return gson.toJson(new StructuredResponse("ok", null, null));
             }
+        });
+
+        Spark.post("/api/auth", (req, res) -> {
+            RequestOAuth reqOAuth = gson.fromJson(req.body(), RequestOAuth.class);
+            System.out.println(reqOAuth.id_token);
+            String accessKey = reqOAuth.id_token;
+            return OAuth.OAuthAuthorize(accessKey);//return section key
         });
     }
 }
