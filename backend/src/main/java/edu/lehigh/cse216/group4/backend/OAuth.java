@@ -3,6 +3,7 @@ package edu.lehigh.cse216.group4.backend;
 
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
 import java.util.Arrays;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
@@ -11,6 +12,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
+import com.google.common.hash.Hashing;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 
 
@@ -50,13 +52,20 @@ public class OAuth {
             String locale = (String) payload.get("locale");
             String familyName = (String) payload.get("family_name");
             String givenName = (String) payload.get("given_name");
-            return new OAuthUser(email, emailVerified, name, pictureUrl, locale, familyName, givenName);
 
+            String Sessionkey = Hashing.sha256().hashString(email, StandardCharsets.UTF_8).toString();
+            return new OAuthUser(userId , email, emailVerified, name, pictureUrl, locale, familyName, givenName, Sessionkey);
+            ///store in a local hash table and verify in the routes 
 
+            
 
+            
         } else {
             System.out.println("Invalid ID token.");
             return null;
+
+
+
         }
     }
 }

@@ -3,6 +3,8 @@ package edu.lehigh.cse216.group4.backend;
 // Import the Spark package, so that we can make use of the "get" function to 
 // create an HTTP GET route
 import spark.Spark;
+
+import java.util.HashMap;
 import java.util.Map;
 import com.google.gson.*;
 
@@ -86,6 +88,15 @@ public class App {
 
         // Database.ReactionRowData result = dataStore.updateReaction(1, 1, 1);
         // System.out.println(result.ideaId);
+
+
+        // UserID(email) sessrionKey
+        HashMap<String, String> UserSessionKey = new HashMap<String, String>();
+
+
+
+
+
 
     }
 

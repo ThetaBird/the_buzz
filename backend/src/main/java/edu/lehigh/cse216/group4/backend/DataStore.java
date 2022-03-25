@@ -39,7 +39,10 @@ public class DataStore {
         /**
          * code to verify token, return 0 if not found in database
          */
-        return 0;
+        
+        //if(){
+            return 0;
+       // }
     }
     /*
         FUNCTIONS FOR CREATING IDEAS, REACTIONS, AND USERS
@@ -55,9 +58,9 @@ public class DataStore {
      * @param allowedRoles Company roles that are allowed to view this idea
      * @return Integer; -1 if not enough information to create idea, 0 if insertion fail, and 1 if insertion success.
      */
-    public synchronized int createIdea(int userId, String subject, String content, String attachment, Short[] allowedRoles){
+    public synchronized int createIdea(String  userId, String userAvatar, String subject, String content, String attachment, Short[] allowedRoles){
         if(subject == null || content == null){return -1;}
-        int ret = db.insertIdea(userId, subject, content, attachment, allowedRoles);
+        int ret = db.insertIdea(userId, userAvatar , subject, content, attachment, allowedRoles);
         return ret;
     }
 
@@ -284,3 +287,13 @@ public class DataStore {
         return toRet;
     }
 }
+
+
+
+
+
+
+
+
+
+

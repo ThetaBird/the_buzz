@@ -58,16 +58,20 @@ public class Database {
     
     public static class IdeaRowData{
         long ideaId;
-        int userId; //email
+        String userId; //email
         String userAvatar; //url
+
+
         int numLikes;
         int numDislikes;
+
+
         long timestamp;
         String subject;
         String content;
         String attachment;
         Short[] allowedRoles = {};
-        public IdeaRowData(long ideaId, int userId, long timestamp, String subject, String content, String attachment, Array allowedRoles){
+        public IdeaRowData(long ideaId, String userId, String userAvatar, long timestamp, String subject, String content, String attachment, Array allowedRoles){
             this.ideaId = ideaId;
             this.userId = userId;
             this.timestamp = timestamp;
@@ -84,11 +88,13 @@ public class Database {
         public IdeaRowData(IdeaRowData idea){
             this.ideaId = idea.ideaId;
             this.userId = idea.userId;
+            this.userAvatar =userAvatar;
             this.timestamp = idea.timestamp;
             this.subject = idea.subject;
             this.content = idea.content;
             this.attachment = idea.attachment;
             this.allowedRoles = idea.allowedRoles;
+
         }
     }
 
@@ -120,6 +126,9 @@ public class Database {
             this.companyRole = user.companyRole;
         }
     }
+
+
+
     public static class ReactionRowData{
         long ideaId;
         Integer[] likes = new Integer[]{};
@@ -142,6 +151,9 @@ public class Database {
             this.dislikes = reaction.dislikes;
         }
     }
+
+
+
     /**
      * The Database constructor is private: we only create Database objects 
      * through the getDatabase() method.
@@ -213,7 +225,8 @@ public class Database {
             db.mCreateIdeaTable = db.mConnection.prepareStatement(
                 "CREATE TABLE IF NOT EXISTS ideas (" + 
                     "id BIGINT PRIMARY KEY, " + //id of idea (TechDebt: turn into timestamp-based id)
-                    "userId INTEGER NOT NULL, " + //id of user who posted the id
+                    "userId VARCHAR NOT NULL, " + //id of user who posted the id
+                    "userAvatar VARCHAR,"+ //Avatar of the user who posted
                     "timestamp BIGINT NOT NULL, " + //time of creation in milliseconds
                     "subject VARCHAR(64) NOT NULL, " + //subject of idea
                     "content VARCHAR(500) NOT NULL, " + //more descriptive content of idea
@@ -232,7 +245,7 @@ public class Database {
 
             // Standard CRUD operations
             db.mDeleteIdea = db.mConnection.prepareStatement("DELETE FROM ideas WHERE id = ?");
-            db.mInsertIdea = db.mConnection.prepareStatement("INSERT INTO ideas VALUES (?, ?, ?, ?, ?, ?, ?)"); //??//
+            db.mInsertIdea = db.mConnection.prepareStatement("INSERT INTO ideas VALUES (? , ?, ?, ?, ?, ?, ?, ?)"); //??//
             db.mSelectIdea = db.mConnection.prepareStatement("SELECT * from ideas WHERE id = ?");
             db.mSelectAllIdeas = db.mConnection.prepareStatement("SELECT * FROM ideas"); //TechDebt: Implement LIMIT and limit offset for lazy message loading
             db.mUpdateIdea = db.mConnection.prepareStatement("UPDATE ideas SET subject = ?, content = ?, attachment = ?, allowedRoles = ? WHERE id = ?");
@@ -253,6 +266,13 @@ public class Database {
         }
         return db;
     }
+
+
+
+
+
+
+
 
     /**
      * Close the current connection to the database, if one exists.
@@ -293,19 +313,20 @@ public class Database {
      * @param allowedRoles Company roles that are allowed to view this idea
      * @return integer; status of operation
      */
-    int insertIdea(int userId, String subject, String content, String attachment, Short[] allowedRoles){
+    int insertIdea(String userId, String userAvatar , String subject, String content, String attachment, Short[] allowedRoles){
         int count = 0;
         try {
             long millis = clock.millis(); //timestamp
 
             mInsertIdea.setLong(1, millis);
-            mInsertIdea.setInt(2, userId);
-            mInsertIdea.setLong(3, millis);
-            mInsertIdea.setString(4, subject);
-            mInsertIdea.setString(5, content);
-            mInsertIdea.setString(6, attachment);
+            mInsertIdea.setString(2, userId);
+            mInsertIdea.setString(3, userAvatar);
+            mInsertIdea.setLong(4, millis);
+            mInsertIdea.setString(5, subject);
+            mInsertIdea.setString(6, content);
+            mInsertIdea.setString(7, attachment);
             Array roles = mConnection.createArrayOf("INTEGER",allowedRoles);
-            mInsertIdea.setArray(7, roles);
+            mInsertIdea.setArray(8, roles);
             count += mInsertIdea.executeUpdate();
         } catch (SQLException e){e.printStackTrace();}
 
@@ -371,7 +392,8 @@ public class Database {
                 
                 IdeaRowData idea = new IdeaRowData(
                     rs.getInt("id"), 
-                    rs.getInt("userId"),
+                    rs.getString("userId"),
+                    rs.getString("userAvatar"),
                     rs.getLong("timestamp"), 
                     rs.getString("subject"), 
                     rs.getString("content"), 
@@ -402,7 +424,8 @@ public class Database {
             if (rs.next()) {
                 res = new IdeaRowData(
                     rs.getInt("id"), 
-                    rs.getInt("userId"),
+                    rs.getString("userId"),
+                    rs.getString("userAvatar"),
                     rs.getLong("timestamp"), 
                     rs.getString("subject"), 
                     rs.getString("content"), 

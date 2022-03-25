@@ -63,8 +63,19 @@ public class Routes {
             // ensure status 200 OK, with a MIME type of JSON
             response.status(200);
             response.type("application/json");
+
+
+
+
             int validToken = dataStore.verifyToken(token);
+
+
+
+
             if(validToken == 0){/** return error */}
+
+
+
 
             Database.IdeaRowData ideaData = dataStore.readIdea(idx);
             if (ideaData == null) {
@@ -99,7 +110,7 @@ public class Routes {
             response.status(200);
             response.type("application/json");
             // NB: createEntry checks for null title and message
-            int newId = dataStore.createIdea(req.userId, req.subject, req.content, req.attachment, req.allowedRoles);
+            int newId = dataStore.createIdea(req.userId, req.userAvatar , req.subject, req.content, req.attachment, req.allowedRoles);
             if (newId == -1) {
                 return gson.toJson(new StructuredResponse("error", "error performing insertion", null));
             } else {
@@ -174,17 +185,21 @@ public class Routes {
             }
         });
 
-        
+
 
         Spark.post("/api/auth", (req, res) -> {
             RequestOAuth reqOAuth = gson.fromJson(req.body(), RequestOAuth.class);
             System.out.println(reqOAuth.id_token);
             String accessKey = reqOAuth.id_token;
             return OAuth.OAuthAuthorize(accessKey);//return section key
+
+
+
+            
         });
 
 
-
+        
 
 
 
