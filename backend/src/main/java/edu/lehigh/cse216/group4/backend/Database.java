@@ -69,6 +69,7 @@ public class Database {
         String subject, content;
         String attachment;
         Short[] allowedRoles = {};
+
         public IdeaRowData(long ideaId, long replyTo, String userId, String userAvatar, long timestamp, String subject, String content, String attachment, Array allowedRoles, int numLikes, int numDislikes, String userName){
             this.ideaId = ideaId;
             this.replyTo = replyTo;
@@ -219,25 +220,31 @@ public class Database {
             
             db.mCreateUserTable = db.mConnection.prepareStatement(
                 "CREATE TABLE IF NOT EXISTS users (" + 
-                    "id VARCHAR(6) PRIMARY KEY, " + //id of user (TechDebt: turn into timestamp-based id)
-                    "note VARCHAR," +
+                    "userId VARCHAR(6) PRIMARY KEY, " + //id of user (TechDebt: turn into timestamp-based id)
+                    "note VARCHAR," +  //note of the user
                     "email VARCHAR, " + //file path to email of user (TechDebt: actually implement this)
-                    "name VARCHAR(50) NOT NULL, " + //Displayed name of user
+                    "name VARCHAR(50) NOT NULL," + //Displayed name of user
                     "avatar VARCHAR," +
                     "companyRole SMALLINT) "); //position of user in company hierarchy
             db.mDropUserTable = db.mConnection.prepareStatement("DROP TABLE users");
 
             db.mCreateIdeaTable = db.mConnection.prepareStatement(
                 "CREATE TABLE IF NOT EXISTS ideas (" + 
-                    "id BIGINT PRIMARY KEY, " + //id of idea (TechDebt: turn into timestamp-based id)
+                    "ideaId BIGINT PRIMARY KEY," + //id of idea (TechDebt: turn into timestamp-based id)
                     "replyTo BIGINT DEFAULT," + // id of idea that the comment is for (if it is a comment)
-                    "userId VARCHAR NOT NULL, " + //id of user who posted the id
+                    "userId VARCHAR NOT NULL," + //id of user who posted the id
                     "userAvatar VARCHAR,"+ //Avatar of the user who posted
-                    "timestamp BIGINT NOT NULL, " + //time of creation in milliseconds
-                    "subject VARCHAR(64) NOT NULL, " + //subject of idea
-                    "content VARCHAR(500) NOT NULL, " + //more descriptive content of idea
+                    "timestamp BIGINT NOT NULL," + //time of creation in milliseconds
+                    "subject VARCHAR(64) NOT NULL," + //subject of idea
+                    "content VARCHAR(500) NOT NULL," + //more descriptive content of idea
                     "attachment VARCHAR(50)," + //file path to any attachment (image, spreadsheet, etc.) for the idea. (TechDebt: actually implement this)
-                    "allowedRoles SMALLINT[] ) "); //array of company roles who can view this message
+                    "allowedRoles SMALLINT[]," + //array of company roles who can view this message
+                    "numLikes integer," + //number of likes for the idea
+                    "numDislikes integer," + //number of dislikes for the idea
+                    "userName VARCHAR" + //user name of the idea
+                    " ) "
+                                       
+                    ); 
             db.mDropIdeaTable = db.mConnection.prepareStatement("DROP TABLE ideas");
 
             db.mCreateReactionTable = db.mConnection.prepareStatement(
@@ -250,11 +257,11 @@ public class Database {
             
 
             // Standard CRUD operations
-            db.mDeleteIdea = db.mConnection.prepareStatement("DELETE FROM ideas WHERE id = ?");
-            db.mInsertIdea = db.mConnection.prepareStatement("INSERT INTO ideas VALUES (?,?,?,?,?,?,?,?,?)"); //??//
-            db.mSelectIdea = db.mConnection.prepareStatement("SELECT * from ideas WHERE id = ?");
+            db.mDeleteIdea = db.mConnection.prepareStatement("DELETE FROM ideas WHERE ideaId = ?");
+            db.mInsertIdea = db.mConnection.prepareStatement("INSERT INTO ideas VALUES (?,?,?,?,?,?,?,?,?,0,0,?)"); //??//
+            db.mSelectIdea = db.mConnection.prepareStatement("SELECT * from ideas WHERE ideaId = ?");
             db.mSelectAllIdeas = db.mConnection.prepareStatement("SELECT * FROM ideas WHERE replyTo = 0"); //TechDebt: Implement LIMIT and limit offset for lazy message loading
-            db.mUpdateIdea = db.mConnection.prepareStatement("UPDATE ideas SET subject = ?, content = ?, attachment = ?, allowedRoles = ? WHERE id = ?");
+            db.mUpdateIdea = db.mConnection.prepareStatement("UPDATE ideas SET subject = ?, content = ?, attachment = ?, allowedRoles = ? WHERE ideaId = ?");
             db.mSelectComments = db.mConnection.prepareStatement("SELECT * FROM ideas WHERE replyTo = ?");
 
             db.mInsertReactions =  db.mConnection.prepareStatement("INSERT INTO reactions VALUES (?, ?, ?)");
@@ -262,8 +269,8 @@ public class Database {
             db.mUpdateReactions = db.mConnection.prepareStatement("UPDATE reactions SET likes = ?, dislikes = ? WHERE ideaId = ?");
 
             db.mInsertUser = db.mConnection.prepareStatement("INSERT INTO users VALUES (?, ?, ?, ?, ?, ?)"); //??//
-            db.mSelectUser = db.mConnection.prepareStatement("SELECT * from users WHERE id = ?");
-            db.mUpdateUser = db.mConnection.prepareStatement("UPDATE users SET note = ? , email = ?, name = ?, companyRole = ? WHERE id = ?");
+            db.mSelectUser = db.mConnection.prepareStatement("SELECT * from users WHERE userId = ?");
+            db.mUpdateUser = db.mConnection.prepareStatement("UPDATE users SET note = ? , email = ?, name = ?, companyRole = ? WHERE ideaId = ?");
         } catch (SQLException e) {
             System.err.println("Error creating prepared statement");
             e.printStackTrace();
@@ -319,20 +326,33 @@ public class Database {
      * @param allowedRoles Company roles that are allowed to view this idea
      * @return integer; status of operation
      */
-    int insertIdea(String userId, String userAvatar , String subject, String content, String attachment, Short[] allowedRoles){
+    int insertIdea(long replyTo , String userId, String userAvatar , String subject, String content, String attachment, Short[] allowedRoles){
         int count = 0;
         try {
+
+
+                String userName = "";
+                UserRowData user = selectUser(userId);
+                if (user != null){
+                    userName = user.name;
+                }
+
+
             long millis = clock.millis(); //timestamp
 
             mInsertIdea.setLong(1, millis);
-            mInsertIdea.setString(2, userId);
-            mInsertIdea.setString(3, userAvatar);
-            mInsertIdea.setLong(4, millis);
-            mInsertIdea.setString(5, subject);
-            mInsertIdea.setString(6, content);
-            mInsertIdea.setString(7, attachment);
+            mInsertIdea.setLong(2, replyTo);
+            mInsertIdea.setString(3, userId);
+            mInsertIdea.setString(4, userAvatar);
+            mInsertIdea.setLong(5, millis);
+            mInsertIdea.setString(6, subject);
+            mInsertIdea.setString(7, content);
+            mInsertIdea.setString(8, attachment);
             Array roles = mConnection.createArrayOf("INTEGER",allowedRoles);
-            mInsertIdea.setArray(8, roles);
+            mInsertIdea.setArray(9, roles);
+            mInsertIdea.setString(10, userName);
+
+
             count += mInsertIdea.executeUpdate();
         } catch (SQLException e){e.printStackTrace();}
 
@@ -356,6 +376,7 @@ public class Database {
         } catch (SQLException e) {e.printStackTrace();}
 
         return count;
+
     }
 
     /**
@@ -367,14 +388,15 @@ public class Database {
      * @param companyRole role in the company
      * @return int, status of operation
      */
-    int insertUser(String note ,String email, String name, String avatar, Short companyRole){
+    int insertUser(String userId , String note ,String email, String name, String avatar, Short companyRole){
         int count = 0;
         try {
-            mInsertUser.setString(1, note );
-            mInsertUser.setString(2, email);          
-            mInsertUser.setString(3, name);
-            mInsertUser.setString(4, avatar);
-            mInsertUser.setShort(5, companyRole);
+            mInsertUser.setString(1, userId);
+            mInsertUser.setString(2, note);
+            mInsertUser.setString(3, email);          
+            mInsertUser.setString(4, name);
+            mInsertUser.setString(5, avatar);
+            mInsertUser.setShort(6, companyRole);
             count += mInsertUser.executeUpdate();
         } catch (SQLException e){e.printStackTrace();}
 
@@ -395,7 +417,7 @@ public class Database {
         try {
             ResultSet rs = mSelectAllIdeas.executeQuery();
             while (rs.next()) {
-                long ideaId = rs.getLong("id");
+                long ideaId = rs.getLong("ideaid");
                 IdeaRowData idea = selectIdea(ideaId);
                 res.add(idea);
             }
@@ -431,7 +453,7 @@ public class Database {
                     userName = user.name;
                 }
                 res = new IdeaRowData(
-                    rs.getLong("id"), 
+                    rs.getLong("ideaId"), 
                     rs.getLong("replyTo"),
                     rs.getString("userId"),
                     rs.getString("userAvatar"),
@@ -443,6 +465,54 @@ public class Database {
                     numLikes,
                     numDislikes,
                     userName
+                    );
+            }
+        } catch (SQLException e){e.printStackTrace();}
+        return res;
+    }
+
+
+
+
+     /*
+        FUNCTIONS FOR SELECTING ROWS (IDEA, REACTION, USER)
+    */
+
+    /**
+     * Read all comments from POSTGRESQL.
+     * 
+     * @return an ArrayList of IdeaRowData containing all valid comments rows.
+     */
+    ArrayList<IdeaRowData> selectComments(long ideaId){
+        ArrayList<IdeaRowData> res = new ArrayList<IdeaRowData>();
+        try {
+            mSelectComments.setLong(1, ideaId);
+            ResultSet rs = mSelectIdea.executeQuery();
+            while (rs.next()) {
+                int numLikes = 0, numDislikes = 0;
+                ReactionRowData reactions = selectReaction(ideaId);
+                if(reactions != null){
+                    numLikes = reactions.likes.length;
+                    numDislikes = reactions.dislikes.length;
+                }
+                String userName = "";
+                UserRowData user = selectUser(rs.getString("userId"));
+                if (user != null){
+                    userName = user.name;
+                }
+                res.add( new IdeaRowData(
+                    rs.getLong("ideaId"), 
+                    rs.getLong("replyTo"),
+                    rs.getString("userId"),
+                    rs.getString("userAvatar"),
+                    rs.getLong("timestamp"), 
+                    rs.getString("subject"), 
+                    rs.getString("content"), 
+                    rs.getString("attachment"),
+                    rs.getArray("allowedRoles"),
+                    numLikes,
+                    numDislikes,
+                    userName)
                     );
             }
         } catch (SQLException e){e.printStackTrace();}
@@ -483,7 +553,7 @@ public class Database {
             ResultSet rs = mSelectUser.executeQuery();
             if (rs.next()) {
                 res = new UserRowData(
-                    rs.getString("id"), 
+                    rs.getString("userId"), 
                     rs.getString("note"),
                     rs.getString("email"),
                     rs.getString("name"),
@@ -554,6 +624,7 @@ public class Database {
 
             mUpdateReactions.setLong(3, ideaId);
             res = mUpdateReactions.executeUpdate();
+
         }catch(SQLException e){e.printStackTrace();}
         return res;
     }

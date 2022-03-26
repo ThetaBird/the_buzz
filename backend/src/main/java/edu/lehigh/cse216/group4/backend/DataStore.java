@@ -40,6 +40,7 @@ public class DataStore {
         this.db = db;
         return 0;
     }
+
     public synchronized int verifyToken(String token){
         String sessionKey = Hashing.sha256().hashString(token, StandardCharsets.UTF_8).toString();
         /**
@@ -64,6 +65,7 @@ public class DataStore {
          * Add (email, sessionkey) to userSessionKeys
          */
     }
+
     public synchronized void checkUser(String email){
         email = email.substring(0,6); //get lehigh username from email 
         UserRowData user = readUser(email);
@@ -85,9 +87,9 @@ public class DataStore {
      * @param allowedRoles Company roles that are allowed to view this idea
      * @return Integer; -1 if not enough information to create idea, 0 if insertion fail, and 1 if insertion success.
      */
-    public synchronized int createIdea(String  userId, String userAvatar, String subject, String content, String attachment, Short[] allowedRoles){
+    public synchronized int createIdea(long replyTo , String  userId, String userAvatar, String subject, String content, String attachment, Short[] allowedRoles){
         if(subject == null || content == null){return -1;}
-        int ret = db.insertIdea(userId, userAvatar , subject, content, attachment, allowedRoles);
+        int ret = db.insertIdea(replyTo, userId, userAvatar , subject, content, attachment, allowedRoles);
         return ret;
     }
 
@@ -115,7 +117,7 @@ public class DataStore {
      */
     public synchronized int createUser(String email){
         if(email == null || email == ""){return -1;}
-        int ret = db.insertUser("" ,email, email,"", (short)1);
+        int ret = db.insertUser( email.substring(0,6) ,"", email,"", "",(short)1);
         return ret;
     }
 
@@ -144,6 +146,20 @@ public class DataStore {
         ArrayList<Database.IdeaRowData> allIdeas = db.selectAllIdeas();
         ArrayList<Database.IdeaRowData> data = new ArrayList<Database.IdeaRowData>();
         for(Database.IdeaRowData idea: allIdeas){
+            if(idea != null){data.add(new Database.IdeaRowData(idea));} //??//
+        }
+        return data;
+    }
+
+      /**
+     * Read all comments of an idea from the DB.
+     * 
+     * @return an ArrayList of IdeaRowData containing all valid idea rows.
+     */
+    public synchronized ArrayList<Database.IdeaRowData> readComments(long ideaId){
+        ArrayList<Database.IdeaRowData> allComments = db.selectComments(ideaId);
+        ArrayList<Database.IdeaRowData> data = new ArrayList<Database.IdeaRowData>();
+        for(Database.IdeaRowData idea: allComments){
             if(idea != null){data.add(new Database.IdeaRowData(idea));} //??//
         }
         return data;
