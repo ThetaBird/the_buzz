@@ -13,7 +13,6 @@ public class Routes {
     // NB: Gson is thread-safe. See
     // https://stackoverflow.com/questions/10380835/is-it-ok-to-use-gson-instance-as-a-static-field-in-a-model-bean-reuse
     final static Gson gson = new Gson();
-
     public static void setRoutes(DataStore dataStore){
         // Set up a route for serving the main page
         Spark.get("/", (req, res) -> {  //??//
@@ -24,7 +23,7 @@ public class Routes {
         // the data, embed it in a StructuredResponse, turn it into JSON, and 
         // return it.  If there's no data, we return "[]", so there's no need 
         // for error handling.
-        Spark.get("/api/ideas", (request, response) -> {
+        Spark.get("/api/ideas?token", (request, response) -> {
             // ensure status 200 OK, with a MIME type of JSON
             response.status(200);
             response.type("application/json");
@@ -38,8 +37,8 @@ public class Routes {
             return gson.toJson(new StructuredResponse("ok", null, dataStore.readAllUsers()));
         });
         */
-        Spark.get("/api/user/:id", (request, response) -> {
-             int idx = Integer.parseInt(request.params("id"));
+        Spark.get("/api/user/:id?token", (request, response) -> {
+            String idx = request.params("id");
             // ensure status 200 OK, with a MIME type of JSON
             response.status(200);
             response.type("application/json");
@@ -64,18 +63,9 @@ public class Routes {
             response.status(200);
             response.type("application/json");
 
-
-
-
             int validToken = dataStore.verifyToken(token);
 
-
-
-
-            if(validToken == 0){/** return error */}
-
-
-
+            if(validToken == 0){return gson.toJson(new StructuredResponse("error", "unauthorized", null));}
 
             Database.IdeaRowData ideaData = dataStore.readIdea(idx);
             if (ideaData == null) {
@@ -84,6 +74,7 @@ public class Routes {
                 return gson.toJson(new StructuredResponse("ok", null, ideaData));
             }
         });
+        /** 
         Spark.get("/api/idea/:id/reactions", (request, response) -> {
             int idx = Integer.parseInt(request.params("id"));
             // ensure status 200 OK, with a MIME type of JSON
@@ -96,11 +87,13 @@ public class Routes {
                 return gson.toJson(new StructuredResponse("ok", null, reactionData));
             }
         });
+        */
+        
         // POST route for adding a new element to the DataStore.  This will read
         // JSON from the body of the request, turn it into a SimpleRequest 
         // object, extract the title and message, insert them, and return the 
         // ID of the newly created row.
-        Spark.post("/api/ideas", (request, response) -> {
+        Spark.post("/api/ideas?token", (request, response) -> {
             // NB: if gson.Json fails, Spark will reply with status 500 Internal 
             // Server Error
             RequestIdea req = gson.fromJson(request.body(), RequestIdea.class);
@@ -117,7 +110,7 @@ public class Routes {
                 return gson.toJson(new StructuredResponse("ok", "" + newId, null));
             }
         });
-
+        /*
         Spark.post("/api/users", (request, response) -> {
             // NB: if gson.Json fails, Spark will reply with status 500 Internal 
             // Server Error
@@ -135,7 +128,7 @@ public class Routes {
                 return gson.toJson(new StructuredResponse("ok", "" + newId, null));
             }
         });
-
+        */
         Spark.post("/api/idea/:id/reactions", (request, response) -> {
             long idx = Long.parseLong(request.params("id"));
             //System.out.println(idx);
@@ -152,7 +145,7 @@ public class Routes {
         });
         // PUT route for updating a row in the DataStore.  This is almost 
         // exactly the same as POST
-        Spark.put("/api/idea/:id", (request, response) -> {
+        Spark.put("/api/idea/:id?token", (request, response) -> {
             // If we can't get an ID or can't parse the JSON, Spark will send
             // a status 500
             long idx = Long.parseLong(request.params("id"));
@@ -169,7 +162,7 @@ public class Routes {
         });
 
         // DELETE route for removing a row from the DataStore
-        Spark.delete("/api/idea/:id", (request, response) -> {
+        Spark.delete("/api/idea/:id?token", (request, response) -> {
             // If we can't get an ID, Spark will send a status 500
             long idx = Long.parseLong(request.params("id"));
             // ensure status 200 OK, with a MIME type of JSON

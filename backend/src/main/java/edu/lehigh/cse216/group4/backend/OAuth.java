@@ -20,9 +20,11 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 
 
 public class OAuth {
-
+    private static DataStore dataStore;
     public static final String CLIENT_ID = "841253943983-23js8dkv8houcvggnt3trl09v83270am.apps.googleusercontent.com";
-
+    public static void setDataStore(DataStore d){
+        dataStore = d;
+    }
     public static OAuthUser OAuthAuthorize(String AcessKey) throws GeneralSecurityException, IOException {
         JsonFactory jsonFactory = new GsonFactory();
         NetHttpTransport transport = GoogleNetHttpTransport.newTrustedTransport();
@@ -53,8 +55,10 @@ public class OAuth {
             String familyName = (String) payload.get("family_name");
             String givenName = (String) payload.get("given_name");
 
-            String Sessionkey = Hashing.sha256().hashString(email, StandardCharsets.UTF_8).toString();
-            return new OAuthUser(userId , email, emailVerified, name, pictureUrl, locale, familyName, givenName, Sessionkey);
+            String sessionKey = Hashing.sha256().hashString(AcessKey, StandardCharsets.UTF_8).toString();
+            dataStore.addSessionKey(email,sessionKey);
+            
+            return new OAuthUser(userId , email, emailVerified, name, pictureUrl, locale, familyName, givenName, sessionKey);
             ///store in a local hash table and verify in the routes 
 
             

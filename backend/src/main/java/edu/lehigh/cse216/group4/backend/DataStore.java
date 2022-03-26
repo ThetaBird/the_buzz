@@ -1,7 +1,12 @@
 package edu.lehigh.cse216.group4.backend;
-
+import java.util.HashMap;
 import java.util.ArrayList;
 
+import com.google.common.hash.Hashing;
+
+import edu.lehigh.cse216.group4.backend.Database.UserRowData;
+
+import java.nio.charset.StandardCharsets;
 
 /**
  * DataStore provides access to a set of objects, and makes sure that each has
@@ -14,7 +19,7 @@ import java.util.ArrayList;
  * web framework and there may be multiple concurrent accesses to the DataStore.
  */
 public class DataStore {
-
+    private HashMap<String, String> userSessionKeys = new HashMap<String, String>();
     private Database db;
 
     /**
@@ -36,13 +41,35 @@ public class DataStore {
         return 0;
     }
     public synchronized int verifyToken(String token){
+        String sessionKey = Hashing.sha256().hashString(token, StandardCharsets.UTF_8).toString();
         /**
-         * code to verify token, return 0 if not found in database
+         * hash the token
+         * check if hashed token in hashmap
          */
         
         //if(){
             return 0;
        // }
+    }
+    public synchronized void addSessionKey(String email, String sessionKey){
+        if(!email.substring(6).equals("@lehigh.edu")){
+            //reject user
+            return;
+        }
+        /**
+         * check if email ends in @lehigh.edu
+         */
+        checkUser(email);
+        /**
+         * Add (email, sessionkey) to userSessionKeys
+         */
+    }
+    public synchronized void checkUser(String email){
+        email = email.substring(0,6); //get lehigh username from email 
+        UserRowData user = readUser(email);
+        if(user == null){
+            createUser(email);
+        }
     }
     /*
         FUNCTIONS FOR CREATING IDEAS, REACTIONS, AND USERS
@@ -86,9 +113,9 @@ public class DataStore {
      * @param companyRole role in the company
      * @return Integer; -1 if not enough information to create idea, 0 if insertion fail, and 1 if insertion success.
      */
-    public synchronized int createUser(String note ,String email, String name, String passwordHash, Short companyRole){
-        if(name == null || passwordHash == null){return -1;}
-        int ret = db.insertUser(note , email, name, passwordHash, companyRole);
+    public synchronized int createUser(String email){
+        if(email == null || email == ""){return -1;}
+        int ret = db.insertUser("" ,email, email,"", (short)1);
         return ret;
     }
 
@@ -102,14 +129,7 @@ public class DataStore {
      * @param ideaId ID of the idea that you want to find in the DB
      * @return null if no idea found, IdeaRowData if idea found.
      */
-    public synchronized Database.IdeaRowData readIdea(long ideaId){
-        /**
-         * Verify legitimate token
-         * if(tokenIsNotLegitimate){
-         * return
-         * }
-         */
-        
+    public synchronized Database.IdeaRowData readIdea(long ideaId){        
         Database.IdeaRowData idea = db.selectIdea(ideaId);
         if(idea == null){return null;}
         return new Database.IdeaRowData(idea);
@@ -147,7 +167,7 @@ public class DataStore {
      * @param userId the ID of the user you want to pull information from
      * @return null if no user found, UserRowData if user found.
      */
-    public synchronized Database.UserRowData readUser(int userId){
+    public synchronized Database.UserRowData readUser(String userId){
         Database.UserRowData user = db.selectUser(userId);
         if(user == null){return null;}
         return new Database.UserRowData(user);
@@ -239,7 +259,7 @@ public class DataStore {
      * @param companyRole current or updated role in the company
      * @return a UserRowData containing the new user information
      */
-    public synchronized Database.UserRowData updateUser(int userId, String note , String email, String name, Short companyRole){
+    public synchronized Database.UserRowData updateUser(String userId, String note , String email, String name, Short companyRole){
         Database.UserRowData user = readUser(userId);
         if(user == null || name == null){return null;}
 

@@ -4,7 +4,6 @@ package edu.lehigh.cse216.group4.backend;
 // create an HTTP GET route
 import spark.Spark;
 
-import java.util.HashMap;
 import java.util.Map;
 import com.google.gson.*;
 
@@ -67,6 +66,7 @@ public class App {
         }
 
         Routes.setRoutes(dataStore);
+        OAuth.setDataStore(dataStore);
 
         // String testJSON = "{'avatar':'ayooo.png','name':'John
         // Doe','passwordHash':'feefgbvgrvf','companyRole':1}";
@@ -88,14 +88,6 @@ public class App {
 
         // Database.ReactionRowData result = dataStore.updateReaction(1, 1, 1);
         // System.out.println(result.ideaId);
-
-
-        // UserID(email) sessrionKey
-        HashMap<String, String> UserSessionKey = new HashMap<String, String>();
-
-
-
-
 
 
     }

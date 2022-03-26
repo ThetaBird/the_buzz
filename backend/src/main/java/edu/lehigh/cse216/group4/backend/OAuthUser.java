@@ -11,7 +11,8 @@ public class OAuthUser {
     String givenName;
     String Sessionkey;
 
-    public OAuthUser(String userId, String email, boolean emailVerified, String name,  String pictureUrl ,String locale,String familyName , String givenName , String Sessionkey){
+    public OAuthUser(String userId, String email, boolean emailVerified, String name,  
+    String pictureUrl ,String locale,String familyName , String givenName , String Sessionkey){
         this.userId = userId;
         this.email = email;
         this.emailVerified =  emailVerified;
