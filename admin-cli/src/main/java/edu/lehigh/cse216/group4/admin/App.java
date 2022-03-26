@@ -10,7 +10,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Map;
-import edu.lehigh.cse216.group4.admin.*;
+
 
 /**
  * App is our basic admin app.  For now, all it does is connect to the database
@@ -32,6 +32,12 @@ public class App {
         String user = env.get("POSTGRES_USER");
         String pass = env.get("POSTGRES_PASS");
 
+        
+        Database.getDatabase(ip, port, user, pass);
+        //EVERYTHING BEYOND THIS POINT IS FROM THE TUTORIALS AND SHOULD PROBABLY GO
+    
+
+        /*
         // Some students find that they need the following lines 
         // *before DriverManager.getConnection* in order to get the postgres
         // driver to load
@@ -56,15 +62,13 @@ public class App {
                 System.out.println("\n\tError: DriverManager.getConnection() returned a null object");
                 return;
             }
+
         } catch (SQLException e) {
             System.out.println("\n\tError: DriverManager.getConnection() threw a SQLException");
             e.printStackTrace();
             return;
         }
         System.out.println(" ... successfully connected");
-        
-        AppTest testOne = new AppTest("Test One");
-        testOne.testApp();
         
         System.out.print("Disconnecting from database");
         try {
@@ -74,6 +78,6 @@ public class App {
             e.printStackTrace();
             return;
         }
-        System.out.println(" ...  connection successfully closed");
+        System.out.println(" ...  connection successfully closed");*/
     }
 } 

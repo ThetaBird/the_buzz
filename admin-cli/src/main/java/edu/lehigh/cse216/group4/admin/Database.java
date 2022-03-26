@@ -127,6 +127,13 @@ public class Database {
             //     SQL incorrectly.  We really should have things like "tblData"
             //     as constants, and then build the strings for the statements
             //     from those constants.
+            
+            db.mDropTable = db.mConnection.prepareStatement("DROP TABLE users");
+            db.dropTable();     //execute the prepared statement
+            db.mDropTable = db.mConnection.prepareStatement("DROP TABLE ideas");
+            db.dropTable();     //execute the prepared statement
+            db.mDropTable = db.mConnection.prepareStatement("DROP TABLE likes"); 
+            db.dropTable();     //execute the prepared statement
 
             // Note: no "IF NOT EXISTS" or "IF EXISTS" checks on table 
             // creation/deletion, so multiple executions will cause an exception
@@ -136,6 +143,8 @@ public class Database {
                 + "password_hash VARCHAR(64) NOT NULL,"
                 + "notes VARCHAR(128)," //notes are like an "about me" section
                 + "company_role SMALLINT NOT NULL");
+            db.createTable();   //execute the prepared
+
             db.mCreateTable = db.mConnection.prepareStatement(
                 "CREATE TABLE IF NOT EXISTS ideas (id SERIAL PRIMARY KEY,"
                 + "user_id INTEGER NOT NULL,"
@@ -146,6 +155,7 @@ public class Database {
                 + "allowed_roles INTEGER[] NOT NULL,"   //roles in the company that are allowed to see the idea
                 + "comment_ids INTEGER[]," //a table of comment id's. comments are treated the same as an idea
                 + "FOREIGN KEY(user_id) REFERENCES users(id)");
+            db.createTable();   //execute the prepared statement
 
             /*db.mCreateTable = db.mConnection.prepareStatement(
                 "CREATE TABLE IF NOT EXISTS likes (post_user_id SERIAL PRIMARY KEY,"
@@ -163,6 +173,8 @@ public class Database {
                 + "FOREIGN KEY(idea_user_id) REFERENCES ideas(user_id)"
                 + "FOREIGN KEY(idea_id) REFERENCES ideas(id) )"
             );
+            db.createTable();   //execute the prepared statement
+
             db.mCreateTable = db.mConnection.prepareStatement(
                 "CREATE TABLE IF NOT EXISTS dislikes ("
                 + "idea_user_id INTEGER NOT NULL,"
@@ -172,11 +184,7 @@ public class Database {
                 + "FOREIGN KEY(idea_user_id) REFERENCES ideas(user_id)"
                 + "FOREIGN KEY(idea_id) REFERENCES ideas(id) )"
             );
-            
-
-            db.mDropTable = db.mConnection.prepareStatement("DROP TABLE users");
-            db.mDropTable = db.mConnection.prepareStatement("DROP TABLE ideas");
-            db.mDropTable = db.mConnection.prepareStatement("DROP TABLE likes"); 
+            db.createTable();   //execute the prepared statement
 
             // Standard CRUD operations
             /*db.mDeleteOne = db.mConnection.prepareStatement("DELETE FROM tblData WHERE id = ?");
