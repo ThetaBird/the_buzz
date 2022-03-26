@@ -39,9 +39,15 @@ public class Routes {
         */
         Spark.get("/api/user/:id?token", (request, response) -> {
             String idx = request.params("id");
+            String token = request.queryParams("token");
             // ensure status 200 OK, with a MIME type of JSON
             response.status(200);
             response.type("application/json");
+
+            int validToken = dataStore.verifyToken(token);
+
+            if(validToken == 0){return gson.toJson(new StructuredResponse("error", "unauthorized", null));}
+
             Database.UserRowData userData = dataStore.readUser(idx);
             if (userData == null) {
                 return gson.toJson(new StructuredResponse("error", idx + " not found", null));
@@ -100,10 +106,16 @@ public class Routes {
             // ensure status 200 OK, with a MIME type of JSON
             // NB: even on error, we return 200, but with a JSON object that
             //     describes the error.
+            String token = request.queryParams("token");
             response.status(200);
             response.type("application/json");
+
+            int validToken = dataStore.verifyToken(token);
+
+            if(validToken == 0){return gson.toJson(new StructuredResponse("error", "unauthorized", null));}
+
             // NB: createEntry checks for null title and message
-            int newId = dataStore.createIdea(req.userId, req.userAvatar , req.subject, req.content, req.attachment, req.allowedRoles);
+            int newId = dataStore.createIdea( req.replyTo, req.userId, req.userAvatar , req.subject, req.content, req.attachment, req.allowedRoles);
             if (newId == -1) {
                 return gson.toJson(new StructuredResponse("error", "error performing insertion", null));
             } else {
@@ -149,10 +161,16 @@ public class Routes {
             // If we can't get an ID or can't parse the JSON, Spark will send
             // a status 500
             long idx = Long.parseLong(request.params("id"));
+            String token = request.queryParams("token");
             RequestIdea req = gson.fromJson(request.body(), RequestIdea.class);
             // ensure status 200 OK, with a MIME type of JSON
             response.status(200);
             response.type("application/json");
+
+            int validToken = dataStore.verifyToken(token);
+
+            if(validToken == 0){return gson.toJson(new StructuredResponse("error", "unauthorized", null));}
+
             Database.IdeaRowData result = dataStore.updateIdea(idx, req.subject, req.content, req.attachment, req.allowedRoles);
             if (result == null) {
                 return gson.toJson(new StructuredResponse("error", "unable to update row " + idx, null));
@@ -165,11 +183,17 @@ public class Routes {
         Spark.delete("/api/idea/:id?token", (request, response) -> {
             // If we can't get an ID, Spark will send a status 500
             long idx = Long.parseLong(request.params("id"));
+            String token = request.queryParams("token");
             // ensure status 200 OK, with a MIME type of JSON
             response.status(200);
             response.type("application/json");
             // NB: we won't concern ourselves too much with the quality of the 
             //     message sent on a successful delete
+
+            int validToken = dataStore.verifyToken(token);
+
+            if(validToken == 0){return gson.toJson(new StructuredResponse("error", "unauthorized", null));}
+
             boolean result = dataStore.deleteIdea(idx);
             if (!result) {
                 return gson.toJson(new StructuredResponse("error", "unable to delete row " + idx, null));

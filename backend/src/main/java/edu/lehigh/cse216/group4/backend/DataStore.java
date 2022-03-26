@@ -41,31 +41,43 @@ public class DataStore {
         return 0;
     }
 
+
+    /** 
+     * check if the token is in local hashmap
+     * @param the token to be verified
+     * 
+     * @return An integer (1 or 0) describing the success of the operation.
+     */
     public synchronized int verifyToken(String token){
-        String sessionKey = Hashing.sha256().hashString(token, StandardCharsets.UTF_8).toString();
-        /**
-         * hash the token
-         * check if hashed token in hashmap
-         */
-        
-        //if(){
+        String sessionKey = Hashing.sha256().hashString(token, StandardCharsets.UTF_8).toString(); //hash the token
+        if(!userSessionKeys.containsValue(sessionKey)){ //check if hashed token in hashmap
             return 0;
-       // }
+        }
+        return 1;
     }
+
+
+    /** 
+     * add session key to the hashamap
+     * @param the email and sessionKey to be added
+     * 
+     * @return no return
+     */
     public synchronized void addSessionKey(String email, String sessionKey){
-        if(!email.substring(6).equals("@lehigh.edu")){
+        if(!email.substring(6).equals("@lehigh.edu")){ //check if email ends in @lehigh.edu
             //reject user
             return;
         }
-        /**
-         * check if email ends in @lehigh.edu
-         */
         checkUser(email);
-        /**
-         * Add (email, sessionkey) to userSessionKeys
-         */
+        userSessionKeys.put(email,sessionKey); //Add (email, sessionkey) to userSessionKeys
     }
 
+     /** 
+     * check if the user is lehigh user
+     * @param the email of the user
+     * 
+     * @return no return
+     */
     public synchronized void checkUser(String email){
         email = email.substring(0,6); //get lehigh username from email 
         UserRowData user = readUser(email);
@@ -73,6 +85,7 @@ public class DataStore {
             createUser(email);
         }
     }
+
     /*
         FUNCTIONS FOR CREATING IDEAS, REACTIONS, AND USERS
     */
