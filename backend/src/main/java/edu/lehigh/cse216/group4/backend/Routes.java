@@ -157,19 +157,24 @@ public class Routes {
         });
         // PUT route for updating a row in the DataStore.  This is almost 
         // exactly the same as POST
-        Spark.put("/api/idea/:id?token", (request, response) -> {
+        Spark.put("/api/idea/:id?token?userid", (request, response) -> {
             // If we can't get an ID or can't parse the JSON, Spark will send
             // a status 500
             long idx = Long.parseLong(request.params("id"));
             String token = request.queryParams("token");
+            String userId = request.queryParams("userId");
+
+            String ideaUserId = dataStore.readIdea(idx).userId;
             RequestIdea req = gson.fromJson(request.body(), RequestIdea.class);
             // ensure status 200 OK, with a MIME type of JSON
             response.status(200);
             response.type("application/json");
 
             int validToken = dataStore.verifyToken(token);
-
+            
             if(validToken == 0){return gson.toJson(new StructuredResponse("error", "unauthorized", null));}
+
+            if(userId != ideaUserId){return gson.toJson(new StructuredResponse("error", "unable to edit other user's idea", null));}
 
             Database.IdeaRowData result = dataStore.updateIdea(idx, req.subject, req.content, req.attachment, req.allowedRoles);
             if (result == null) {

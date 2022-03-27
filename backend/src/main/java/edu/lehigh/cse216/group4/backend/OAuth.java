@@ -67,8 +67,6 @@ public class OAuth {
             System.out.println("Invalid ID token.");
             return null;
 
-
-
         }
     }
 }
