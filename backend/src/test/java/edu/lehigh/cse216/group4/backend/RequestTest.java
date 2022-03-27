@@ -30,17 +30,23 @@ public class RequestTest extends TestCase{
      * Ensure that the constructor populates every relevant field of the object it
      * creates
      */
+    
     public void testIdeaConstructor() {
-        int ideaId = 0;
-        int userId = 1;
+        long ideaId = 0;
+        long replyTo = 1;
+        String userId = "Test UserID";
+        String userAvatar = "Test userAvatar";
         long timestamp = 0;
         String subject = "Test Title";
         String content = "Test Content";
         String attachment = "Test Attachment";
         Array allowedRoles = null;
+        int numLikes = 0 ;
+        int numDislikes = 0 ; 
+        String userName ="Test UserName"; 
         
 
-        IdeaRowData d = new IdeaRowData(ideaId, userId, timestamp, subject, content, attachment, allowedRoles);
+        IdeaRowData d = new IdeaRowData(ideaId, replyTo, userId, userAvatar, timestamp, subject, content, attachment, allowedRoles, numLikes , numDislikes , userName);
 
         assertTrue(d.userId == userId);
         assertTrue(d.subject.equals(subject));
@@ -48,17 +54,22 @@ public class RequestTest extends TestCase{
         assertTrue(d.attachment.equals(attachment));
     }
     public void testIdeaCopyConstructor(){
-        int ideaId = 0;
-        int userId = 1;
+        long ideaId = 0;
+        long replyTo = 1;
+        String userId = "Test UserID";
+        String userAvatar = "Test userAvatar";
         long timestamp = 0;
         String subject = "Test Title";
         String content = "Test Content";
         String attachment = "Test Attachment";
         Array allowedRoles = null;
+        int numLikes = 0 ;
+        int numDislikes = 0 ; 
+        String userName ="Test UserName"; 
         
 
-        IdeaRowData d = new IdeaRowData(ideaId, userId, timestamp, subject, content, attachment, allowedRoles);
-        IdeaRowData d2 = new IdeaRowData(d);
+        IdeaRowData d = new IdeaRowData(ideaId, replyTo, userId, userAvatar, timestamp, subject, content, attachment, allowedRoles, numLikes , numDislikes , userName);
+       IdeaRowData d2 = new IdeaRowData(d);
 
         assertTrue(d.userId == d2.userId);
         assertTrue(d.subject.equals(d2.subject));
@@ -66,36 +77,37 @@ public class RequestTest extends TestCase{
         assertTrue(d.attachment.equals(d2.attachment));
     }
     public void testUserConstructor(){
-        int userId = 1;
+        String userId = "Test user";
         String note = "Test note";
         String email = "Testemail";
         String name = "Test Name";
-        String passwordHash = "Test Hash";
+        String avatar = "Test avatar";
         Short companyRole = 1;
 
-        UserRowData d = new UserRowData(userId,note, email, name, passwordHash, companyRole);
+        UserRowData d = new UserRowData(userId,note, email, name, avatar, companyRole);
 
         assertTrue(d.userId == userId);
         assertTrue(d.email.equals(email));
         assertTrue(d.name.equals(name));
-        assertTrue(d.passwordHash.equals(passwordHash));
+        assertTrue(d.avatar.equals(avatar));
         assertTrue(d.companyRole.equals(companyRole));
     }
+
     public void testUserCopyConstructor(){
-        int userId = 1;
-        String note = "Test note"; 
+        String userId = "Test user";
+        String note = "Test note";
         String email = "Testemail";
         String name = "Test Name";
-        String passwordHash = "Test Hash";
+        String avatar = "Test avatar";
         Short companyRole = 1;
 
-        UserRowData d = new UserRowData(userId, note , email, name, passwordHash, companyRole);
+        UserRowData d = new UserRowData(userId,note, email, name, avatar, companyRole);
         UserRowData d2 = new UserRowData(d);
 
         assertTrue(d.userId == d2.userId);
         assertTrue(d.email.equals(d2.email));
         assertTrue(d.name.equals(d2.name));
-        assertTrue(d.passwordHash.equals(d2.passwordHash));
+        assertTrue(d.avatar.equals(d2.avatar));
         assertTrue(d.companyRole.equals(d2.companyRole));
     }
     public void testReactionConstructor(){
