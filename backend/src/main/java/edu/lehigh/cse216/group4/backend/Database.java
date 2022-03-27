@@ -231,7 +231,7 @@ public class Database {
             db.mCreateIdeaTable = db.mConnection.prepareStatement(
                 "CREATE TABLE IF NOT EXISTS ideas (" + 
                     "ideaId BIGINT PRIMARY KEY," + //id of idea (TechDebt: turn into timestamp-based id)
-                    "replyTo BIGINT DEFAULT," + // id of idea that the comment is for (if it is a comment)
+                    "replyTo BIGINT DEFAULT 0," + // id of idea that the comment is for (if it is a comment)
                     "userId VARCHAR NOT NULL," + //id of user who posted the id
                     "userAvatar VARCHAR,"+ //Avatar of the user who posted
                     "timestamp BIGINT NOT NULL," + //time of creation in milliseconds
