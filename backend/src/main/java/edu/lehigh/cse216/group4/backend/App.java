@@ -33,6 +33,11 @@ public class App {
         if (db == null)
             return;
 
+
+        db.dropIdeaTable();
+        db.dropReactionTable();
+        db.dropUserTable();
+        
         db.createIdeaTable();
         db.createUserTable();
         db.createReactionTable();

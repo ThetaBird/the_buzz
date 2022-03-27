@@ -19,7 +19,7 @@ import java.nio.charset.StandardCharsets;
  * web framework and there may be multiple concurrent accesses to the DataStore.
  */
 public class DataStore {
-    private HashMap<String, String> userSessionKeys = new HashMap<String, String>();
+    HashMap<String, String> userSessionKeys = new HashMap<String, String>();
     private Database db;
 
     /**
@@ -50,7 +50,7 @@ public class DataStore {
      */
     public synchronized int verifyToken(String token){
         String sessionKey = Hashing.sha256().hashString(token, StandardCharsets.UTF_8).toString(); //hash the token
-        if(!userSessionKeys.containsValue(sessionKey)){ //check if hashed token in hashmap
+        if(!userSessionKeys.containsKey(sessionKey)){ //check if hashed token in hashmap
             return 0;
         }
         return 1;
@@ -63,13 +63,13 @@ public class DataStore {
      * 
      * @return no return
      */
-    public synchronized void addSessionKey(String email, String sessionKey){
+    public synchronized void addSessionKey(String sessionKey, String email){
         if(!email.substring(6).equals("@lehigh.edu")){ //check if email ends in @lehigh.edu
             //reject user
             return;
         }
         checkUser(email);
-        userSessionKeys.put(email,sessionKey); //Add (email, sessionkey) to userSessionKeys
+        userSessionKeys.put(sessionKey,email); //Add (email, sessionkey) to userSessionKeys
     }
 
      /** 
