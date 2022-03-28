@@ -26,7 +26,7 @@ public class RoutesTest {
     @Test
     public void testIdeasGet() {
 
-        String testUrl = "/api/ideas?token";
+        String testUrl = "/api/ideas";
 
         Spark.get(testUrl, (request, response) -> {
             // ensure status 200 OK, with a MIME type of JSON
@@ -40,7 +40,7 @@ public class RoutesTest {
     @Test
     public void testUserGet() {
 
-        String testUrl = "/api/user/:id?token";
+        String testUrl = "/api/user/:id";
 
         Spark.get(testUrl, (request, response) -> {
             // ensure status 200 OK, with a MIME type of JSON
@@ -54,7 +54,7 @@ public class RoutesTest {
     @Test
     public void testIdeaGet() {
 
-        String testUrl = "/api/idea/:id?token";
+        String testUrl = "/api/idea/:id";
 
         Spark.get(testUrl, (request, response) -> {
             // ensure status 200 OK, with a MIME type of JSON
@@ -70,7 +70,7 @@ public class RoutesTest {
     @Test
     public void testIdeaPost() {
 
-        String testUrl = "/api/ideas?token";
+        String testUrl = "/api/ideas";
 
        Spark.post(testUrl , (request, response) -> {
             // ensure status 200 OK, with a MIME type of JSON
@@ -98,7 +98,7 @@ public class RoutesTest {
     @Test
     public void testIdeaPut() {
 
-        String testUrl = "/api/idea/:id?token";
+        String testUrl = "/api/idea/:id";
 
         Spark.put(testUrl, (request, response) -> {
             // ensure status 200 OK, with a MIME type of JSON
@@ -112,7 +112,7 @@ public class RoutesTest {
     @Test
     public void testIdeaDelete() {
 
-        String testUrl = "/api/idea/:id?token";
+        String testUrl = "/api/idea/:id";
 
         Spark.delete(testUrl, (request, response) -> {
             // ensure status 200 OK, with a MIME type of JSON

@@ -50,9 +50,11 @@ public class DataStore {
      */
     public synchronized int verifyToken(String token){
         String sessionKey = Hashing.sha256().hashString(token, StandardCharsets.UTF_8).toString(); //hash the token
+        System.out.println(sessionKey);
         if(!userSessionKeys.containsKey(sessionKey)){ //check if hashed token in hashmap
             return 0;
         }
+        System.out.println(sessionKey);
         return 1;
     }
 
@@ -68,8 +70,10 @@ public class DataStore {
             //reject user
             return;
         }
+        System.out.println(sessionKey);
         checkUser(email);
         userSessionKeys.put(sessionKey,email); //Add (email, sessionkey) to userSessionKeys
+        System.out.println(sessionKey);
     }
 
      /** 
@@ -84,6 +88,8 @@ public class DataStore {
         if(user == null){
             createUser(email);
         }
+        System.out.println(email);
+
     }
 
     /*
