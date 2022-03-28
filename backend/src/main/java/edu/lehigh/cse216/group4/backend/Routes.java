@@ -219,11 +219,8 @@ public class Routes {
             RequestOAuth reqOAuth = gson.fromJson(req.body(), RequestOAuth.class);
             System.out.println(reqOAuth.id_token);
             String accessKey = reqOAuth.id_token;
-            return OAuth.OAuthAuthorize(accessKey);//return section key
+            return gson.toJson(new StructuredResponse("ok", null ,OAuth.OAuthAuthorize(accessKey)));//return section key
 
-
-
-            
         });
 
 
