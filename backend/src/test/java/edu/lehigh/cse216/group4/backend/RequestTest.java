@@ -31,7 +31,7 @@ public class RequestTest extends TestCase{
      * Ensure that the constructor populates every relevant field of the object it
      * creates
      */
-    /*
+    
     public void testIdeaConstructor() {
         long ideaId = 0;
         long replyTo = 1;
@@ -45,7 +45,7 @@ public class RequestTest extends TestCase{
         int numLikes = 0 ;
         int numDislikes = 0 ; 
         String userName ="Test UserName"; 
-       ArrayList<IdeaRowData> comment = null;
+       IdeaRowData[] comment = null;
         
 
         IdeaRowData d = new IdeaRowData(ideaId, replyTo, userId, userAvatar, timestamp, subject, content, attachment, allowedRoles, numLikes , numDislikes , userName ,comment);
@@ -68,7 +68,7 @@ public class RequestTest extends TestCase{
         int numLikes = 0 ;
         int numDislikes = 0 ; 
         String userName ="Test UserName"; 
-        ArrayList<IdeaRowData> comment = null;
+        IdeaRowData[] comment = null;
         
 
         IdeaRowData d = new IdeaRowData(ideaId, replyTo, userId, userAvatar, timestamp, subject, content, attachment, allowedRoles, numLikes , numDislikes , userName ,comment);
@@ -135,5 +135,5 @@ public class RequestTest extends TestCase{
         assertTrue(d.likes.equals(d2.likes));
         assertTrue(d.dislikes.equals(d2.dislikes));
     }
-    */
+    
 }
