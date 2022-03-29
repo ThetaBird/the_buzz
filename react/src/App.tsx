@@ -3,17 +3,9 @@ import { HashRouter as Router, Route, Link, Switch, Redirect } from 'react-route
 import { Hello } from "./Hello";
 import { IdeaList } from './Components/IdeaList';
 import { GoogleOAuth } from './Components/Login';
-const Store = require('./Context/Store.tsx')
-
-/** App has one property: an ID token from google oath */
-type AppProps = { 
-    data:{
-        token:string
-    }
- }
 
 
-export class App extends React.Component<AppProps> {
+export class App extends React.Component{
     /** The global state for this component is a counter */
     state = { 
         user:{

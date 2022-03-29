@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { Redirect } from "react-router-dom";
 const axios = require('axios');
-const Store = require('../Context/Store.tsx')
 
 type NewFormProps = {
     user:any,

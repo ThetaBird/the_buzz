@@ -4,7 +4,6 @@ const axios = require('axios');
 import {Idea} from './Idea';
 import {IdeaNewForm} from './IdeaNewForm';
 import {IdeaSpecific} from './IdeaSpecific';
-const Store = require('../Context/Store.tsx')
 
 type IdeaListProps = {
     user:any
@@ -19,7 +18,8 @@ export class IdeaList extends React.Component<IdeaListProps>{
         },
         ideas:[],
         newForm:false,
-        showIdea:"",
+        showIdea:false,
+        ideaId:""
     };
     
     
@@ -55,17 +55,20 @@ export class IdeaList extends React.Component<IdeaListProps>{
         this.setState(this.state); //force re-render
     }
     showIdea = (key) => {
-        this.state.showIdea = key;
+        this.state.showIdea = true;
+        this.state.ideaId = key;
         this.setState(this.state); //force re-render
+        console.log("Key request:");
+        console.log(this.state.ideaId);
     }
     render(){
         if(this.state.newForm){
             this.state.newForm=false;
             return <Redirect to={'/ideas/new'}/> 
         }
-        if(this.state.showIdea != ""){
-            let path = '/ideas/' + this.state.showIdea;
-            this.state.showIdea="";
+        if(this.state.showIdea){
+            let path = '/ideas/' + this.state.ideaId;
+            this.state.showIdea=false;
             return <Redirect to={path}/> 
         }
         return(
@@ -84,9 +87,9 @@ export class IdeaList extends React.Component<IdeaListProps>{
                         </span>
                         
                         <Switch>
-                                <Route exact path="/ideas/new" render={() => <IdeaNewForm user={this.state.user}/>}/>
-                                <Route path="/ideas/:id" render={() => <IdeaSpecific ideaId={this.state.showIdea} user={this.state.user}/>}/>
-                            </Switch>
+                            <Route exact path="/ideas/new" render={() => <IdeaNewForm user={this.state.user}/>}/>
+                            <Route path="/ideas/:id" render={() => <IdeaSpecific ideaId={this.state.ideaId} user={this.state.user}/>}/>
+                        </Switch>
                         
                         
                     </div>

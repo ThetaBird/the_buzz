@@ -1,14 +1,7 @@
 import * as React from 'react';
-
+import {CommentReactions} from './CommentReactions'
 type CommentProps = {
-    data:{
-        ideaId: number,
-        userId: number,
-        timestamp:any,
-        content: string,
-        key: string
-    }
-    
+    data:any  
 }
 
 export class Comment extends React.Component<CommentProps>{
@@ -27,9 +20,9 @@ export class Comment extends React.Component<CommentProps>{
         return(
             <div id={this.props.data.key}className="shadow-sm commentContainer">
                 <div className="form-row h6 text-start commentUser">
-                    <div className="col-sm-1">@User{this.props.data.userId}</div>
+                    <div className="col-sm-1">{this.props.data.userId}</div>
                     <div className="col-sm-3">{this.state.parsedDate}</div>
-                    <div className="col-sm-2 text-end">Likes/Dislikes</div>
+                    <div className="col-sm-2 text-end"><CommentReactions ideaData={this.props.data}/></div>
                 </div>
                 <div className="form-row">
                     <div className='col-md-8 commentContent'>{this.props.data.content}</div>
