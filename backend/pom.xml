@@ -12,12 +12,15 @@
     <maven.compiler.target>1.8</maven.compiler.target>
   </properties>
   <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
-    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/junit/junit -->
+<dependency>
+    <groupId>junit</groupId>
+    <artifactId>junit</artifactId>
+    <version>4.13.2</version>
+    <scope>test</scope>
+</dependency>
+
     <dependency>
       <groupId>com.sparkjava</groupId>
       <artifactId>spark-core</artifactId>
@@ -38,6 +41,11 @@
       <artifactId>heroku-maven-plugin</artifactId>
       <version>3.0.3</version>
     </dependency>
+    <dependency>
+     <groupId>com.google.api-client</groupId>
+     <artifactId>google-api-client</artifactId>
+     <version>1.31.5</version>
+   </dependency>
   </dependencies>
    <build>
 	<plugins>
@@ -63,7 +71,7 @@
       <version>2.0.2</version>
       <configuration>
         <jdkVersion>1.8</jdkVersion>
-        <appName>cse216-group4-app</appName>
+        <appName>cse216-group4-test</appName>
         <processTypes>
           <web>java -jar ./target/backend-1.0-SNAPSHOT-jar-with-dependencies.jar</web>
         </processTypes>

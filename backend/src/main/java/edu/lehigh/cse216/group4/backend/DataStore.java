@@ -1,7 +1,12 @@
 package edu.lehigh.cse216.group4.backend;
-
+import java.util.HashMap;
 import java.util.ArrayList;
 
+import com.google.common.hash.Hashing;
+
+import edu.lehigh.cse216.group4.backend.Database.UserRowData;
+
+import java.nio.charset.StandardCharsets;
 
 /**
  * DataStore provides access to a set of objects, and makes sure that each has
@@ -14,7 +19,7 @@ import java.util.ArrayList;
  * web framework and there may be multiple concurrent accesses to the DataStore.
  */
 public class DataStore {
-
+    HashMap<String, String> userSessionKeys = new HashMap<String, String>();
     private Database db;
 
     /**
@@ -36,6 +41,57 @@ public class DataStore {
         return 0;
     }
 
+
+    /** 
+     * check if the token is in local hashmap
+     * @param the token to be verified
+     * 
+     * @return An integer (1 or 0) describing the success of the operation.
+     */
+    public synchronized String verifyToken(String token){
+        String sessionKey = Hashing.sha256().hashString(token, StandardCharsets.UTF_8).toString(); //hash the token
+        System.out.println(sessionKey);
+        if(!userSessionKeys.containsKey(sessionKey)){ //check if hashed token in hashmap
+            return "";
+        }
+        System.out.println(sessionKey);
+        return userSessionKeys.get(sessionKey);
+    }
+
+
+    /** 
+     * add session key to the hashamap
+     * @param the email and sessionKey to be added
+     * 
+     * @return no return
+     */
+    public synchronized void addSessionKey(String sessionKey, String email){
+        if(!email.substring(6).equals("@lehigh.edu")){ //check if email ends in @lehigh.edu
+            //reject user
+            return;
+        }
+        System.out.println(sessionKey);
+        checkUser(email);
+        userSessionKeys.put(sessionKey,email); //Add (email, sessionkey) to userSessionKeys
+        System.out.println(sessionKey);
+    }
+
+     /** 
+     * check if the user is lehigh user
+     * @param the email of the user
+     * 
+     * @return no return
+     */
+    public synchronized void checkUser(String email){
+        email = email.substring(0,6); //get lehigh username from email 
+        UserRowData user = readUser(email);
+        if(user == null){
+            createUser(email);
+        }
+        System.out.println(email);
+
+    }
+
     /*
         FUNCTIONS FOR CREATING IDEAS, REACTIONS, AND USERS
     */
@@ -50,9 +106,9 @@ public class DataStore {
      * @param allowedRoles Company roles that are allowed to view this idea
      * @return Integer; -1 if not enough information to create idea, 0 if insertion fail, and 1 if insertion success.
      */
-    public synchronized int createIdea(int userId, String subject, String content, String attachment, Short[] allowedRoles){
+    public synchronized int createIdea(long replyTo , String  userId, String subject, String content, String attachment, Short[] allowedRoles){
         if(subject == null || content == null){return -1;}
-        int ret = db.insertIdea(userId, subject, content, attachment, allowedRoles);
+        int ret = db.insertIdea(replyTo, userId , subject, content, attachment, allowedRoles);
         return ret;
     }
 
@@ -62,7 +118,7 @@ public class DataStore {
      * @param ideaId ID of the idea that the reaction row is for.
      * @return Integer; -1 if not enough information to create idea, 0 if insertion fail, and 1 if insertion success.
      */
-    public synchronized int createReaction(int ideaId){
+    public synchronized int createReaction(long ideaId){
         if(ideaId == 0){return -1;}
         int ret = db.insertReaction(ideaId);
         return ret;
@@ -72,15 +128,15 @@ public class DataStore {
      * Insert a user row into the database
      * 
      * 
-     * @param avatar filepath to avatar image for user
+     * @param email filepath to email image for user
      * @param name display name of user
      * @param passwordHash encrypted string of user password
      * @param companyRole role in the company
      * @return Integer; -1 if not enough information to create idea, 0 if insertion fail, and 1 if insertion success.
      */
-    public synchronized int createUser(String avatar, String name, String passwordHash, Short companyRole){
-        if(name == null || passwordHash == null){return -1;}
-        int ret = db.insertUser(avatar, name, passwordHash, companyRole);
+    public synchronized int createUser(String email){
+        if(email == null || email == ""){return -1;}
+        int ret = db.insertUser( email.substring(0,6) ,"", email,"", "",(short)1);
         return ret;
     }
 
@@ -94,7 +150,7 @@ public class DataStore {
      * @param ideaId ID of the idea that you want to find in the DB
      * @return null if no idea found, IdeaRowData if idea found.
      */
-    public synchronized Database.IdeaRowData readIdea(int ideaId){
+    public synchronized Database.IdeaRowData readIdea(long ideaId){        
         Database.IdeaRowData idea = db.selectIdea(ideaId);
         if(idea == null){return null;}
         return new Database.IdeaRowData(idea);
@@ -109,7 +165,21 @@ public class DataStore {
         ArrayList<Database.IdeaRowData> allIdeas = db.selectAllIdeas();
         ArrayList<Database.IdeaRowData> data = new ArrayList<Database.IdeaRowData>();
         for(Database.IdeaRowData idea: allIdeas){
-            if(idea != null){data.add(new Database.IdeaRowData(idea));}
+            if(idea != null){data.add(new Database.IdeaRowData(idea));} //??//
+        }
+        return data;
+    }
+
+      /**
+     * Read all comments of an idea from the DB.
+     * 
+     * @return an ArrayList of IdeaRowData containing all valid idea rows.
+     */
+    public synchronized ArrayList<Database.IdeaRowData> readComments(long ideaId){
+        ArrayList<Database.IdeaRowData> allComments = db.selectComments(ideaId);
+        ArrayList<Database.IdeaRowData> data = new ArrayList<Database.IdeaRowData>();
+        for(Database.IdeaRowData idea: allComments){
+            if(idea != null){data.add(new Database.IdeaRowData(idea));} //??//
         }
         return data;
     }
@@ -120,7 +190,7 @@ public class DataStore {
      * @param ideaId the ID of the idea that you want to get a reaction from.
      * @return null if no reaction found, ReactionRowData if reaction fouund.
      */
-    public synchronized Database.ReactionRowData readReaction(int ideaId){
+    public synchronized Database.ReactionRowData readReaction(long ideaId){
         Database.ReactionRowData reaction = db.selectReaction(ideaId);
         if(reaction == null){return null;}
         return new Database.ReactionRowData(reaction);
@@ -132,7 +202,7 @@ public class DataStore {
      * @param userId the ID of the user you want to pull information from
      * @return null if no user found, UserRowData if user found.
      */
-    public synchronized Database.UserRowData readUser(int userId){
+    public synchronized Database.UserRowData readUser(String userId){
         Database.UserRowData user = db.selectUser(userId);
         if(user == null){return null;}
         return new Database.UserRowData(user);
@@ -151,7 +221,7 @@ public class DataStore {
      * @param allowedRoles current or updated allowed roles of idea
      * @return Updated idea object, containing latest values.
      */
-    public synchronized Database.IdeaRowData updateIdea(int ideaId, String subject, String content, String attachment, Short[] allowedRoles){
+    public synchronized Database.IdeaRowData updateIdea(long ideaId, String subject, String content, String attachment, Short[] allowedRoles){
         Database.IdeaRowData idea = readIdea(ideaId);
         if(idea == null || subject == null || content == null){return null;}
         
@@ -163,7 +233,7 @@ public class DataStore {
         int res = db.updateIdea(ideaId, subject, content, attachment, allowedRoles);
         if(res == -1){return null;}
 
-        return new Database.IdeaRowData(idea);
+        return new Database.IdeaRowData(idea);  //??//
     }
 
     /**
@@ -175,7 +245,7 @@ public class DataStore {
      * @param reactionType -1 for toggling a dislike, 0 for clearing reactions, 1 for toggling a like
      * @return Updated reaction row for idea, or a new reaction row if one didn't exist
      */
-    public synchronized Database.ReactionRowData updateReaction(int ideaId, int userId, int reactionType){
+    public synchronized Database.ReactionRowData updateReaction(long ideaId, int userId, int reactionType){
         Database.IdeaRowData idea = readIdea(ideaId);
         if(idea == null){return null;}
         Database.ReactionRowData reaction = readReaction(ideaId);
@@ -191,6 +261,7 @@ public class DataStore {
             case -1: //dislike toggle
                 if(dislikes.indexOf(user) == -1){dislikes.add(user);}
                 else{dislikes.remove(user);}
+                if(likes.indexOf(user)!= -1){likes.remove(user);}
                 break;
             case 0: //remove either
                 if(likes.indexOf(user) != -1){likes.remove(user);}
@@ -199,6 +270,7 @@ public class DataStore {
             case 1: //like toggle
                 if(likes.indexOf(user) == -1){likes.add(user);}
                 else{likes.remove(user);}
+                if(dislikes.indexOf(user)!= -1){dislikes.remove(user);}
                 break;  
         }
 
@@ -217,20 +289,20 @@ public class DataStore {
      * Update a user row in the DB
      * 
      * @param userId user ID of the user you want to update
-     * @param avatar current or updated avatar filepath
+     * @param email current or updated email filepath
      * @param name current or updated display name
      * @param companyRole current or updated role in the company
      * @return a UserRowData containing the new user information
      */
-    public synchronized Database.UserRowData updateUser(int userId, String avatar, String name, Short companyRole){
+    public synchronized Database.UserRowData updateUser(String userId, String note , String email, String name, Short companyRole){
         Database.UserRowData user = readUser(userId);
         if(user == null || name == null){return null;}
 
-        user.avatar = avatar;
+        user.email = email;
         user.name = name;
         user.companyRole = companyRole;
 
-        int res = db.updateUser(userId, avatar, name, companyRole);
+        int res = db.updateUser(userId, note , email, name, companyRole);
         if(res == -1){return null;}
 
         return new Database.UserRowData(user);
@@ -245,7 +317,7 @@ public class DataStore {
      * @param ideaId ID of the idea row you want to remove
      * @return false if if operatin fail, true if operation success.
      */
-    public synchronized boolean deleteIdea(int ideaId){
+    public synchronized boolean deleteIdea(long ideaId){
         int res = db.deleteIdea(ideaId);
         if(res == -1){return false;}
         return true;
@@ -270,3 +342,13 @@ public class DataStore {
         return toRet;
     }
 }
+
+
+
+
+
+
+
+
+
+
