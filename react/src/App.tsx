@@ -1,8 +1,9 @@
 import * as React from "react";
-import { HashRouter as Router, Route, Link, Switch } from 'react-router-dom';
+import { HashRouter as Router, Route, Link, Switch, Redirect } from 'react-router-dom';
 import { Hello } from "./Hello";
 import { IdeaList } from './Components/IdeaList';
-
+import { GoogleOAuth } from './Components/Login';
+const Store = require('./Context/Store.tsx')
 
 /** App has one property: an ID token from google oath */
 type AppProps = { 
@@ -11,53 +12,55 @@ type AppProps = {
     }
  }
 
+
 export class App extends React.Component<AppProps> {
     /** The global state for this component is a counter */
     state = { 
-        token: null 
+        user:{
+            userToken:""
+        }
     };
 
-    /**
-     * When the component mounts, we need to set the initial value of its
-     * counter
-     */
-    componentDidMount = () => { this.setState({ token: this.props.data.token }); }
-
-    /** Get the current value of the counter */
-    getToken = () => this.state.token;
-
-    /** Set the counter value */
-    setToken = (token: string) => this.setState({ token });
-
+    setAppState = (data: any) => {
+        this.state.user = data;
+        this.setState(this.state);
+        console.log(this.state);
+    }
+    getAppState = () => {
+        return this.state.user;
+    }
     /** render the component */
     render() {
         return (
+            this.state.user.userToken ?
             <Router>
                 <div className="row container-fluid">
-                    <div className="col-sm-2 p-3 primary text-white text-center ">
-                        <nav id="navHeader" className="position-fixed text-start">
-                            <Link className="text-white spartan p-2" to="/">Home</Link>
-                            <Link className="text-white spartan p-2" to="/profile">Profile</Link>
-                            <Link className="text-white spartan p-2" to="/employees">Employees</Link>
+                    <span id="navCol"className="primary col-2">
+                        <nav id="navHeader" className="row text-center">
+                            <Link className="col-3 text-white spartan p-2" to="/">Home</Link>
+                            <Link className="col-3 text-white spartan p-2" to="/profile">Profile</Link>
+                            <Link className="col-3 text-white spartan p-2" to="/employees">Employees</Link>
                             {/* Also profile indicator, w/ avatar and name w/ logout option */}
                         </nav>
-                    </div>
+                    </span>
                     
-                    <div className="col-sm-8">
-                        <Switch>
-                            <Route exact path="/" component={Hello} />
-                            <Route exact path="/ideas" component={IdeaList}/>
-                            <Route exact path="/ideas/*" component={IdeaList}/>    
-                            <Route exact path="/profile" component={Hello} />
-                            <Route exact path="/settings" component={Hello} />
-                            <Route exact path="/employees" component={Hello} />
-                        </Switch>
-                    </div>
-
+                        <span id="contentCol" className="col">
+                            <Switch>
+                                <Route exact path="/" render={() => <Redirect to={'/ideas'}/>} />
+                                <Route exact path="/ideas" render={() => <IdeaList user={this.state.user}/>}/>
+                                <Route exact path="/ideas/*" render={() => <IdeaList user={this.state.user}/>}/>    
+                                <Route exact path="/profile" component={Hello} />
+                                <Route exact path="/settings" component={Hello} />
+                                <Route exact path="/employees" component={Hello} />
+                            </Switch>
+                        </span>
+                    
                     
                       
                 </div>
             </Router>
+            :
+            <GoogleOAuth updateData={this.setAppState}/>
         );
     }
 }

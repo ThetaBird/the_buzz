@@ -1,10 +1,32 @@
-.primary {
-    background-color: #1c1c1c;  
-    margin-left: -12px;  
-}
 .spartan{
     font-family: 'League Spartan', sans-serif;
     text-decoration: none;
+}
+#navCol{
+    background-color: #1c1c1c; 
+    margin-left: -12px;
+}
+#navHeader{
+    padding-left: 12px;
+}
+#contentCol{
+    margin-right: -47px;
+}
+#specificColContainer{
+    margin-left: -20px;
+}
+#specificCol{
+    top:70px;
+    height: 100%;
+    background-color: aliceblue;
+    padding-left: 15px;
+    overflow-y: auto;
+}
+#specificIdeaContainer{
+    margin-top: 80px;
+    width: calc(100% - 20px);
+    overflow-x: none;
+    
 }
 .ideaUser{
     margin-left: 0px;
@@ -18,6 +40,7 @@
 }
 .ideaContainer{
     border-radius: 10px;
+    width: calc(100% - 20px);
 }
 #viewDescription{
     font-size: 20pt;
@@ -25,17 +48,22 @@
     padding: 12px;
     padding-left: 20px;
     margin-left: -10px;
-    margin-top: -70px;
 }
-#ideaList{
-    margin-top: 70px;
 
-}
 #ideaList > div {
-    background-color: rgb(245, 245, 245);
+    background-color: rgb(250, 250, 250);
     margin-bottom: 20px;
 }
+#ideaList{
+    
+    height: calc(100vh - 70px);
+    
+    width:100%;
+    top:70px;
+    overflow-y: scroll;
+}
 #ideaForm{
+    position: absolute;
     top:0;
     left:0;
     width: 100%;
@@ -59,12 +87,19 @@
     overflow-y: scroll;
     resize: none;
 }
-body {
-    font-size: 14pt;
-    font-family: Arial;
-    /*filter:blur(8px);*/
+#viewIdeaDescription{
+    font-size: 16pt;
+    background-color: #1c1c1c;
+    color: aliceblue;
+    padding: 12px;
+    padding-left: 20px;
+    margin-left: -15px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
 }
 
-h1 {
-    font-size: 18pt;
+body {
+    font-size: 14pt;
+    
+    overflow: hidden;
 }
