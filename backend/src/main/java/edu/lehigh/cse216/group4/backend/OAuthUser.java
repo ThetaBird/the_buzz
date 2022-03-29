@@ -9,10 +9,10 @@ public class OAuthUser {
     String locale;
     String familyName;
     String givenName;
-    String Sessionkey;
+    String AcessKey;
 
     public OAuthUser(String userId, String email, boolean emailVerified, String name,  
-    String pictureUrl ,String locale,String familyName , String givenName , String Sessionkey){
+    String pictureUrl ,String locale,String familyName , String givenName , String AcessKey){
         this.userId = userId;
         this.email = email;
         this.emailVerified =  emailVerified;
@@ -21,6 +21,6 @@ public class OAuthUser {
         this.locale = locale;
         this.familyName = familyName;
         this.givenName = givenName;
-        this.Sessionkey = Sessionkey;
+        this.AcessKey = AcessKey;
     }   
 }

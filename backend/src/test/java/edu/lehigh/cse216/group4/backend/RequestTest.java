@@ -1,6 +1,7 @@
 package edu.lehigh.cse216.group4.backend;
 
 import java.sql.Array;
+import java.util.ArrayList;
 
 import edu.lehigh.cse216.group4.backend.Database.IdeaRowData;
 import edu.lehigh.cse216.group4.backend.Database.ReactionRowData;
@@ -44,9 +45,10 @@ public class RequestTest extends TestCase{
         int numLikes = 0 ;
         int numDislikes = 0 ; 
         String userName ="Test UserName"; 
+       ArrayList<IdeaRowData> comment = null;
         
 
-        IdeaRowData d = new IdeaRowData(ideaId, replyTo, userId, userAvatar, timestamp, subject, content, attachment, allowedRoles, numLikes , numDislikes , userName);
+        IdeaRowData d = new IdeaRowData(ideaId, replyTo, userId, userAvatar, timestamp, subject, content, attachment, allowedRoles, numLikes , numDislikes , userName ,comment);
 
         assertTrue(d.userId == userId);
         assertTrue(d.subject.equals(subject));
@@ -66,9 +68,10 @@ public class RequestTest extends TestCase{
         int numLikes = 0 ;
         int numDislikes = 0 ; 
         String userName ="Test UserName"; 
+        ArrayList<IdeaRowData> comment = null;
         
 
-        IdeaRowData d = new IdeaRowData(ideaId, replyTo, userId, userAvatar, timestamp, subject, content, attachment, allowedRoles, numLikes , numDislikes , userName);
+        IdeaRowData d = new IdeaRowData(ideaId, replyTo, userId, userAvatar, timestamp, subject, content, attachment, allowedRoles, numLikes , numDislikes , userName ,comment);
        IdeaRowData d2 = new IdeaRowData(d);
 
         assertTrue(d.userId == d2.userId);

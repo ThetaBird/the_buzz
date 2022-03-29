@@ -47,9 +47,9 @@ public class Routes {
             response.status(200);
             response.type("application/json");
 
-            int validToken = dataStore.verifyToken(token);
+            String validToken = dataStore.verifyToken(token);
 
-            if(validToken == 0){return gson.toJson(new StructuredResponse("error", "unauthorized", null));}
+            if(validToken.equals("")){return gson.toJson(new StructuredResponse("error", "unauthorized", null));}
 
             Database.UserRowData userData = dataStore.readUser(idx);
             if (userData == null) {
@@ -72,9 +72,9 @@ public class Routes {
             response.status(200);
             response.type("application/json");
 
-            int validToken = dataStore.verifyToken(token);
+            String validToken = dataStore.verifyToken(token);
 
-            if(validToken == 0){return gson.toJson(new StructuredResponse("error", "unauthorized", null));}
+            if(validToken.equals("")){return gson.toJson(new StructuredResponse("error", "unauthorized", null));}
 
             Database.IdeaRowData ideaData = dataStore.readIdea(idx);
             if (ideaData == null) {
@@ -113,12 +113,12 @@ public class Routes {
             response.status(200);
             response.type("application/json");
 
-            int validToken = dataStore.verifyToken(token);
+            String validToken = dataStore.verifyToken(token);
 
-            if(validToken == 0){return gson.toJson(new StructuredResponse("error", "unauthorized", null));}
+            if(validToken.equals("")){return gson.toJson(new StructuredResponse("error", "unauthorized", null));}
 
             // NB: createEntry checks for null title and message
-            int newId = dataStore.createIdea( req.replyTo, req.userId, req.userAvatar , req.subject, req.content, req.attachment, req.allowedRoles);
+            int newId = dataStore.createIdea( req.replyTo, validToken , req.subject, req.content, req.attachment, req.allowedRoles);
             if (newId == -1) {
                 return gson.toJson(new StructuredResponse("error", "error performing insertion", null));
             } else {
@@ -176,15 +176,15 @@ public class Routes {
             response.status(200);
             response.type("application/json");
 
-            int validToken = dataStore.verifyToken(token);
+            String validToken = dataStore.verifyToken(token);
             
-            if(validToken == 0){return gson.toJson(new StructuredResponse("error", "unauthorized", null));}
+            if(validToken.equals("")){return gson.toJson(new StructuredResponse("error", "unauthorized", null));}
 
-            if(userId != ideaUserId){return gson.toJson(new StructuredResponse("error", "unable to edit other user's idea", null));}
+            if(!userId.equals(ideaUserId)){return gson.toJson(new StructuredResponse("error", "access denied", null));}
 
             Database.IdeaRowData result = dataStore.updateIdea(idx, req.subject, req.content, req.attachment, req.allowedRoles);
             if (result == null) {
-                return gson.toJson(new StructuredResponse("error", "unable to update row " + idx, null));
+                return gson.toJson(new StructuredResponse("error", "operation failed " + idx, null));
             } else {
                 return gson.toJson(new StructuredResponse("ok", null, result));
             }
@@ -200,11 +200,15 @@ public class Routes {
             response.type("application/json");
             // NB: we won't concern ourselves too much with the quality of the 
             //     message sent on a successful delete
+            String sessionKey = Hashing.sha256().hashString(token, StandardCharsets.UTF_8).toString();
 
-            int validToken = dataStore.verifyToken(token);
+            String userId = dataStore.userSessionKeys.get(sessionKey).substring(0,6);
+            
+            String ideaUserId = dataStore.readIdea(idx).userId;
+            String validToken = dataStore.verifyToken(token);
 
-            if(validToken == 0){return gson.toJson(new StructuredResponse("error", "unauthorized", null));}
-
+            if(validToken.equals("")){return gson.toJson(new StructuredResponse("error", "unauthorized", null));}
+            if(!userId.equals(ideaUserId)){return gson.toJson(new StructuredResponse("error", "access denied", null));}
             boolean result = dataStore.deleteIdea(idx);
             if (!result) {
                 return gson.toJson(new StructuredResponse("error", "unable to delete row " + idx, null));

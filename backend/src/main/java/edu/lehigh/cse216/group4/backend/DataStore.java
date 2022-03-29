@@ -48,14 +48,14 @@ public class DataStore {
      * 
      * @return An integer (1 or 0) describing the success of the operation.
      */
-    public synchronized int verifyToken(String token){
+    public synchronized String verifyToken(String token){
         String sessionKey = Hashing.sha256().hashString(token, StandardCharsets.UTF_8).toString(); //hash the token
         System.out.println(sessionKey);
         if(!userSessionKeys.containsKey(sessionKey)){ //check if hashed token in hashmap
-            return 0;
+            return "";
         }
         System.out.println(sessionKey);
-        return 1;
+        return userSessionKeys.get(sessionKey);
     }
 
 
@@ -106,9 +106,9 @@ public class DataStore {
      * @param allowedRoles Company roles that are allowed to view this idea
      * @return Integer; -1 if not enough information to create idea, 0 if insertion fail, and 1 if insertion success.
      */
-    public synchronized int createIdea(long replyTo , String  userId, String userAvatar, String subject, String content, String attachment, Short[] allowedRoles){
+    public synchronized int createIdea(long replyTo , String  userId, String subject, String content, String attachment, Short[] allowedRoles){
         if(subject == null || content == null){return -1;}
-        int ret = db.insertIdea(replyTo, userId, userAvatar , subject, content, attachment, allowedRoles);
+        int ret = db.insertIdea(replyTo, userId , subject, content, attachment, allowedRoles);
         return ret;
     }
 
