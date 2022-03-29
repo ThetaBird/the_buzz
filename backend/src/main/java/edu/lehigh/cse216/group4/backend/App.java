@@ -35,6 +35,8 @@ public class App {
 
 
         //db.dropIdeaTable();
+        //db.dropReactionTable();
+        //db.dropUserTable();
         
         db.createIdeaTable();
         db.createUserTable();

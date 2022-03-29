@@ -66,7 +66,7 @@ public class Routes {
         // Server Error.  Otherwise, we have an integer, and the only possible 
         // error is that it doesn't correspond to a row with data.
         Spark.get("/api/idea/:id", (request, response) -> {
-            long idx = Integer.parseInt(request.params("id"));
+            long idx = Long.parseLong(request.params("id"));
             String token = request.queryParams("token");
             // ensure status 200 OK, with a MIME type of JSON
             response.status(200);
@@ -149,9 +149,15 @@ public class Routes {
             //System.out.println(idx);
             // ensure status 200 OK, with a MIME type of JSON
             RequestReaction req = gson.fromJson(request.body(), RequestReaction.class);
+            String token = request.queryParams("token");
             response.status(200);
             response.type("application/json");
-            Database.ReactionRowData result = dataStore.updateReaction(req.ideaId, req.userId, req.type);
+
+            String validToken = dataStore.verifyToken(token);
+
+            if(validToken.equals("")){return gson.toJson(new StructuredResponse("error", "unauthorized", null));}
+
+            Database.ReactionRowData result = dataStore.updateReaction(idx, validToken, req.type);
             if (result == null) {
                 return gson.toJson(new StructuredResponse("error", "unable to update row " + idx, null));
             } else {

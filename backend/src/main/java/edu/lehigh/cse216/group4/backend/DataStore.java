@@ -153,6 +153,8 @@ public class DataStore {
     public synchronized Database.IdeaRowData readIdea(long ideaId){        
         Database.IdeaRowData idea = db.selectIdea(ideaId);
         if(idea == null){return null;}
+        System.out.println("comments");
+        System.out.println(idea.comments);
         return new Database.IdeaRowData(idea);
     }
 
@@ -245,7 +247,7 @@ public class DataStore {
      * @param reactionType -1 for toggling a dislike, 0 for clearing reactions, 1 for toggling a like
      * @return Updated reaction row for idea, or a new reaction row if one didn't exist
      */
-    public synchronized Database.ReactionRowData updateReaction(long ideaId, int userId, int reactionType){
+    public synchronized Database.ReactionRowData updateReaction(long ideaId, String userId, int reactionType){
         Database.IdeaRowData idea = readIdea(ideaId);
         if(idea == null){return null;}
         Database.ReactionRowData reaction = readReaction(ideaId);
@@ -254,9 +256,9 @@ public class DataStore {
             if(newId == 0){return null;}
             reaction = readReaction(ideaId);
         }
-        ArrayList<Integer> likes = reactionArrayList(reaction.likes);
-        ArrayList<Integer> dislikes = reactionArrayList(reaction.dislikes);
-        Integer user = Integer.valueOf(userId);
+        ArrayList<String> likes = reactionArrayList(reaction.likes);
+        ArrayList<String> dislikes = reactionArrayList(reaction.dislikes);
+        String user = userId;
         switch(reactionType){
             case -1: //dislike toggle
                 if(dislikes.indexOf(user) == -1){dislikes.add(user);}
@@ -274,8 +276,8 @@ public class DataStore {
                 break;  
         }
 
-        Integer[] likesArr = reactionIntegerArray(likes);
-        Integer[] dislikesArr = reactionIntegerArray(dislikes);
+        String[] likesArr = reactionIntegerArray(likes);
+        String[] dislikesArr = reactionIntegerArray(dislikes);
         reaction.likes = likesArr;
         reaction.dislikes = dislikesArr;
 
@@ -326,21 +328,24 @@ public class DataStore {
     /*
         CONVERT INTEGER[] TO ARRAYLIST<INTEGER> AND VICE VERSA, for convenience
     */
-    static ArrayList<Integer> reactionArrayList(Integer[] arr){
-        ArrayList<Integer> toRet = new ArrayList<Integer>();
-        for(Integer i: arr){
+    static ArrayList<String> reactionArrayList(String[] arr){
+        ArrayList<String> toRet = new ArrayList<String>();
+        for(String i: arr){
             toRet.add(i);
         }
         return toRet;
     }
 
-    static Integer[] reactionIntegerArray(ArrayList<Integer> arrlist){
-        Integer[] toRet = new Integer[arrlist.size()];
+    static String[] reactionIntegerArray(ArrayList<String> arrlist){
+        String[] toRet = new String[arrlist.size()];
         for(int i = 0; i < arrlist.size(); i++){
             toRet[i] = arrlist.get(i);
         }
         return toRet;
     }
+    
+
+    
 }
 
 
