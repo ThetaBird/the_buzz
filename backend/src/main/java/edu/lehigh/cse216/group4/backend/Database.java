@@ -67,13 +67,13 @@ public class Database {
 
         long timestamp;
         String subject, content;
-        ArrayList<IdeaRowData> comments;
+        IdeaRowData[] comments = null;
         String attachment;
         Short[] allowedRoles = {};
 
         public IdeaRowData(long ideaId, long replyTo, String userId, String userAvatar, long timestamp, String subject,
                 String content, String attachment, Array allowedRoles, int numLikes, int numDislikes, String userName,
-                ArrayList<IdeaRowData> comments) {
+                IdeaRowData[] comments) {
             this.ideaId = ideaId;
             this.replyTo = replyTo;
             this.userId = userId;
@@ -143,15 +143,15 @@ public class Database {
 
     public static class ReactionRowData {
         long ideaId;
-        Integer[] likes = new Integer[] {};
-        Integer[] dislikes = new Integer[] {};
+        String[] likes = new String[] {};
+        String[] dislikes = new String[] {};
 
         public ReactionRowData(long ideaId, Array likes, Array dislikes) {
             this.ideaId = ideaId;
 
             try {
                 if (likes != null) {
-                    this.likes = (Integer[]) likes.getArray();
+                    this.likes = (String[]) likes.getArray();
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -159,7 +159,7 @@ public class Database {
 
             try {
                 if (dislikes != null) {
-                    this.dislikes = (Integer[]) dislikes.getArray();
+                    this.dislikes = (String[]) dislikes.getArray();
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -377,9 +377,9 @@ public class Database {
      */
     int insertReaction(long ideaId) {
         int count = 0;
-        Integer[] emptyArr = new Integer[] {};
+        String[] emptyArr = new String[] {};
         try {
-            Array reactions = mConnection.createArrayOf("INTEGER", emptyArr);
+            Array reactions = mConnection.createArrayOf("VARCHAR", emptyArr);
             mInsertReactions.setLong(1, ideaId);
             mInsertReactions.setArray(2, reactions);
             mInsertReactions.setArray(3, reactions);
@@ -463,29 +463,40 @@ public class Database {
                     numDislikes = reactions.dislikes.length;
                 }
                 String userName = "";
+                String userAvatar = "";
                 UserRowData user = selectUser(rs.getString("userId"));
                 if (user != null) {
                     userName = user.name;
+                    userAvatar = user.avatar;
                 }
-                ArrayList<IdeaRowData> comments = null;
-                if(rs.getLong("replyTo") > 0){ //if row is a comment
-                    comments = selectComments(ideaId);
+                IdeaRowData[] comments = new IdeaRowData[]{};
+                
+                System.out.println(comments.length);
+                res = new IdeaRowData(
+                    rs.getLong("ideaId"),
+                    rs.getLong("replyTo"),
+                    rs.getString("userId"),
+                    userAvatar,
+                    rs.getLong("timestamp"),
+                    rs.getString("subject"),
+                    rs.getString("content"),
+                    rs.getString("attachment"),
+                    rs.getArray("allowedRoles"),
+                    numLikes,
+                    numDislikes,
+                    userName,
+                    comments
+                );
+
+                if(rs.getLong("replyTo") == 0){ //if row is not a comment
+                    ArrayList<IdeaRowData> commentList = null;
+                    commentList = selectComments(ideaId);
+                    if(commentList.size() != 0){
+                        comments = commentArray(commentList);
+                        res.comments = comments;
+                    }
                 }
 
-                res = new IdeaRowData(
-                        rs.getLong("ideaId"),
-                        rs.getLong("replyTo"),
-                        rs.getString("userId"),
-                        rs.getString("userAvatar"),
-                        rs.getLong("timestamp"),
-                        rs.getString("subject"),
-                        rs.getString("content"),
-                        rs.getString("attachment"),
-                        rs.getArray("allowedRoles"),
-                        numLikes,
-                        numDislikes,
-                        userName,
-                        comments);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -508,6 +519,8 @@ public class Database {
                 res.add(new IdeaRowData(comment));
             }
         }catch(SQLException e){e.printStackTrace();}
+        System.out.println("comment size");
+        System.out.println(res.size());
         return res;
     }
 
@@ -615,11 +628,11 @@ public class Database {
      * @param dislikes integer array of user IDs who disliked the idea
      * @return
      */
-    int updateReaction(long ideaId, Integer[] likes, Integer[] dislikes) {
+    int updateReaction(long ideaId, String[] likes, String[] dislikes) {
         int res = -1;
         try {
-            Array mLikes = mConnection.createArrayOf("INTEGER", likes);
-            Array mDislikes = mConnection.createArrayOf("INTEGER", dislikes);
+            Array mLikes = mConnection.createArrayOf("VARCHAR", likes);
+            Array mDislikes = mConnection.createArrayOf("VARCHAR", dislikes);
             mUpdateReactions.setArray(1, mLikes);
             mUpdateReactions.setArray(2, mDislikes);
 
@@ -710,5 +723,13 @@ public class Database {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    static IdeaRowData[] commentArray(ArrayList<IdeaRowData> arrlist){
+        IdeaRowData[] toRet = new IdeaRowData[arrlist.size()];
+        for(int i = 0; i < arrlist.size(); i++){
+            toRet[i] = arrlist.get(i);
+        }
+        return toRet;
     }
 }
