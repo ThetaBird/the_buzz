@@ -2,7 +2,7 @@
     "compilerOptions": {
         "jsx": "react",
         "module": "es2015",
-        "noImplicitAny": true,
+        "noImplicitAny": false,
         "outDir": "./build/",
         "preserveConstEnums": true,
         "removeComments": true,

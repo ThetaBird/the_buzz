@@ -1,70 +1,78 @@
 import * as React from "react";
 import { HashRouter as Router, Route, Link, Switch } from 'react-router-dom';
-import { Counter } from "./Counter";
-import { GlobalCounter } from "./GlobalCounter";
 import { Hello } from "./Hello";
-import {Url} from "./Url";
-import {Net} from "./Net";
-import {TwoWay} from "./TwoWay";
+import { IdeaList } from './Components/IdeaList';
 
-/** App has one property: a number */
-type AppProps = { num: number }
+
+/** App has one property: an ID token from google oath */
+type AppProps = { 
+    data:{
+        token:string
+    }
+ }
 
 export class App extends React.Component<AppProps> {
     /** The global state for this component is a counter */
-    state = { num: 0 };
+    state = { 
+        token: null 
+    };
 
     /**
      * When the component mounts, we need to set the initial value of its
      * counter
      */
-    componentDidMount = () => { this.setState({ num: this.props.num }); }
+    componentDidMount = () => { this.setState({ token: this.props.data.token }); }
 
     /** Get the current value of the counter */
-    getNum = () => this.state.num;
+    getToken = () => this.state.token;
 
     /** Set the counter value */
-    setNum = (num: number) => this.setState({ num });
+    setToken = (token: string) => this.setState({ token });
 
     /** render the component */
     render() {
         return (
             <Router>
-                <div>
-                    <nav>
-                        <Link to="/">Hello (1)</Link>
-                        &nbsp;|&nbsp;
-                        <Link to="/hello">Hello (2)</Link>
-
-                        <Link to="/url/1">Url (1)</Link>
-                        &nbsp;|&nbsp;
-                        <Link to="/url/2">Url (2)</Link>
-
-                        <Link to="/counter">Counter</Link>
-
-                        <Link to="/globalcounter">Global Counter</Link>
-
-                        <Link to="/net">Network</Link>
-
-                        <Link to="/twoway">Two-Way</Link>
-                    </nav>
-                    <Switch>
-                        <Route exact path="/" component={Hello} />
-                        <Route exact path="/hello" render={() => <Hello message={"There"} />} /> 
-                        <Route path="/url/:num" component={Url} />
-                        <Route exact path="/counter" component={Counter} />
-                        <Route exact path="/globalcounter" render={() => <GlobalCounter getNum={this.getNum} setNum={this.setNum} />} />
-                        <Route exact path="/net" component={Net} />
-                        <Route exact path="/twoway" component={TwoWay} />
-                    </Switch>
-                    <div>
-                        &copy; 2021
+                <div className="row container-fluid">
+                    <div className="col-sm-2 p-3 primary text-white text-center ">
+                        <nav id="navHeader" className="position-fixed text-start">
+                            <Link className="text-white spartan p-2" to="/">Home</Link>
+                            <Link className="text-white spartan p-2" to="/profile">Profile</Link>
+                            <Link className="text-white spartan p-2" to="/employees">Employees</Link>
+                            {/* Also profile indicator, w/ avatar and name w/ logout option */}
+                        </nav>
                     </div>
-                    <div>
-                        &copy; 2021 &mdash; The global counter value is {this.state.num}
-                     </div>    
+                    
+                    <div className="col-sm-8">
+                        <Switch>
+                            <Route exact path="/" component={Hello} />
+                            <Route exact path="/ideas" component={IdeaList}/>
+                            <Route exact path="/ideas/*" component={IdeaList}/>    
+                            <Route exact path="/profile" component={Hello} />
+                            <Route exact path="/settings" component={Hello} />
+                            <Route exact path="/employees" component={Hello} />
+                        </Switch>
+                    </div>
+
+                    
+                      
                 </div>
             </Router>
         );
     }
 }
+/**
+ * LINKS
+ * Profile (view avatar, description, liked/disliked ideas, posted ideas, company role)
+ * Settings (Light/Dark mode, edit name, avatar)
+ * Edit idea (edit subject, attachment, content, or allowed roles)
+ * Employee directory (list of profiles and what role in the company they have)
+ * 
+ * ROUTES
+ * ideas (automatic redirect from / if logged in)
+ * login (automatic redirect from / if not logged in)
+ * profile (accessible from link in header)
+ * edit idea (accessible from button in idea)
+ * employees (accessible from link in header)
+ * 
+ */
