@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "406496928721",
+    "project_id": "thebuzz-efadf",
+    "storage_bucket": "thebuzz-efadf.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:406496928721:android:29b41a862f24082332b6f0",
+        "android_client_info": {
+          "package_name": "com.example.thebuzz"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "406496928721-kmoah0kcdtj06n6p8iaakmf1kn9lnc91.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDziYk6QnXkxlF4LeeLSKQqMVOffT8BRAc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "406496928721-kmoah0kcdtj06n6p8iaakmf1kn9lnc91.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
