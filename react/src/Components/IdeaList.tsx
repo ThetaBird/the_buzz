@@ -14,7 +14,8 @@ export class IdeaList extends React.Component<IdeaListProps>{
         user:{
             userToken:"",
             userName:"",
-            userId:""
+            userId:"",
+            userEmail:""
         },
         ideas:[],
         newForm:false,
@@ -61,6 +62,10 @@ export class IdeaList extends React.Component<IdeaListProps>{
         console.log("Key request:");
         console.log(this.state.ideaId);
     }
+    refreshList = () =>{
+        console.log("HEY, CAN WE REFRESH THIS?");
+        this.setState(this.state);
+    }
     render(){
         if(this.state.newForm){
             this.state.newForm=false;
@@ -88,7 +93,7 @@ export class IdeaList extends React.Component<IdeaListProps>{
                         
                         <Switch>
                             <Route exact path="/ideas/new" render={() => <IdeaNewForm user={this.state.user}/>}/>
-                            <Route path="/ideas/:id" render={() => <IdeaSpecific ideaId={this.state.ideaId} user={this.state.user}/>}/>
+                            <Route path="/ideas/:id" render={() => <IdeaSpecific ideaId={this.state.ideaId} user={this.state.user} refreshList={this.refreshList}/>}/>
                         </Switch>
                         
                         

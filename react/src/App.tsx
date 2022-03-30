@@ -2,15 +2,18 @@ import * as React from "react";
 import { HashRouter as Router, Route, Link, Switch, Redirect } from 'react-router-dom';
 import { Hello } from "./Hello";
 import { IdeaList } from './Components/IdeaList';
-import { GoogleOAuth } from './Components/Login';
-
+import { Login, Logout } from './Components/OAuth';
+import { Greeting } from './Components/Greeting';
+import { Profile } from './Components/Profile';
 
 export class App extends React.Component{
     /** The global state for this component is a counter */
     state = { 
         user:{
             userToken:""
-        }
+        },
+        viewUser:{},
+        refresh:true
     };
 
     setAppState = (data: any) => {
@@ -23,26 +26,37 @@ export class App extends React.Component{
     }
     /** render the component */
     render() {
+        const loggedInUser = localStorage.getItem("user");
+        if(loggedInUser && this.state.refresh){
+            this.state.refresh=false;
+            this.setAppState(JSON.parse(loggedInUser))
+        }
         return (
             this.state.user.userToken ?
             <Router>
                 <div className="row container-fluid">
                     <span id="navCol"className="primary col-2">
+                        <div id="buzzHeader"className='spartan h1'>The Buzz</div>
+                        <Greeting user={this.state.user}/>
                         <nav id="navHeader" className="row text-center">
                             <Link className="col-3 text-white spartan p-2" to="/">Home</Link>
                             <Link className="col-3 text-white spartan p-2" to="/profile">Profile</Link>
                             <Link className="col-3 text-white spartan p-2" to="/employees">Employees</Link>
                             {/* Also profile indicator, w/ avatar and name w/ logout option */}
                         </nav>
+                        <Logout updateData={this.setAppState}/>
                     </span>
                     
                         <span id="contentCol" className="col">
                             <Switch>
                                 <Route exact path="/" render={() => <Redirect to={'/ideas'}/>} />
+
                                 <Route exact path="/ideas" render={() => <IdeaList user={this.state.user}/>}/>
-                                <Route exact path="/ideas/*" render={() => <IdeaList user={this.state.user}/>}/>    
-                                <Route exact path="/profile" component={Hello} />
-                                <Route exact path="/settings" component={Hello} />
+                                <Route exact path="/ideas/*" render={() => <IdeaList user={this.state.user}/>}/>
+
+                                <Route exact path="/profile" render={() => <Profile user={this.state.user} viewUser={this.state.user}/>} />    
+                                <Route exact path="/profile/*" render={() => <Profile user={this.state.user} viewUser={this.state.viewUser}/>} />
+
                                 <Route exact path="/employees" component={Hello} />
                             </Switch>
                         </span>
@@ -52,7 +66,7 @@ export class App extends React.Component{
                 </div>
             </Router>
             :
-            <GoogleOAuth updateData={this.setAppState}/>
+            <Login updateData={this.setAppState}/>
         );
     }
 }
