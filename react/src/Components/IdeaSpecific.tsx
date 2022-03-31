@@ -87,6 +87,26 @@ export class IdeaSpecific extends React.Component<IdeaSpecificProps>{
           });
         
       }
+    editIdea = () => {
+        const params = {
+            subject: this.state.idea.subject,
+            content: this.state.idea.content,
+            attachment: null,
+            allowedRoles: null
+        }
+        axios.put(`https://cse216-group4-test.herokuapp.com/api/idea/${this.state.idea.ideaId}?token=${this.state.user.userToken}`, params)
+          .then((result) => {
+            console.log(result);
+           
+          });
+    }
+    deleteIdea = () => {
+        axios.delete(`https://cse216-group4-test.herokuapp.com/api/idea/${this.state.idea.ideaId}?token=${this.state.user.userToken}`)
+        .then((result) => {
+          console.log(result);
+         
+        });
+    }
     render(){
         console.log("Rendered Specific Idea")
         console.log(this.state.idea);
