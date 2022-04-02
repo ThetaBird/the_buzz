@@ -1,10 +1,65 @@
-.primary {
-    background-color: #1c1c1c;  
-    margin-left: -12px;  
-}
 .spartan{
     font-family: 'League Spartan', sans-serif;
     text-decoration: none;
+}
+#loginContainer{
+    background-color: #1c1c1c;
+    color:white;
+    height:100vh;
+}
+#loginHeader{
+    position: relative;
+    top:20%;
+    font-size: 50pt;
+}
+#buzzHeader{
+    position: relative;
+    top:30px;
+   margin-left: 20px;
+    color:white;
+    font-size: 30pt;
+    margin-bottom: 50px;
+}
+#greetingContainer{
+    margin-left: 20px;
+}
+#loginButton{
+    position: relative;
+    top:calc(20% + 30px);
+    font-size: 16pt;
+}
+#logoutButton{
+    position: absolute;
+    bottom:20px;
+    left:20px;
+}
+#navCol{
+    background-color: #1c1c1c; 
+    margin-left: -12px;
+}
+#navHeader{
+    padding-left: 12px;
+}
+#contentCol{
+    margin-right: -47px;
+}
+#specificColContainer{
+    margin-left: -20px;
+    background-color: aliceblue;
+}
+#specificCol{
+    top:70px;
+    height: 100%;
+    
+    padding-left: 15px;
+    overflow-y: auto;
+}
+#specificIdeaContainer{
+    margin-top: 80px;
+    width: calc(100% - 20px);
+    padding-right: 0;
+    overflow-x: none;
+    
 }
 .ideaUser{
     margin-left: 0px;
@@ -18,6 +73,7 @@
 }
 .ideaContainer{
     border-radius: 10px;
+    width: calc(100% - 20px);
 }
 #viewDescription{
     font-size: 20pt;
@@ -25,17 +81,22 @@
     padding: 12px;
     padding-left: 20px;
     margin-left: -10px;
-    margin-top: -70px;
 }
-#ideaList{
-    margin-top: 70px;
 
-}
 #ideaList > div {
-    background-color: rgb(245, 245, 245);
+    background-color: rgb(250, 250, 250);
     margin-bottom: 20px;
 }
+#ideaList{
+    
+    height: calc(100vh - 70px);
+    
+    width:100%;
+    top:70px;
+    overflow-y: auto;
+}
 #ideaForm{
+    position: absolute;
     top:0;
     left:0;
     width: 100%;
@@ -55,16 +116,71 @@
     border-top-left-radius: 10px;
     border-top-right-radius: 15px;
 }
+#specificCol{
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: calc(100vh - 275px);
+    padding-left: 20px;
+    margin-left: -15px;
+}
+#commentForm{
+    margin-left: -35px;
+}
+#commentsHeader{
+    background-color: #1c1c1c;
+    color:white;
+    padding-left: 20px;
+    padding-top:10px;
+    padding-bottom:10px;
+    margin-left: -15px;
+    margin-bottom: 15px;
+    margin-top: 10px;
+}
+.commentContainer{
+    background-color: rgb(250, 250, 250);
+    padding:10px;
+    margin-bottom: 10px;
+}
 .textarea {
     overflow-y: scroll;
     resize: none;
 }
+#viewIdeaDescription{
+    font-size: 16pt;
+    background-color: #1c1c1c;
+    color: aliceblue;
+    padding: 12px;
+    padding-left: 20px;
+    margin-left: -15px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+.reactionContainer{
+    margin-right: 10px;
+}
+#profileContainer{
+    height: calc(100vh - 60px);  
+    width:100%;
+    margin-top:30px;
+    margin-left: 20px;
+}
+#profileImage{
+    width:300px;
+    height: 300px;
+    border-radius: 150px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+}
+#profileInfoHolder{
+    margin-top: 50px;
+    margin-left: 20px;
+    font-size: 30pt;
+}
+#profileEmail{
+    font-size: 16pt;
+}
 body {
     font-size: 14pt;
-    font-family: Arial;
-    /*filter:blur(8px);*/
-}
-
-h1 {
-    font-size: 18pt;
+    
+    overflow: hidden;
 }

@@ -21,5 +21,5 @@ export class Hello extends React.Component<HelloProps> {
      * The render function will return a JSX element.  In the jsx, we use the
      * "{}" syntax to read fields of the Hello class, using "one-way" binding.
      */
-    render() { return <h1>Hello, {this.props.message}</h1>; }
+    render() { return <h1 className='col-sm-4'>Hello, {this.props.message}</h1>; }
 }
