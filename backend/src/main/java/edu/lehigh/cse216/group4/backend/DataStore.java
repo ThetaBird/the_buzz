@@ -1,5 +1,4 @@
 package edu.lehigh.cse216.group4.backend;
-import java.util.HashMap;
 import java.util.ArrayList;
 
 import com.google.common.hash.Hashing;
@@ -7,6 +6,20 @@ import com.google.common.hash.Hashing;
 import edu.lehigh.cse216.group4.backend.Database.UserRowData;
 
 import java.nio.charset.StandardCharsets;
+
+import net.rubyeye.xmemcached.MemcachedClient;
+import net.rubyeye.xmemcached.MemcachedClientBuilder;
+import net.rubyeye.xmemcached.XMemcachedClientBuilder;
+import net.rubyeye.xmemcached.auth.AuthInfo;
+import net.rubyeye.xmemcached.command.BinaryCommandFactory;
+import net.rubyeye.xmemcached.exception.MemcachedException;
+import net.rubyeye.xmemcached.utils.AddrUtil;
+
+import java.lang.InterruptedException;
+import java.net.InetSocketAddress;
+import java.io.IOException;
+import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 /**
  * DataStore provides access to a set of objects, and makes sure that each has
@@ -19,7 +32,13 @@ import java.nio.charset.StandardCharsets;
  * web framework and there may be multiple concurrent accesses to the DataStore.
  */
 public class DataStore {
-    HashMap<String, String> userSessionKeys = new HashMap<String, String>();
+
+    private List<InetSocketAddress> servers = AddrUtil.getAddresses(System.getenv("MEMCACHIER_SERVERS").replace(",", " "));
+    private AuthInfo authInfo = AuthInfo.plain(System.getenv("MEMCACHIER_USERNAME"), System.getenv("MEMCACHIER_PASSWORD"));
+    private MemcachedClientBuilder builder = new XMemcachedClientBuilder(servers);
+    private MemcachedClient mc;
+
+
     private Database db;
 
     /**
@@ -40,7 +59,29 @@ public class DataStore {
         this.db = db;
         return 0;
     }
-
+    public synchronized int attachCache(){
+        // Configure SASL auth for each server
+    for(InetSocketAddress server : servers) {
+        builder.addAuthInfo(server, authInfo);
+      }
+  
+      // Use binary protocol
+      builder.setCommandFactory(new BinaryCommandFactory());
+      // Connection timeout in milliseconds (default: )
+      builder.setConnectTimeout(1000);
+      // Reconnect to servers (default: true)
+      builder.setEnableHealSession(true);
+      // Delay until reconnect attempt in milliseconds (default: 2000)
+      builder.setHealSessionInterval(2000);
+  
+      try {
+        mc = builder.build();
+      } catch (IOException ioe) {
+        System.err.println("Couldn't create a connection to MemCachier: " +
+                           ioe.getMessage());
+      }
+        return 0;
+    }
 
     /** 
      * check if the token is in local hashmap
@@ -51,16 +92,29 @@ public class DataStore {
     public synchronized String verifyToken(String token){
         String sessionKey = Hashing.sha256().hashString(token, StandardCharsets.UTF_8).toString(); //hash the token
         System.out.println(sessionKey);
-        if(!userSessionKeys.containsKey(sessionKey)){ //check if hashed token in hashmap
-            return "";
-        }
+        String val = "";
+        try {
+            val = mc.get(sessionKey);
+            if(val != "" || val == null){
+                return "";
+            }
+          } catch (TimeoutException te) {
+            System.err.println("Timeout during set or get: " +
+                               te.getMessage());
+          } catch (InterruptedException ie) {
+            System.err.println("Interrupt during set or get: " +
+                               ie.getMessage());
+          } catch (MemcachedException me) {
+            System.err.println("Memcached error during get or set: " +
+                               me.getMessage());
+          }
         System.out.println(sessionKey);
-        return userSessionKeys.get(sessionKey);
+        return val;
     }
 
 
     /** 
-     * add session key to the hashamap
+     * add session key to the hashmap
      * @param the email and sessionKey to be added
      * 
      * @return no return
@@ -72,8 +126,23 @@ public class DataStore {
         }
         System.out.println(sessionKey);
         checkUser(email);
-        userSessionKeys.put(sessionKey,email); //Add (email, sessionkey) to userSessionKeys
+        
         System.out.println(sessionKey);
+        try {
+            mc.set(sessionKey, 0, email);
+            String val = mc.get(sessionKey);
+            System.out.println(val);
+          } catch (TimeoutException te) {
+            System.err.println("Timeout during set or get: " +
+                               te.getMessage());
+          } catch (InterruptedException ie) {
+            System.err.println("Interrupt during set or get: " +
+                               ie.getMessage());
+          } catch (MemcachedException me) {
+            System.err.println("Memcached error during get or set: " +
+                               me.getMessage());
+          }
+        
     }
 
      /** 

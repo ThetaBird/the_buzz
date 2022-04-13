@@ -2,9 +2,6 @@ package edu.lehigh.cse216.group4.backend;
 
 import spark.Spark;
 
-import java.nio.charset.StandardCharsets;
-
-import com.google.common.hash.Hashing;
 import com.google.gson.*;
 
 public class Routes {
@@ -172,10 +169,6 @@ public class Routes {
             long idx = Long.parseLong(request.params("id"));
             String token = request.queryParams("token");
             
-            String sessionKey = Hashing.sha256().hashString(token, StandardCharsets.UTF_8).toString();
-
-            String userId = dataStore.userSessionKeys.get(sessionKey).substring(0,6);
-            
             String ideaUserId = dataStore.readIdea(idx).userId;
             RequestIdea req = gson.fromJson(request.body(), RequestIdea.class);
             // ensure status 200 OK, with a MIME type of JSON
@@ -183,6 +176,7 @@ public class Routes {
             response.type("application/json");
 
             String validToken = dataStore.verifyToken(token);
+            String userId = validToken;
             
             if(validToken.equals("")){return gson.toJson(new StructuredResponse("error", "unauthorized", null));}
 
@@ -206,12 +200,11 @@ public class Routes {
             response.type("application/json");
             // NB: we won't concern ourselves too much with the quality of the 
             //     message sent on a successful delete
-            String sessionKey = Hashing.sha256().hashString(token, StandardCharsets.UTF_8).toString();
 
-            String userId = dataStore.userSessionKeys.get(sessionKey).substring(0,6);
             
             String ideaUserId = dataStore.readIdea(idx).userId;
             String validToken = dataStore.verifyToken(token);
+            String userId = validToken;
 
             if(validToken.equals("")){return gson.toJson(new StructuredResponse("error", "unauthorized", null));}
             if(!userId.equals(ideaUserId)){return gson.toJson(new StructuredResponse("error", "access denied", null));}
