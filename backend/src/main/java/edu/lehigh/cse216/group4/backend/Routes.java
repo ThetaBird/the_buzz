@@ -2,12 +2,11 @@ package edu.lehigh.cse216.group4.backend;
 
 import spark.Spark;
 
-import java.io.ByteArrayOutputStream;
+
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.Base64;
 
-import com.google.api.client.http.FileContent;
 import com.google.api.services.drive.*;
 import com.google.api.services.drive.model.File;
 
@@ -87,16 +86,6 @@ public class Routes {
             if (ideaData == null) {
                 return gson.toJson(new StructuredResponse("error", idx + " not found", null));
             } else {
-                //download from google drive
-                OutputStream outputStream = new ByteArrayOutputStream();
-                Drive driveService = new DriveQuickstart().getService();
-                driveService.files().get(ideaData.attachment).executeMediaAndDownloadTo(outputStream);
-
-                //convert to string and set as attachment
-                byte[] file = ((ByteArrayOutputStream) outputStream).toByteArray();
-                String fileAttachment = new String(Base64.getEncoder().encode(file));
-                ideaData.attachment = fileAttachment;
-
                 return gson.toJson(new StructuredResponse("ok", null, ideaData));
             }
         });
@@ -146,7 +135,7 @@ public class Routes {
                     Drive driveService = new DriveQuickstart().getService();    //creates google drive instance to upload to
                     if(driveService != null){
                        file = driveService.files().create(file).execute();    //creates and uploads file
-                       req.attachment = file.getId();
+                       file.setId(String.valueOf(req.attachment));
                     }
                 } catch (Exception e) 
                 {

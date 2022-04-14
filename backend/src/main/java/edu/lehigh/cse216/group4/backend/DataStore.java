@@ -1,11 +1,14 @@
 package edu.lehigh.cse216.group4.backend;
 import java.util.ArrayList;
+import java.util.Base64;
 
+import com.google.api.services.drive.Drive;
 import com.google.common.hash.Hashing;
 
 import edu.lehigh.cse216.group4.backend.Database.UserRowData;
 
 import java.nio.charset.StandardCharsets;
+import java.security.GeneralSecurityException;
 
 import net.rubyeye.xmemcached.MemcachedClient;
 import net.rubyeye.xmemcached.MemcachedClientBuilder;
@@ -17,7 +20,9 @@ import net.rubyeye.xmemcached.utils.AddrUtil;
 
 import java.lang.InterruptedException;
 import java.net.InetSocketAddress;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
@@ -224,6 +229,37 @@ public class DataStore {
         if(idea == null){return null;}
         System.out.println("comments");
         System.out.println(idea.comments);
+
+        //download from google drive
+        OutputStream outputStream = new ByteArrayOutputStream();
+        Drive driveService;
+        try {
+            driveService = new DriveQuickstart().getService();
+            driveService.files().get(idea.attachment).executeMediaAndDownloadTo(outputStream);
+
+        //convert to string and set as attachment
+        byte[] file = ((ByteArrayOutputStream) outputStream).toByteArray();
+        String fileAttachment = new String(Base64.getEncoder().encode(file));
+        idea.attachment = fileAttachment;
+        try {   //store file in memcachier
+            mc.set(String.valueOf(ideaId), 0, fileAttachment);
+            String val = mc.get(String.valueOf(ideaId));
+            System.out.println(val);
+          } catch (TimeoutException te) {
+            System.err.println("Timeout during set or get: " +
+                               te.getMessage());
+          } catch (InterruptedException ie) {
+            System.err.println("Interrupt during set or get: " +
+                               ie.getMessage());
+          } catch (MemcachedException me) {
+            System.err.println("Memcached error during get or set: " +
+                               me.getMessage());
+          }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (GeneralSecurityException e) {
+            e.printStackTrace();
+        }
         return new Database.IdeaRowData(idea);
     }
 
