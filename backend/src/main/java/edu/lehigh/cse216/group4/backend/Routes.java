@@ -2,7 +2,16 @@ package edu.lehigh.cse216.group4.backend;
 
 import spark.Spark;
 
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.util.Base64;
+
+import com.google.api.client.http.FileContent;
+import com.google.api.services.drive.*;
+import com.google.api.services.drive.model.File;
+
 import com.google.gson.*;
+
 
 public class Routes {
     // gson provides us with a way to turn JSON into objects, and objects
@@ -113,6 +122,24 @@ public class Routes {
             String validToken = dataStore.verifyToken(token);
 
             if(validToken.equals("")){return gson.toJson(new StructuredResponse("error", "unauthorized", null));}
+
+            if(req.attachment != null){
+                // https://stackoverflow.com/questions/37674016/similar-java-function-like-atob-in-javascript
+                String byteAttachment = new String(Base64.getEncoder().encode(req.attachment.getBytes()));
+
+                byte[] data = Base64.getDecoder().decode(byteAttachment);
+                File file = new File();
+                try(OutputStream stream = new FileOutputStream(file.getName()) ) 
+                {
+                    stream.write(data);
+                    Drive driveService = new DriveQuickstart().getService();
+                    if(driveService != null)
+                        driveService.files().create(file).execute();
+                } catch (Exception e) 
+                {
+                    System.err.println("Couldn't write to file...");
+                }
+            }
 
             // NB: createEntry checks for null title and message
             int newId = dataStore.createIdea( req.replyTo, validToken , req.subject, req.content, req.attachment, req.allowedRoles);
