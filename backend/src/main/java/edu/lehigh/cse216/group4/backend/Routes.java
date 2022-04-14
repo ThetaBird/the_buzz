@@ -2,6 +2,7 @@ package edu.lehigh.cse216.group4.backend;
 
 import spark.Spark;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.Base64;
@@ -86,6 +87,16 @@ public class Routes {
             if (ideaData == null) {
                 return gson.toJson(new StructuredResponse("error", idx + " not found", null));
             } else {
+                //download from google drive
+                OutputStream outputStream = new ByteArrayOutputStream();
+                Drive driveService = new DriveQuickstart().getService();
+                driveService.files().get(ideaData.attachment).executeMediaAndDownloadTo(outputStream);
+
+                //convert to string and set as attachment
+                byte[] file = ((ByteArrayOutputStream) outputStream).toByteArray();
+                String fileAttachment = new String(Base64.getEncoder().encode(file));
+                ideaData.attachment = fileAttachment;
+
                 return gson.toJson(new StructuredResponse("ok", null, ideaData));
             }
         });
@@ -123,21 +134,23 @@ public class Routes {
 
             if(validToken.equals("")){return gson.toJson(new StructuredResponse("error", "unauthorized", null));}
 
-            if(req.attachment != null){
+            if(req.attachment != null){ //optional file upload
                 // https://stackoverflow.com/questions/37674016/similar-java-function-like-atob-in-javascript
-                String byteAttachment = new String(Base64.getEncoder().encode(req.attachment.getBytes()));
+                String byteAttachment = new String(Base64.getEncoder().encode(req.attachment.getBytes()));  //encodes into base64, makes string
 
-                byte[] data = Base64.getDecoder().decode(byteAttachment);
+                byte[] data = Base64.getDecoder().decode(byteAttachment);   //decodes string into base64 array
                 File file = new File();
                 try(OutputStream stream = new FileOutputStream(file.getName()) ) 
                 {
-                    stream.write(data);
-                    Drive driveService = new DriveQuickstart().getService();
-                    if(driveService != null)
-                        driveService.files().create(file).execute();
+                    stream.write(data); //reads data into file
+                    Drive driveService = new DriveQuickstart().getService();    //creates google drive instance to upload to
+                    if(driveService != null){
+                       file = driveService.files().create(file).execute();    //creates and uploads file
+                       req.attachment = file.getId();
+                    }
                 } catch (Exception e) 
                 {
-                    System.err.println("Couldn't write to file...");
+                    System.err.println("Couldn't write to file");
                 }
             }
 
