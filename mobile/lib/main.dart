@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 //import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:thebuzz/Components/Data/GlobalState.dart'; 
-
-import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'Pages/Wrapper.dart';
 Future main() async{
   WidgetsFlutterBinding.ensureInitialized();
-  //await Firebase.initializeApp();
+  await Firebase.initializeApp();
 
   runApp(
     const App()
@@ -77,6 +76,7 @@ class _MyHomePageState extends State<MainWidget> {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create:(_) => GlobalStateService()),
+        ChangeNotifierProvider(create:(_) => IdeaListStateService()),
       ],
       child: Wrapper()
     );

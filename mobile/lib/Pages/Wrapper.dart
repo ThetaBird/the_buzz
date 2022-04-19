@@ -18,8 +18,8 @@ class Wrapper extends StatelessWidget{
     if(globalState.userToken == ""){
       return Login();
     }
-    if(globalState.specificId != 0){
-      return IdeaSpecific(ideaId: globalState.specificId);
+    if(globalState.specificIdea != null){
+      return IdeaSpecific(idea: globalState.specificIdea!);
     }
     if(globalState.newIdea){
       return const NewIdea();

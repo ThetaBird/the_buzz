@@ -46,7 +46,7 @@ class _IdeaState extends State<Idea> {
     reaction += ' | ${numComments} Comments';
 
     return GestureDetector(
-      onTap: (() => {context.read<GlobalStateService>().setSpecificId(_data.ideaId as int)}),
+      onTap: (() => {context.read<GlobalStateService>().setSpecificId(_data)}),
       child: SizedBox(
         child: Column(
           children: [

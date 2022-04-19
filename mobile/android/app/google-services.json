@@ -7,47 +7,18 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:519089242965:android:7ba7107a20cf442c9de5dc",
+        "mobilesdk_app_id": "1:519089242965:android:fab694cc52f328cd9de5dc",
         "android_client_info": {
           "package_name": "com.cse216_group4.buzz"
         }
       },
       "oauth_client": [
         {
-          "client_id": "519089242965-tbuabt15bvjm05l92fkhc4h583r17vlq.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyCxAg5080A8brUcq5k0MFB7ySPp1N6eIrk"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "519089242965-tbuabt15bvjm05l92fkhc4h583r17vlq.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:519089242965:android:fc98049f4631b5b09de5dc",
-        "android_client_info": {
-          "package_name": "com.cse216_group4.thebuzz"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "519089242965-4eh3alase9us0ek6gll08osv4vf9kso6.apps.googleusercontent.com",
+          "client_id": "519089242965-tmvbdkba6a9f7qefcjmamhgj1ib7244m.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.cse216_group4.thebuzz",
-            "certificate_hash": "9c6635b4d299ef88006b962f81c6044a2e23f663"
+            "package_name": "com.cse216_group4.buzz",
+            "certificate_hash": "7b9b988924eeec0e2036187923ec91f1a3e014f8"
           }
         },
         {

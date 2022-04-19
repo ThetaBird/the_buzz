@@ -9,24 +9,23 @@ import '../Components/Comment.dart';
 import '../Components/Data/GlobalState.dart';
 
 class IdeaSpecific extends StatefulWidget{
-  const IdeaSpecific({Key? key, required this.ideaId}) : super(key: key);
-  final int ideaId;
+  const IdeaSpecific({Key? key, required this.idea}) : super(key: key);
+  final IdeaData idea;
   @override
-  State<IdeaSpecific> createState() => _IdeaSpecificState(ideaId);
+  State<IdeaSpecific> createState() => _IdeaSpecificState(idea);
 }
 
 class _IdeaSpecificState extends State<IdeaSpecific>{
-  _IdeaSpecificState(this.ideaId);
+  _IdeaSpecificState(this.idea);
 
-  int ideaId;
-  IdeaData idea = IdeaData(); 
+  IdeaData idea;
   String? token;
   bool shouldUpdate = true;
 
   void test(String? token) async{
     IdeaData ideaDataSpecific;
     http.Response res = await http.get(
-      Uri.parse('https://cse216-group4-test.herokuapp.com/api/idea/${ideaId}?token=${token}'),
+      Uri.parse('https://cse216-group4-test.herokuapp.com/api/idea/${idea.ideaId}?token=${token}'),
       headers: <String, String>{'Content-Type': 'application/json; charset=UTF-8',},
     );
     Map<String, dynamic> response = jsonDecode(res.body);
@@ -56,15 +55,28 @@ class _IdeaSpecificState extends State<IdeaSpecific>{
     String commentContent = "";
     print(idea.ideaId);
     Idea ideaChild = Idea(data: idea,full:true);
-    void submitComment(){
-
+    void submitComment() async {
+      http.Response res = await http.post(
+        Uri.parse('https://cse216-group4-test.herokuapp.com/api/ideas?token=${globalState.userToken}'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String, dynamic>{
+          'replyTo':idea.ideaId,
+          'subject': "",
+          'content': commentContent,
+          'attachment':null,
+          'allowedRoles':[]
+        }),
+      );
+      
     }
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 28, 28, 28),
         title: const Text('Idea'),
         leading: GestureDetector(
-          onTap: (){context.read<GlobalStateService>().setSpecificId(0);},
+          onTap: (){context.read<GlobalStateService>().setSpecificId(null);},
           child: const Icon(Icons.arrow_back_ios_rounded),
         ),
       ),

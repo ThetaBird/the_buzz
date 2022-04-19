@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:thebuzz/Components/Data/IdeaData.dart';
 
 class GlobalState{
   String userToken = "";
   String userName = "";
   String userEmail = "";
   String userAvatar = "";
-  int specificId = 0;
+  IdeaData? specificIdea = IdeaData();
   bool newIdea = false;
   bool profile = false;
 
@@ -21,8 +21,8 @@ class GlobalStateService with ChangeNotifier{
     _state = s;
     notifyListeners();
   }
-  void setSpecificId(int id){
-    _state.specificId = id;
+  void setSpecificId(IdeaData? id){
+    _state.specificIdea = id;
     notifyListeners();
   }
   void setNewIdea(bool b){
@@ -36,6 +36,21 @@ class GlobalStateService with ChangeNotifier{
   void logout(){
     _state.userName = "";
     _state.userToken = "";
+    notifyListeners();
+  }
+}
+
+class IdeaListState{
+  List<IdeaData> ideas = [];
+  IdeaListState(this.ideas);
+}
+
+class IdeaListStateService with ChangeNotifier{
+  var _state = IdeaListState([]);
+  IdeaListState get state => _state;
+
+  void setIdeaList(List<IdeaData> l){
+    _state.ideas = l;
     notifyListeners();
   }
 }

@@ -21,7 +21,7 @@ class _IdeaListState extends State<IdeaList>{
   bool shouldUpdate = true;
 
   void test(String? token) async{
-    List ideaDataList = [];
+    List<IdeaData> ideaDataList = [];
     http.Response res = await http.get(
       Uri.parse('https://cse216-group4-test.herokuapp.com/api/ideas?token=${token}'),
       headers: <String, String>{'Content-Type': 'application/json; charset=UTF-8',},
@@ -35,15 +35,14 @@ class _IdeaListState extends State<IdeaList>{
       
     }
     if(shouldUpdate){
-      setState(() {
-        shouldUpdate = false;
-        ideas = ideaDataList;
-      });
+      shouldUpdate = false;
+      context.read<IdeaListStateService>().setIdeaList(ideaDataList);
     }
   }
   @override 
   Widget build(BuildContext context){
     final globalState = Provider.of<GlobalStateService>(context).state;
+    final listState = Provider.of<IdeaListStateService>(context).state;
 
     final ButtonStyle buttonStyle = ElevatedButton.styleFrom(textStyle: const TextStyle(fontSize: 14,fontWeight:FontWeight.bold),onPrimary: Colors.white, maximumSize: const Size(100,40));
     const TextStyle buzzStyle = TextStyle(color: Colors.white,fontSize: 30);
@@ -70,7 +69,7 @@ class _IdeaListState extends State<IdeaList>{
       drawer: BuzzDrawer(),
       body: SizedBox.expand(
           child: ListView(
-            children: ideas.map((ideaData) => Idea(data:ideaData,full: false,)).toList(),
+            children: listState.ideas.map((ideaData) => Idea(data:ideaData,full: false,)).toList(),
           ),
         ),
     );
