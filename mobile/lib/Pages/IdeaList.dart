@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
+import 'package:thebuzz/Components/BuzzDrawer.dart';
 
 import 'package:thebuzz/Components/Data/IdeaData.dart';
 import 'package:thebuzz/Components/Idea.dart';
@@ -45,30 +46,31 @@ class _IdeaListState extends State<IdeaList>{
     final globalState = Provider.of<GlobalStateService>(context).state;
 
     final ButtonStyle buttonStyle = ElevatedButton.styleFrom(textStyle: const TextStyle(fontSize: 14,fontWeight:FontWeight.bold),onPrimary: Colors.white, maximumSize: const Size(100,40));
+    const TextStyle buzzStyle = TextStyle(color: Colors.white,fontSize: 30);
+    const TextStyle text1Style = TextStyle(color: Colors.white,fontSize: 22);
+    const TextStyle text2Style = TextStyle(color: Colors.white,fontSize: 24);
 
     test(globalState.userToken);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 28, 28, 28),
         title: const Text('Ideas'),
-        leading: GestureDetector(
-          onTap: (){},
-          child: const Icon(Icons.menu),
-        ),
+        
         actions: <Widget>[
           Padding(
             padding: const EdgeInsets.only(right:20.0),
             child: TextButton(
               style: buttonStyle,
-              onPressed: (){},
+              onPressed:(){context.read<GlobalStateService>().setNewIdea(true);},
               child: const Text('New Idea'),
             ),
           ),
         ],
       ),
+      drawer: BuzzDrawer(),
       body: SizedBox.expand(
           child: ListView(
-            children: ideas.map((ideaData) => Idea(data:ideaData)).toList(),
+            children: ideas.map((ideaData) => Idea(data:ideaData,full: false,)).toList(),
           ),
         ),
     );

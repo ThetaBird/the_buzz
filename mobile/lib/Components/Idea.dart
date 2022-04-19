@@ -1,102 +1,102 @@
 import 'package:flutter/material.dart';
 import 'Data/IdeaData.dart';
+import 'package:provider/provider.dart';
+import 'Data/GlobalState.dart';
+
+extension StringExtension on String {
+  String truncateTo(int maxLength) =>
+      (this.length <= maxLength) ? this : '${this.substring(0, maxLength)}...';
+}
 
 class Idea extends StatefulWidget {
-  const Idea({Key? key, required this.data}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
+  const Idea({Key? key, required this.data, required this.full}) : super(key: key);
 
   final IdeaData data;
+  final bool full;
 
   @override
-  State<Idea> createState() => _IdeaState(data);
+  State<Idea> createState() => _IdeaState();
 }
 
 class _IdeaState extends State<Idea> {
-  _IdeaState(this.data);
-
-  IdeaData data;
-
-  void _setIdea(IdeaData d) {
-    setState(() {
-     data = d;
-    });
-  }
+  //_IdeaState(this.data);
+  
+  late IdeaData _data;
+  late bool full;
 
   @override
-  Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    
-    return SizedBox(
-      child: Column(
-        children: [
-          DecoratedBox(
-            decoration: const BoxDecoration(color:Color.fromARGB(255, 208, 208, 208)),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      Column(children: [
-                        SizedBox(width:300, child: Text('${data.userId}')),
-                        SizedBox(width:300, child: Text('${data.subject}',style: Theme.of(context).textTheme.bodyMedium,)),
-                        SizedBox(
-                          width: 300,
-                          child: Text('${data.content}'),
-                        ),
-                        
-                      ],)
-                    ],
-                  ),
-                  Row(
+  Widget build(BuildContext context) {   
+    const TextStyle text2Style = TextStyle(fontSize: 10);
+    const TextStyle text1Style = TextStyle(fontSize: 20,fontWeight: FontWeight.bold);
+    _data = widget.data;
+    full = widget.full;
+    if(!full){
+      _data.content = '${_data.content}'.truncateTo(200);
+    }
+    int totalLikes = _data.numLikes! - _data.numDislikes!;
+    int numComments = _data.comments!.length;
+    String reaction = "";
+    if(totalLikes > 0){
+      reaction = 'Positive (${totalLikes} Likes)';
+    }else if(totalLikes < 0){
+      reaction = 'Negative (${totalLikes} Likes)';
+    }else{
+      reaction = 'Neutral (${totalLikes} Likes)';
+    }
+    reaction += ' | ${numComments} Comments';
 
-                  ),
-                ],
-            ),
-          ),
-          SizedBox(height: 15),
-        ],
-      ),
-    );
-  }
-}
-/*
-Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text('${widget.data.subject}'),
-      ),
-      body: Center(
+    return GestureDetector(
+      onTap: (() => {context.read<GlobalStateService>().setSpecificId(_data.ideaId as int)}),
+      child: SizedBox(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '_counter',
-              style: Theme.of(context).textTheme.headline4,
+          children: [
+            SizedBox(height: 15),
+            DecoratedBox(
+              decoration: const BoxDecoration(
+                color:Color.fromARGB(255, 245, 245, 245), 
+                boxShadow:[BoxShadow(
+                  color: Color.fromARGB(125, 220, 220, 220),
+                  spreadRadius: 5,
+                  blurRadius: 7,
+                  offset: Offset(0, 3),
+                )]),
+              
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: <Widget>[
+                      Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: Column(
+                              children: [
+                                Row(children:[SizedBox(width:300, child: Text('${_data.userId}', style: text2Style))]),
+                                Row(
+                                  children: [
+                                    Expanded(child: SizedBox(width:300, child: Text('${_data.subject}',style: text1Style))),
+                                    SizedBox(width: 50),
+                                    Expanded(child: SizedBox(width:50, child: Text(reaction, style: text2Style))),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    SizedBox(width:300, child: Text('${_data.content}', style: Theme.of(context).textTheme.caption)),
+                                  ],
+                                ), 
+                              ],
+                            ),
+                          ),
+                          
+                        ],
+                      ),
+                    ],
+                ),
+              ),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: (){},
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
-*/
+  }
+}

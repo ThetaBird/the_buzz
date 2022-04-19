@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:thebuzz/Pages/IdeaSpecific.dart';
+import 'package:thebuzz/Pages/NewIdea.dart';
+import 'package:thebuzz/Pages/Profile.dart';
 
 import '../Components/Data/GlobalState.dart';
 import './Login.dart';
@@ -15,6 +18,15 @@ class Wrapper extends StatelessWidget{
     if(globalState.userToken == ""){
       return Login();
     }
-    return IdeaList();
+    if(globalState.specificId != 0){
+      return IdeaSpecific(ideaId: globalState.specificId);
+    }
+    if(globalState.newIdea){
+      return const NewIdea();
+    }
+    if(globalState.profile){
+      return Profile();
+    }
+    return const IdeaList();
   }
 }

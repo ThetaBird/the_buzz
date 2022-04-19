@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:thebuzz/Components/Data/GlobalState.dart'; 
 
-import 'Components/LoginButton.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'Pages/Wrapper.dart';
 Future main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,6 +24,9 @@ class App extends StatelessWidget {
         title: 'The Buzz',
         theme: ThemeData(
           primarySwatch: Colors.teal,
+          //textTheme: GoogleFonts.spartanTextTheme(
+          //  Theme.of(context).textTheme
+          //)
         ),
         home: const MainWidget(title: 'The Buzz'),
       );
