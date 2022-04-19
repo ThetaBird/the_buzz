@@ -27,11 +27,12 @@
 <build>
   <plugins>
     <plugin>
-      <groupId>org.codehaus.mojo</groupId>
-      <artifactId>exec-maven-plugin</artifactId>
-      <version>1.6.0</version>
+      <groupId>com.heroku.sdk</groupId>
+      <artifactId>heroku-maven-plugin</artifactId>
+      <version>3.0.3</version>
       <configuration>
         <mainClass>edu.lehigh.cse216.maj224.admin.App</mainClass>
+        <appName>cse216-group4-app</appName>
       </configuration>
     </plugin>
   </plugins>

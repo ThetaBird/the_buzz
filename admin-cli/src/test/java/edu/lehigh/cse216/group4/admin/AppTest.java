@@ -46,13 +46,24 @@ public class AppTest
     public void testDatabase()
     {
         // same code as App.java
-        Map<String, String> env = System.getenv();
+        /*Map<String, String> env = System.getenv();
         String ip = env.get("POSTGRES_IP");
         String port = env.get("POSTGRES_PORT");
         String user = env.get("POSTGRES_USER");
         String pass = env.get("POSTGRES_PASS");
 
-        Database db = Database.getDatabase(ip, port, user, pass);
+        Database db = Database.getDatabase(ip, port, user, pass);*/
+        String db_url = System.getenv("DATABASE_URL");
+        String port = System.getenv("POSTGRES_PORT");
+        String user = System.getenv("POSTGRES_USER");
+        String pass = System.getenv("POSTGRES_PASS");
+
+        // Get a fully-configured connection to the database, or exit
+        // immediately
+        Database db = Database.getDatabase(db_url, port, user, pass);
+        //Database db = DriverManager.getConnection(db_url);
+        if (db == null)
+            return;
 
         //will fail if postgres variables have not been set
         assertNotNull(db);

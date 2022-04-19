@@ -4,12 +4,10 @@ import java.io.InputStreamReader;
 import java.io.IOException;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.Map;
 
 
 /**
@@ -22,62 +20,17 @@ public class App {
      * arguments to connect to the database.
      */
    public static void main(String[] argv) {
-
-        
-
         // get the Postgres configuration from the environment
-        Map<String, String> env = System.getenv();
-        String ip = env.get("POSTGRES_IP");
-        String port = env.get("POSTGRES_PORT");
-        String user = env.get("POSTGRES_USER");
-        String pass = env.get("POSTGRES_PASS");
+        String db_url = System.getenv("DATABASE_URL");
+        String port = System.getenv("POSTGRES_PORT");
+        String user = System.getenv("POSTGRES_USER");
+        String pass = System.getenv("POSTGRES_PASS");
 
-        
-        Database.getDatabase(ip, port, user, pass);
-        //EVERYTHING BEYOND THIS POINT IS FROM THE TUTORIALS AND SHOULD PROBABLY GO
-    
-
-        /*
-        // Some students find that they need the following lines 
-        // *before DriverManager.getConnection* in order to get the postgres
-        // driver to load
-
-        // try {
-        //     Class.forName("org.postgresql.Driver");
-        // } catch (ClassNotFoundException cnfe) {
-        //     System.out.println("Unable to find postgresql driver");
-        //     return;
-        // }
-
-        // conn is a connection to the database.  In this simple example, it is
-        // a local variable, though in a realistic program it might not be
-        Connection conn = null;
-
-        // Connect to the database or fail
-        System.out.print("Connecting to " + ip + ":" + port);
-        try {
-            // Open a connection, fail if we cannot get one
-            conn = DriverManager.getConnection("jdbc:postgresql://" + ip + ":" + port + "/", user, pass);
-            if (conn == null) {
-                System.out.println("\n\tError: DriverManager.getConnection() returned a null object");
-                return;
-            }
-
-        } catch (SQLException e) {
-            System.out.println("\n\tError: DriverManager.getConnection() threw a SQLException");
-            e.printStackTrace();
+        // Get a fully-configured connection to the database, or exit
+        // immediately
+        Database db = Database.getDatabase(db_url, port, user, pass);
+        if (db == null)
             return;
-        }
-        System.out.println(" ... successfully connected");
-        
-        System.out.print("Disconnecting from database");
-        try {
-            conn.close();
-        } catch (SQLException e) {
-            System.out.println("\n\tError: close() threw a SQLException");
-            e.printStackTrace();
-            return;
-        }
-        System.out.println(" ...  connection successfully closed");*/
+            //Retrieve data for logged in user
     }
-} 
+}
