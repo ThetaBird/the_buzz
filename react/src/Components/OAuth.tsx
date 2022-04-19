@@ -8,7 +8,8 @@ type OAuthProps = {
 }
 export class Login extends React.Component<OAuthProps>{
     responseGoogle = (response) => {
-        this.attemptLogin(response.wc.id_token);
+        console.log(response.tokenId);
+        this.attemptLogin(response.tokenId);
     }
     
     attemptLogin(token){

@@ -1,4 +1,4 @@
-# thebuzz
+# myapp
 
 A new Flutter project.
 
