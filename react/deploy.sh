@@ -5,7 +5,7 @@
 # web deploy directory.
 
 # This is the resource folder where maven expects to find our files
-TARGETFOLDER=../../cse216_spring22_group4/backend/src/main/resources
+TARGETFOLDER=../backend/src/main/resources
 
 # This is the folder that we used with the Spark.staticFileLocation command
 WEBFOLDERNAME=web
