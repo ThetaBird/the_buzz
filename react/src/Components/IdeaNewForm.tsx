@@ -66,6 +66,10 @@ export class IdeaNewForm extends React.Component<NewFormProps>{
                     <small className="form-text text-muted mx-2">Limit: 500 Characters</small>
                     <textarea onChange={this.onChange} name="content" className="form-control textarea shadow-sm" rows={9}></textarea>
                 </div>
+                <div>
+                <label for="avatar">Choose a profile picture:</label>
+                <input type="file" id="avatar" name="avatar" accept="image/png, image/jpeg , pdf"></input>
+                </div>
                 <div className='row ms-3 mt-4'>
                     <div className='col-auto'>
                         <button onClick={this.submitForm} type="button" className="btn btn-primary px-3 shadow">Post Idea</button>

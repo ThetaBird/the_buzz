@@ -89,14 +89,9 @@ export class IdeaList extends React.Component<IdeaListProps>{
                         <Switch>
                             <Route exact path="/ideas/new" render={() => <IdeaNewForm user={this.state.user}/>}/>
                             <Route path="/ideas/:id" render={() => <IdeaSpecific ideaId={this.state.ideaId} user={this.state.user}/>}/>
-                        </Switch>
-                        
-                        
+                        </Switch>                       
                     </div>
-
-                       
-                    
-                </div>                
+               </div>                
             </Router>
         ) 
     }
