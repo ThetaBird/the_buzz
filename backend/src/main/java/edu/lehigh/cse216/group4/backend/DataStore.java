@@ -401,15 +401,14 @@ public class DataStore {
      * @param companyRole current or updated role in the company
      * @return a UserRowData containing the new user information
      */
-    public synchronized Database.UserRowData updateUser(String userId, String note , String email, String name, Short companyRole){
+    public synchronized Database.UserRowData updateUser(String userId, String note){
         Database.UserRowData user = readUser(userId);
-        if(user == null || name == null){return null;}
+        if(user == null ){return null;}
 
-        user.email = email;
-        user.name = name;
-        user.companyRole = companyRole;
+       
+        user.note = note;
 
-        int res = db.updateUser(userId, note , email, name, companyRole);
+        int res = db.updateUser(userId, note);
         if(res == -1){return null;}
 
         return new Database.UserRowData(user);

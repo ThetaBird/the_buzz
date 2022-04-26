@@ -65,6 +65,28 @@ public class Routes {
             }
         });
 
+        //Update user note in DB
+        Spark.post("/api/user/:id", (request, response) -> {
+            String idx = request.params("id");
+            String token = request.queryParams("token");
+            RequestUser req = gson.fromJson(request.body(), RequestUser.class);
+            // ensure status 200 OK, with a MIME type of JSON
+            response.status(200);
+            response.type("application/json");
+
+            String validToken = dataStore.verifyToken(token);
+
+            if(validToken.equals("")){return gson.toJson(new StructuredResponse("error", "unauthorized", null));}
+
+            Database.UserRowData userData = dataStore.readUser(idx);
+            if (userData == null) {
+                return gson.toJson(new StructuredResponse("error", idx + " not found", null));
+            } else {
+                dataStore.updateUser(userData.userId, req.note);
+                return gson.toJson(new StructuredResponse("ok", null, userData));
+            }
+        });
+
         // GET route that returns everything for a single row in the DataStore.
         // The ":id" suffix in the first parameter to get() becomes 
         // request.params("id"), so that we can get the requested row ID.  If 
@@ -142,7 +164,16 @@ public class Routes {
                     System.err.println("Couldn't write to file");
                 }
             }
+            /*
+                - Call the profanity API, pass subject & content and receive results
+                (POST request)
+                if(response.bad == true){
+                    return gson.toJson(new StructuredResponse("error", "no bad words!", null));
+                }
 
+
+
+            */
             // NB: createEntry checks for null title and message
             int newId = dataStore.createIdea( req.replyTo, validToken , req.subject, req.content, req.attachment, req.allowedRoles);
             if (newId == -1) {
