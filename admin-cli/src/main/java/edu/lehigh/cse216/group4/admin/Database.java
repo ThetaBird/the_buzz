@@ -26,6 +26,24 @@ public class Database {
     private PreparedStatement mSelectOne;
 
     /**
+     * A prepared statement for getting the number of likes in one row (for one idea)
+     * in the database 
+     */
+    private PreparedStatement mSelectLikes;
+
+    /**
+     * A prepared statement for getting the number of dislikes in one row (for one idea)
+     * in the database 
+     */
+    private PreparedStatement mSelectDislikes;
+
+    /**
+     * A prepared statement for getting the number of comments in one row (for one idea)
+     * in the database
+     */
+    private PreparedStatement mSelectComments;
+
+    /**
      * A prepared statement for deleting a row from the database
      */
     private PreparedStatement mDeleteOne;
@@ -60,27 +78,54 @@ public class Database {
      * abstract representation of a row of the database.  RowData and the 
      * Database are tightly coupled: if one changes, the other should too.
      */
+    //idea row data
     public static class RowData {
         /**
          * The ID of this row of the database
          */
         int mId;
+
+        /**
+         * The User ID of this row of the database
+         */
+        int mUid;
+
         /**
          * The subject stored in this row
          */
         String mSubject;
+
         /**
          * The message stored in this row
          */
         String mMessage;
 
         /**
+         * The number of comments stored in this row
+         */
+        int mComments;
+
+        /**
+         * The number of likes stored in this row
+         */
+        int mLikes;
+
+        /**
+         * The number of dislikes stored in this row
+         */
+        int mDislikes;
+
+        /**
          * Construct a RowData object by providing values for its fields
          */
-        public RowData(int id, String subject, String message) {
-            mId = id;
-            mSubject = subject;
-            mMessage = message;
+        public RowData(int id, int user_id, String subject, String content, int comments, int likes, int dislikes) {
+            this.mId = id;
+            this.mUid = user_id;
+            this.mSubject = subject;
+            this.mMessage = content;
+            this.mComments = comments;
+            this.mLikes = likes;
+            this.mDislikes = dislikes;
         }
     }
 
@@ -138,12 +183,14 @@ public class Database {
             // Note: no "IF NOT EXISTS" or "IF EXISTS" checks on table 
             // creation/deletion, so multiple executions will cause an exception
             db.mCreateTable = db.mConnection.prepareStatement(
-                "CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, name VARCHAR(50) NOT NULL"
+                "CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY,"
+                + "note VARCHAR(128)," //notes are like an "about me" section
+                + "email VARCHAR,"
+                + "name VARCHAR(50) NOT NULL,"
                 + "avatar VARCHAR NOT NULL,"
                 + "password_hash VARCHAR(64) NOT NULL,"
-                + "notes VARCHAR(128)," //notes are like an "about me" section
-                + "company_role SMALLINT NOT NULL");
-            db.createTable();   //execute the prepared
+                + "company_role SMALLINT NOT NULL)");
+            db.createTable();   //execute the prepared statement
 
             db.mCreateTable = db.mConnection.prepareStatement(
                 "CREATE TABLE IF NOT EXISTS ideas (id SERIAL PRIMARY KEY,"
@@ -154,7 +201,7 @@ public class Database {
                 + "attachment VARCHAR(50) NOT NULL,"
                 + "allowed_roles INTEGER[] NOT NULL,"   //roles in the company that are allowed to see the idea
                 + "comment_ids INTEGER[]," //a table of comment id's. comments are treated the same as an idea
-                + "FOREIGN KEY(user_id) REFERENCES users(id)");
+                + "FOREIGN KEY(user_id) REFERENCES users(id))");
             db.createTable();   //execute the prepared statement
 
             /*db.mCreateTable = db.mConnection.prepareStatement(
@@ -170,8 +217,8 @@ public class Database {
                 + "idea_id SERIAL NOT NULL,"
                 + "liked_users_id INTEGER[],"
                 + "PRIMARY KEY (idea_user_id, idea_id),"
-                + "FOREIGN KEY(idea_user_id) REFERENCES ideas(user_id)"
-                + "FOREIGN KEY(idea_id) REFERENCES ideas(id) )"
+                + "FOREIGN KEY(idea_user_id) REFERENCES ideas(user_id),"
+                + "FOREIGN KEY(idea_id) REFERENCES ideas(id))"
             );
             db.createTable();   //execute the prepared statement
 
@@ -181,8 +228,8 @@ public class Database {
                 + "idea_id SERIAL NOT NULL,"
                 + "disliked_users_id INTEGER[],"
                 + "PRIMARY KEY (idea_user_id, idea_id),"
-                + "FOREIGN KEY(idea_user_id) REFERENCES ideas(user_id)"
-                + "FOREIGN KEY(idea_id) REFERENCES ideas(id) )"
+                + "FOREIGN KEY(idea_user_id) REFERENCES ideas(user_id),"
+                + "FOREIGN KEY(idea_id) REFERENCES ideas(id))"
             );
             db.createTable();   //execute the prepared statement
 
@@ -234,12 +281,17 @@ public class Database {
      * 
      * @return The number of rows that were inserted
      */
-    int insertRow(String subject, String message) {
+    int insertRow(String subject, String content) {
         int count = 0;
         try {
-            mInsertOne.setString(1, subject);
-            mInsertOne.setString(2, message);
-            count += mInsertOne.executeUpdate();
+            if(subject == null || content == null){
+                return count;
+            }
+            else{
+                mInsertOne.setString(1, subject);
+                mInsertOne.setString(2, content);
+                count += mInsertOne.executeUpdate();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -247,7 +299,8 @@ public class Database {
     }
 
     /**
-     * Query the database for a list of all subjects and their IDs
+     * Query the database for a list of all subjects, IDs, original owners,
+     * and current reaction and comment information
      * 
      * @return All rows, as an ArrayList
      */
@@ -255,8 +308,37 @@ public class Database {
         ArrayList<RowData> res = new ArrayList<RowData>();
         try {
             ResultSet rs = mSelectAll.executeQuery();
+            int currId;
+            ResultSet c, r, w;
+            Long time;
+            String parseTime, sub, cont;
             while (rs.next()) {
-                res.add(new RowData(rs.getInt("id"), rs.getString("subject"), null));
+                currId = rs.getInt("id");
+                time = rs.getLong("time_stamp");
+                parseTime = String.valueOf(time);
+                char[] year = new char[4];
+                for(int k = 0; k < 4; k++){
+                    year[k] = parseTime.charAt(k);
+                    //if the third number is not 2
+                    //so the year is not 2020, 2021, 2022
+                    if(k == 2 && year[k] != 2){
+                        //delete it
+                        deleteRow(currId);
+                    }
+                }
+                sub = rs.getString("subject");
+                cont = rs.getString("content");
+                //checking if the subject or content are null or incomplete uploads
+                if(sub == null || cont == null){
+                    deleteRow(currId);
+                }
+                //select the number of comments
+                c = mSelectComments.executeQuery("SELECT COUNT(comment_ids) AS comments FROM ideas WHERE id = "+currId+" ");
+                //select the number of likes
+                r = mSelectLikes.executeQuery("SELECT COUNT(liked_users_id) AS Likes FROM likes WHERE idea_id = "+currId+" ");
+                //select the number of dislikes
+                w = mSelectDislikes.executeQuery("SELECT COUNT(disliked_users_id) AS Dislikes FROM dislikes WHERE idea_id = "+currId+" ");
+                res.add(new RowData(rs.getInt("id"), rs.getInt("user_id"), rs.getString("subject"), null, c.getInt("comments"), r.getInt("Likes"), w.getInt("Dislikes")));
             }
             rs.close();
             return res;
@@ -267,7 +349,7 @@ public class Database {
     }
 
     /**
-     * Get all data for a specific row, by ID
+     * Get all data (original owner, subject, message) for a specific idea, by ID
      * 
      * @param id The id of the row being requested
      * 
@@ -278,8 +360,13 @@ public class Database {
         try {
             mSelectOne.setInt(1, id);
             ResultSet rs = mSelectOne.executeQuery();
+            ResultSet c, r, w;
             if (rs.next()) {
-                res = new RowData(rs.getInt("id"), rs.getString("subject"), rs.getString("message"));
+                int currId = rs.getInt("id");
+                c = mSelectComments.executeQuery("SELECT COUNT(comment_ids) AS comments FROM ideas WHERE id = "+currId+" ");
+                r = mSelectLikes.executeQuery("SELECT COUNT(liked_users_id) AS Likes FROM likes WHERE idea_id = "+currId+" ");
+                w = mSelectDislikes.executeQuery("SELECT COUNT(disliked_users_id) AS Dislikes FROM dislikes WHERE idea_id = "+currId+" ");
+                res = new RowData(rs.getInt("id"), rs.getInt("user_id"), rs.getString("subject"), rs.getString("content"), c.getInt("comments"), r.getInt("Likes"), w.getInt("Dislikes"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -316,9 +403,14 @@ public class Database {
     int updateOne(int id, String message) {
         int res = -1;
         try {
-            mUpdateOne.setString(1, message);
-            mUpdateOne.setInt(2, id);
-            res = mUpdateOne.executeUpdate();
+            if(message == null){
+                return res;
+            }
+            else{
+                mUpdateOne.setString(1, message);
+                mUpdateOne.setInt(2, id);
+                res = mUpdateOne.executeUpdate();
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }

@@ -2,10 +2,16 @@ package edu.lehigh.cse216.group4.backend;
 
 import spark.Spark;
 
-import java.nio.charset.StandardCharsets;
 
-import com.google.common.hash.Hashing;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.util.Base64;
+
+import com.google.api.services.drive.*;
+import com.google.api.services.drive.model.File;
+
 import com.google.gson.*;
+
 
 public class Routes {
     // gson provides us with a way to turn JSON into objects, and objects
@@ -117,6 +123,26 @@ public class Routes {
 
             if(validToken.equals("")){return gson.toJson(new StructuredResponse("error", "unauthorized", null));}
 
+            if(req.attachment != null){ //optional file upload
+                // https://stackoverflow.com/questions/37674016/similar-java-function-like-atob-in-javascript
+                String byteAttachment = new String(Base64.getEncoder().encode(req.attachment.getBytes()));  //encodes into base64, makes string
+
+                byte[] data = Base64.getDecoder().decode(byteAttachment);   //decodes string into base64 array
+                File file = new File();
+                try(OutputStream stream = new FileOutputStream(file.getName()) ) 
+                {
+                    stream.write(data); //reads data into file
+                    Drive driveService = new DriveQuickstart().getService();    //creates google drive instance to upload to
+                    if(driveService != null){
+                       file = driveService.files().create(file).execute();    //creates and uploads file
+                       file.setId(String.valueOf(req.attachment));
+                    }
+                } catch (Exception e) 
+                {
+                    System.err.println("Couldn't write to file");
+                }
+            }
+
             // NB: createEntry checks for null title and message
             int newId = dataStore.createIdea( req.replyTo, validToken , req.subject, req.content, req.attachment, req.allowedRoles);
             if (newId == -1) {
@@ -172,10 +198,6 @@ public class Routes {
             long idx = Long.parseLong(request.params("id"));
             String token = request.queryParams("token");
             
-            String sessionKey = Hashing.sha256().hashString(token, StandardCharsets.UTF_8).toString();
-
-            String userId = dataStore.userSessionKeys.get(sessionKey).substring(0,6);
-            
             String ideaUserId = dataStore.readIdea(idx).userId;
             RequestIdea req = gson.fromJson(request.body(), RequestIdea.class);
             // ensure status 200 OK, with a MIME type of JSON
@@ -183,6 +205,7 @@ public class Routes {
             response.type("application/json");
 
             String validToken = dataStore.verifyToken(token);
+            String userId = validToken;
             
             if(validToken.equals("")){return gson.toJson(new StructuredResponse("error", "unauthorized", null));}
 
@@ -206,12 +229,11 @@ public class Routes {
             response.type("application/json");
             // NB: we won't concern ourselves too much with the quality of the 
             //     message sent on a successful delete
-            String sessionKey = Hashing.sha256().hashString(token, StandardCharsets.UTF_8).toString();
 
-            String userId = dataStore.userSessionKeys.get(sessionKey).substring(0,6);
             
             String ideaUserId = dataStore.readIdea(idx).userId;
             String validToken = dataStore.verifyToken(token);
+            String userId = validToken;
 
             if(validToken.equals("")){return gson.toJson(new StructuredResponse("error", "unauthorized", null));}
             if(!userId.equals(ideaUserId)){return gson.toJson(new StructuredResponse("error", "access denied", null));}
