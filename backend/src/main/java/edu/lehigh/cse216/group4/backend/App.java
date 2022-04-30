@@ -14,7 +14,9 @@ public class App {
     final static Gson gson = new Gson();
 
     public static void main(String[] args) {
-
+        Censor censor = new Censor();
+        censor.censor();
+        /*
         // dataStore holds all of the data that has been provided via HTTP
         // requests
         //
@@ -95,7 +97,7 @@ public class App {
         // Database.ReactionRowData result = dataStore.updateReaction(1, 1, 1);
         // System.out.println(result.ideaId);
 
-
+        */
     }
 
     /**
