@@ -30,9 +30,9 @@ public class OAuth {
         NetHttpTransport transport = GoogleNetHttpTransport.newTrustedTransport();
         GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory)
                 // Specify the CLIENT_ID of the app that accesses the backend:
-                .setAudience(Arrays.asList(CLIENT_ID))
+                //.setAudience(Arrays.asList(CLIENT_ID))
                 // Or, if multiple clients access the backend:
-                 //.setAudience(Arrays.asList(CLIENT_ID, CLIENT_ID_MOBILE, CLIENT_ID_MOBILE2))
+                .setAudience(Arrays.asList(CLIENT_ID, CLIENT_ID_MOBILE, CLIENT_ID_MOBILE2))
                 .build();
 
         // (Receive idTokenString by HTTPS POST)

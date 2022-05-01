@@ -56,8 +56,10 @@ public class DataStore {
         return 0;
     }
     public synchronized int attachCache(){
+        String memServers = System.getenv("MEMCACHIER_SERVERS");
+        System.out.println(memServers);
         List<InetSocketAddress> servers =
-        AddrUtil.getAddresses(System.getenv("MEMCACHIER_SERVERS").replace(",", " "));
+        AddrUtil.getAddresses(memServers);
         AuthInfo authInfo =
         AuthInfo.plain(System.getenv("MEMCACHIER_USERNAME"),
                         System.getenv("MEMCACHIER_PASSWORD"));
