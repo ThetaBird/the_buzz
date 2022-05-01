@@ -25,10 +25,10 @@ export class IdeaReactions extends React.Component<LikeProps>{
     render(){
         this.calculateReactions();
         return(
-            <span>
+            <span className='reactionContainer'>
                <span>{this.state.reactionAsset}</span>
-               <span>{this.state.netLikes}</span>
-               <span>{this.state.numComments}</span>
+               <span>({this.state.netLikes} Likes)</span>
+               <span>{this.state.numComments} Comments</span>
             </span> 
             
         )
