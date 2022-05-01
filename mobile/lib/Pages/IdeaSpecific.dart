@@ -88,6 +88,20 @@ class _IdeaSpecificState extends State<IdeaSpecific>{
               children: [ideaChild],
             ),
           ),
+          //if(idea.attachment != null)[
+          //  SizedBox(
+          //    child: Text("Download image file"),
+          //],
+      //if attachment is not empty then there's something in there (file)
+      //display an indicator of this
+          /**
+           * 
+           * If image attachment exists, then 
+           * SizedBox(
+           * text: "Download File"
+           * onClick: downloadFile(idea.attachment)
+           * ),
+           */
           const DecoratedBox(
             decoration: const BoxDecoration(
                 color: Color.fromARGB(255, 28, 28, 28),

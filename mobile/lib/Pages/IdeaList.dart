@@ -20,6 +20,7 @@ class _IdeaListState extends State<IdeaList>{
   String? token;
   bool shouldUpdate = true;
 
+  //pulls info from backend
   void test(String? token) async{
     List<IdeaData> ideaDataList = [];
     http.Response res = await http.get(

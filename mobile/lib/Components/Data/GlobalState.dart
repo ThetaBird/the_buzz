@@ -6,7 +6,7 @@ class GlobalState{
   String userName = "";
   String userEmail = "";
   String userAvatar = "";
-  IdeaData? specificIdea = IdeaData();
+  IdeaData? specificIdea = null;
   bool newIdea = false;
   bool profile = false;
 
