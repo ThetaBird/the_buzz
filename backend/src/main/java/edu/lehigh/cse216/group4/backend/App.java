@@ -49,7 +49,7 @@ public class App {
         // POSTGRES.
         // Attach the created Database to dataStore, so that dataStore can read/write it
         dataStore.attachDB(db);
-        //dataStore.attachCache();
+        dataStore.attachCache();
         // Set up the location for serving static files. If the STATIC_LOCATION
         // environment variable is set, we will serve from it. Otherwise, serve
         // from "/web"
