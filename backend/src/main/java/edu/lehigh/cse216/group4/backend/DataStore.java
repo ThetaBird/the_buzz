@@ -112,11 +112,28 @@ public class DataStore {
     public synchronized String verifyToken(String token){
         String sessionKey = Hashing.sha256().hashString(token, StandardCharsets.UTF_8).toString(); //hash the token
         System.out.println(sessionKey);
+        /*
         if(!userSessionKeys.containsKey(sessionKey)){ //check if hashed token in hashmap
             return "";
         }
         System.out.println(sessionKey);
-        return userSessionKeys.get(sessionKey);
+        */
+        //return userSessionKeys.get(sessionKey);
+        String userId = "";
+        try{
+            userId = mc.get(sessionKey);
+        }  catch (TimeoutException te) {
+            System.err.println("Timeout during set or get: " +
+                               te.getMessage());
+          } catch (InterruptedException ie) {
+            System.err.println("Interrupt during set or get: " +
+                               ie.getMessage());
+          } catch (MemcachedException me) {
+            System.err.println("Memcached error during get or set: " +
+                               me.getMessage());
+          }  
+
+        return userId;
     }
 
 
@@ -133,7 +150,22 @@ public class DataStore {
         }
         System.out.println(sessionKey);
         checkUser(email);
+        /*
         userSessionKeys.put(sessionKey,email); //Add (email, sessionkey) to userSessionKeys
+        */
+
+        try{
+            mc.set(sessionKey, 0, email);
+        }catch (TimeoutException te) {
+            System.err.println("Timeout during set or get: " +
+                               te.getMessage());
+          } catch (InterruptedException ie) {
+            System.err.println("Interrupt during set or get: " +
+                               ie.getMessage());
+          } catch (MemcachedException me) {
+            System.err.println("Memcached error during get or set: " +
+                               me.getMessage());
+          }  
         System.out.println(sessionKey);
     }
 
