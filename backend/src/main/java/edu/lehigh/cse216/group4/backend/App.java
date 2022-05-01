@@ -14,9 +14,9 @@ public class App {
     final static Gson gson = new Gson();
 
     public static void main(String[] args) {
-        Censor censor = new Censor();
-        censor.censor();
-        /*
+        //Censor censor = new Censor();
+        //censor.censor();
+        
         // dataStore holds all of the data that has been provided via HTTP
         // requests
         //
@@ -49,7 +49,7 @@ public class App {
         // POSTGRES.
         // Attach the created Database to dataStore, so that dataStore can read/write it
         dataStore.attachDB(db);
-        dataStore.attachCache();
+        //dataStore.attachCache();
         // Set up the location for serving static files. If the STATIC_LOCATION
         // environment variable is set, we will serve from it. Otherwise, serve
         // from "/web"
@@ -97,7 +97,7 @@ public class App {
         // Database.ReactionRowData result = dataStore.updateReaction(1, 1, 1);
         // System.out.println(result.ideaId);
 
-        */
+        
     }
 
     /**

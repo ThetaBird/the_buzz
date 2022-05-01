@@ -5,8 +5,11 @@ import spark.Spark;
 
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.net.http.HttpClient;
 import java.util.Base64;
 
+import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpResponse;
 import com.google.api.services.drive.*;
 import com.google.api.services.drive.model.File;
 
@@ -164,16 +167,18 @@ public class Routes {
                     System.err.println("Couldn't write to file");
                 }
             }
+
             /*
                 - Call the profanity API, pass subject & content and receive results
                 (POST request)
                 if(response.bad == true){
                     return gson.toJson(new StructuredResponse("error", "no bad words!", null));
                 }
-
-
-
             */
+            boolean hasProfanity = Censor.checkProfanity(req.subject + " " + req.content);
+            if(hasProfanity){
+                return gson.toJson(new StructuredResponse("error", "profanity", null));
+            }
             // NB: createEntry checks for null title and message
             int newId = dataStore.createIdea( req.replyTo, validToken , req.subject, req.content, req.attachment, req.allowedRoles);
             if (newId == -1) {
@@ -279,15 +284,13 @@ public class Routes {
 
 
         Spark.post("/api/auth", (req, res) -> {
-            RequestOAuth reqOAuth = gson.fromJson(req.body(), RequestOAuth.class);
-            System.out.println(reqOAuth.id_token);
-            String accessKey = reqOAuth.id_token;
-            return gson.toJson(new StructuredResponse("ok", null ,OAuth.OAuthAuthorize(accessKey)));//return section key
+            //RequestOAuth reqOAuth = gson.fromJson(req.body(), RequestOAuth.class);
+            System.out.println("reqOAuth.id_token");
+            //String accessKey = reqOAuth.id_token;
+            return gson.toJson(new StructuredResponse("ok", "test" ,null));
+            //return gson.toJson(new StructuredResponse("ok", null ,OAuth.OAuthAuthorize(accessKey)));//return section key
 
-        });
-
-
-        
+        });   
 
 
 

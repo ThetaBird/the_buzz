@@ -3,13 +3,12 @@ package edu.lehigh.cse216.group4.backend;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Scanner;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 public class Censor {
-    public static void censor(){
+    public static boolean checkProfanity(String input){
         try{
-            URL url = new URL ("https://www.purgomalum.com/service/containsprofanity?text=fuck%20you");
+            String modifiedString = input.replaceAll(" ", "%20");
+            URL url = new URL ("https://www.purgomalum.com/service/containsprofanity?text=" + modifiedString);
             HttpURLConnection conn = (HttpURLConnection)url.openConnection();
             conn.setRequestMethod("GET");
             conn.connect();
@@ -30,13 +29,13 @@ public class Censor {
                     inline += scanner.nextLine();
                 }
                 scanner.close();
-                JSONParser parse = new JSONParser();
-                JSONObject dataObject = (JSONObject) parse.parse(inline);
-                System.out.println(dataObject.get(0));
-                JSONObject userData = (JSONObject) dataObject.get(0);
+
+                boolean result = Boolean.parseBoolean(inline);
+                return result;
             }
         } catch (Exception e){
             System.out.println("error" + e);
         }
+        return false;
     }
 }
