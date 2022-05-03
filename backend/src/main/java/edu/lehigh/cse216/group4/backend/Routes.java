@@ -147,7 +147,7 @@ public class Routes {
             String validToken = dataStore.verifyToken(token);
 
             if(validToken.equals("")){return gson.toJson(new StructuredResponse("error", "unauthorized", null));}
-
+/*
             if(req.attachment != null){ //optional file upload
                 // https://stackoverflow.com/questions/37674016/similar-java-function-like-atob-in-javascript
                 String byteAttachment = new String(Base64.getEncoder().encode(req.attachment.getBytes()));  //encodes into base64, makes string
@@ -167,7 +167,7 @@ public class Routes {
                     System.err.println("Couldn't write to file");
                 }
             }
-
+*/
             /*
                 - Call the profanity API, pass subject & content and receive results
                 (POST request)
@@ -288,7 +288,6 @@ public class Routes {
             System.out.println(reqOAuth.id_token);
             String accessKey = reqOAuth.id_token;
             return gson.toJson(new StructuredResponse("ok", null ,OAuth.OAuthAuthorize(accessKey)));//return section key
-
 
         });   
 
