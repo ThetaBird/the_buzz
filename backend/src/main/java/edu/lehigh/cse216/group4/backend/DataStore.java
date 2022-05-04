@@ -300,8 +300,11 @@ public class DataStore {
      * @return null if no user found, UserRowData if user found.
      */
     public synchronized Database.UserRowData readUser(String userId){
+        System.out.println(userId);
         Database.UserRowData user = db.selectUser(userId);
+        System.out.println("userId");
         if(user == null){return null;}
+        System.out.println(user.userId);
         return new Database.UserRowData(user);
     }
 

@@ -57,15 +57,19 @@ public class Routes {
             response.type("application/json");
 
             String validToken = dataStore.verifyToken(token);
+            System.out.println("route");
+            System.out.println(validToken + "\n");
+            
 
             if(validToken.equals("")){return gson.toJson(new StructuredResponse("error", "unauthorized", null));}
-
+            return gson.toJson(new StructuredResponse("ok", "test", null));
+            /*
             Database.UserRowData userData = dataStore.readUser(idx);
             if (userData == null) {
                 return gson.toJson(new StructuredResponse("error", idx + " not found", null));
             } else {
                 return gson.toJson(new StructuredResponse("ok", null, userData));
-            }
+            }*/
         });
 
         //Update user note in DB
