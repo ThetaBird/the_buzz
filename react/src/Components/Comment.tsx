@@ -16,20 +16,7 @@ export class Comment extends React.Component<CommentProps>{
      state = {
          parsedDate:"",
      };
-     parseDate(){
-        let date = new Date(this.props.data.timestamp);
-        this.props.data.key = this.props.data.timestamp;
-        this.state.parsedDate = 
-        (date.getMonth()+1)+
-        "/"+date.getDate()+
-        "/"+date.getFullYear()+
-        " "+date.getHours()+
-        ":"+date.getMinutes()+
-        ":"+date.getSeconds();
-        //console.log(this.props.data.timestamp);
-     }
      render() {
-         this.parseDate();
         return(
             <div id={this.props.data.key}className="shadow-sm commentContainer">
                 <div className="form-row h6 text-start commentUser">
