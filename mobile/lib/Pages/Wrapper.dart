@@ -24,8 +24,8 @@ class Wrapper extends StatelessWidget{
     if(globalState.newIdea){
       return const NewIdea();
     }
-    if(globalState.profile){
-      return Profile();
+    if(globalState.profile != null){
+      return Profile(profile: globalState.profile!);
     }
     return const IdeaList();
   }

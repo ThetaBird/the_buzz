@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:thebuzz/Components/Data/IdeaData.dart';
+import 'package:thebuzz/Components/Data/ProfileData.dart';
 
 class GlobalState{
   String userToken = "";
@@ -8,7 +9,7 @@ class GlobalState{
   String userAvatar = "";
   IdeaData? specificIdea = null;
   bool newIdea = false;
-  bool profile = false;
+  ProfileData? profile = null;
 
   GlobalState(this.userToken,this.userName,this.userEmail,this.userAvatar);
 }
@@ -29,7 +30,7 @@ class GlobalStateService with ChangeNotifier{
     _state.newIdea = b;
     notifyListeners();
   }
-  void setProfile(bool b){
+  void setProfile(ProfileData? b){
     _state.profile = b;
     notifyListeners();
   }

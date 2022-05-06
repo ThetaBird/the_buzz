@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:thebuzz/Components/Data/ProfileData.dart';
 import '../Components/Data/GlobalState.dart';
 
 class BuzzDrawer extends StatelessWidget{
@@ -38,7 +39,8 @@ class BuzzDrawer extends StatelessWidget{
             ListTile(
               title: const Text('Profile'),
               onTap: () {
-                context.read<GlobalStateService>().setProfile(true);
+                ProfileData profile = ProfileData(globalState.userEmail,globalState.userName,globalState.userAvatar);
+                context.read<GlobalStateService>().setProfile(profile);
                 Navigator.pop(context);
               },
             ),

@@ -101,6 +101,9 @@ class NewIdea extends StatelessWidget{
                 ElevatedButton(
                   onPressed: () {
                     _getFromGallery();
+                    // ignore: prefer_const_constructors
+                    var snackBar = SnackBar(content: Text('Image uploaded from gallery'));
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
                   },
                   // ignore: prefer_const_constructors
                   child: Text('Gallery'),
@@ -109,6 +112,9 @@ class NewIdea extends StatelessWidget{
                 ElevatedButton(
                   onPressed: () {
                     _getFromCamera();
+                    // ignore: prefer_const_constructors
+                    var snackBar = SnackBar(content: Text('Image uploaded from camera'));
+                    ScaffoldMessenger.of(context).showSnackBar(snackBar);
                   },
                   // ignore: prefer_const_constructors
                   child: Text('Camera'),
