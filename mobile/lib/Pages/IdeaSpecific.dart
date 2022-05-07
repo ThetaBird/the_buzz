@@ -87,6 +87,23 @@ class _IdeaSpecificState extends State<IdeaSpecific> {
     }
 
     ProfileData profile = ProfileData(idea.userId!,idea.userName!,idea.userAvatar!);
+    /*void getProfile() async {
+      http.Response res = await http.post(
+        Uri.parse('https://cse216-group4-test.herokuapp.com/api/idea/${globalState.specificIdea!.ideaId}/reactions?token=${globalState.userToken}'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String,dynamic>{
+          'userId': profile.userId,
+          'note': "",
+          'email': profile.userName,
+          'name': idea.userName,
+          'avatar': profile.userAvatar,
+          'companyRole': 0,
+        }),
+      );
+      //return profile;
+    }*/
 
     return Scaffold(
       appBar: AppBar(
@@ -118,7 +135,6 @@ class _IdeaSpecificState extends State<IdeaSpecific> {
                 Text(idea.numDislikes.toString() + " dislikes"),
               ],
                 //display number of comments
-                //display likes and dislikes to the right
             ),
           ),
           SizedBox(
@@ -174,27 +190,32 @@ class _IdeaSpecificState extends State<IdeaSpecific> {
                 return ListTile(
                   title: Text(commentData[index].content!),
                   subtitle: Text(commentData[index].numLikes.toString() + " Likes " + commentData[index].numDislikes.toString() + " Dislikes"),
-                  //subtitle: Text(commentData[index].numLikes.toString() + " Likes"),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      TextButton(style: buttonStyle,
+                      TextButton(
                         onPressed: () {
-                        submitReaction(1);
+                          submitReaction(1);
+                          // ignore: prefer_const_constructors
+                          var snackBar = SnackBar(content: Text('Like Successful'));
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                          // ignore: prefer_const_constructors
+                        }, 
                         // ignore: prefer_const_constructors
-                        var snackBar = SnackBar(content: Text('Like Successful'));
-                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                        // ignore: prefer_const_constructors
-                        }, child: Text('Like'),
+                        child: Text('Like'),
+                        style: buttonStyle
                       ),
-                      TextButton(style: buttonStyle,
+                      TextButton(
                         onPressed: () {
                         submitReaction(-1);
                         // ignore: prefer_const_constructors
                         var snackBar = SnackBar(content: Text('Dislike Successful'));
                         ScaffoldMessenger.of(context).showSnackBar(snackBar);
                         // ignore: prefer_const_constructors
-                        }, child: Text('Dislike'),
+                        }, 
+                        // ignore: prefer_const_constructors
+                        child: Text('Dislike'),
+                        style: buttonStyle
                       ),
                     ],
                   )

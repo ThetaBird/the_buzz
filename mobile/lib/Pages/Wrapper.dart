@@ -18,14 +18,14 @@ class Wrapper extends StatelessWidget{
     if(globalState.userToken == ""){
       return Login();
     }
+    if(globalState.profile != null){
+      return Profile(profile: globalState.profile!);
+    }
     if(globalState.specificIdea != null){
       return IdeaSpecific(idea: globalState.specificIdea!);
     }
     if(globalState.newIdea){
       return const NewIdea();
-    }
-    if(globalState.profile != null){
-      return Profile(profile: globalState.profile!);
     }
     return const IdeaList();
   }

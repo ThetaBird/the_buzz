@@ -4,6 +4,7 @@ import 'package:thebuzz/Components/Data/ProfileData.dart';
 import '../Components/Data/GlobalState.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+//import 'package:flutter_image/network.dart';
 
 class Profile extends StatefulWidget{
   const Profile({Key? key, required this.profile}) : super(key: key);
@@ -46,10 +47,19 @@ class _ProfileState extends State<Profile>{
     const TextStyle text1Style = TextStyle(fontSize: 14);
     const TextStyle text2Style = TextStyle(fontSize: 32);
     //print(globalState.userAvatar);
-    void editNote(){
+    void editNote() async{
       /**
        * Pass modified note to backend on submission
        */
+      http.Response res = await http.post(
+        Uri.parse('https://cse216-group4-test.herokuapp.com/api/users/${globalState.specificIdea!.ideaId}/?token=${globalState.userToken}'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String,dynamic>{
+          'note': note,
+        }),
+      );
       
     }
     bool isUser = (profile.name == globalState.userName);
@@ -62,32 +72,50 @@ class _ProfileState extends State<Profile>{
           child: const Icon(Icons.arrow_back_ios_rounded),
         ),
       ),
-      body: SizedBox.expand(
+      // ignore: avoid_unnecessary_containers
+      body: Container(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 30),
             child: Column(
               children: [
-                Image(image: NetworkImage(profile.avatar),),
+                Image(image: NetworkImage(profile.avatar)),
                 // ignore: prefer_const_constructors
                 SizedBox(height: 25,),
-                Text(profile.name, style:text2Style),
+                Text(profile.name, style:text1Style),
                 Text(profile.email, style:text1Style),
-                  // ignore: prefer_const_constructors
-                  //padding: EdgeInsets.all(10.0),
+                // ignore: prefer_const_constructors
+                Text(profile.note, style:text1Style),
+                isUser
+                 // ignore: prefer_const_constructors
+                  ? SizedBox.expand(
+                    child: Row(
+                      children: [
+                        TextField(
+                        autocorrect: true,
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Profile Note',
+                        ),
+                      onChanged: (String value) => {note = value},
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          editNote();
+                          // ignore: prefer_const_constructors
+                          var snackBar = SnackBar(content: Text('Note submitted successful'));
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                          // ignore: prefer_const_constructors
+                        }, child: Text('Submit Note'),
+                      ),
+                    ],
+                  ),
+                )
+                : Container(),
               ],
             )
           ),
+
         ),
     );
   }
 }
-
-
-/*
-                  autocorrect: true,  
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Profile Note',
-                  ),
-                  onChanged: (String value) => {note = value},
-                )*/
