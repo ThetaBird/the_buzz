@@ -20,16 +20,13 @@ public class App {
      * The main routine reads arguments from the environment and then uses those
      * arguments to connect to the database.
      */
-    public static void main(String[] argv) throws IOException, GeneralSecurityException {
+    public static void main(String[] argv){
 
         String db_url = System.getenv("DATABASE_URL");
-        String port = System.getenv("POSTGRES_PORT");
-        String user = System.getenv("POSTGRES_USER");
-        String pass = System.getenv("POSTGRES_PASS");
-
+        
         // Get a fully-configured connection to the database, or exit
         // immediately
-        Database db = Database.getDatabase(db_url, port, user, pass);
+        Database db = Database.getDatabase(db_url);
         if (db == null)
             return;
             //Retrieve data for logged in user
@@ -56,7 +53,7 @@ public class App {
                 db.createTable();
             } else if (action == '1') { // query for a specific user in buzzusers
                 String username = scan.next();
-                Database.RowData row = new db.RowData();;
+                Database.RowData row = new Database.RowData();;
                 if (res != null) {
                     ;
                     System.out.println("  Idea: [" + res.note + "] " + " email: [" + res.email + "] " + " name: [" + res.name + "] "
@@ -73,7 +70,7 @@ public class App {
                      
                 }
             } else if (action == '3') { // query for a specific like
-                int idea = getInt(in, "Enter the idea of the like");
+                int idea = scan.nextInt();
                 String username = getString(in, "Enter the username associated with the like");
                 Database.RowData res = new db.RowData();
                 if (res != null) {

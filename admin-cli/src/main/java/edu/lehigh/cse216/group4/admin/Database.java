@@ -1,4 +1,4 @@
-package edu.lehigh.cse216.group4.backend;
+package edu.lehigh.cse216.group4.admin;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -732,4 +732,51 @@ public class Database {
         }
         return toRet;
     }
+
+    int deleteRow(String sub) {
+        int res = -1;
+        try {
+            Database.Connection.prepareStatement("DELETE FROM ideas WHERE id = ?");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return res;
+    }
+
+    int insertRow(long replyTo, String userId, String subject, String content, String attachment,
+    Short[] allowedRoles) {
+        int count = 0;
+        try {
+            mInsertIdea.setLong(1, millis);
+            mInsertIdea.setLong(2, replyTo);
+            mInsertIdea.setString(3, userId);
+            mInsertIdea.setLong(4, millis);
+            mInsertIdea.setString(5, subject);
+            mInsertIdea.setString(6, content);
+            mInsertIdea.setString(7, attachment);
+            Array roles = mConnection.createArrayOf("INTEGER", allowedRoles);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return count;
+    }
+
+    int updateRow(long ideaId, String subject, String content, String attachment, Short[] allowedRoles) {
+        int res = -1;
+        try {
+            mUpdateIdea.setString(1, subject);
+            mUpdateIdea.setString(2, content);
+            mUpdateIdea.setString(3, attachment);
+            Array roles = mConnection.createArrayOf("SMALLINT", allowedRoles);
+            mUpdateIdea.setArray(4, roles);
+
+            mUpdateIdea.setLong(5, ideaId);
+            res = mUpdateIdea.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return res;
+    }
+
+
 }
