@@ -54,7 +54,7 @@ public class DriveService {
     public static void init() throws IOException, GeneralSecurityException {
         final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
         System.out.println(new File(".").getAbsolutePath());
-    File pk12 = new File("/quickstartserv.p12");
+    File pk12 = new File("quickstartserv.p12");
     String serviceAccount = "drive-779@group4-344719.iam.gserviceaccount.com";
 
     // Build service account credential.Builder necessary for the ability to refresh tokens
