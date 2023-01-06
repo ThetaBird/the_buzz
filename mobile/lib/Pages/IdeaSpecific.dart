@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-
+import 'package:thebuzz/Components/Data/ProfileData.dart';
 import 'package:thebuzz/Components/Data/IdeaData.dart';
 import 'package:thebuzz/Components/Idea.dart';
 import '../Components/Comment.dart';
@@ -13,9 +13,10 @@ class IdeaSpecific extends StatefulWidget{
   final IdeaData idea;
   @override
   State<IdeaSpecific> createState() => _IdeaSpecificState(idea);
+
 }
 
-class _IdeaSpecificState extends State<IdeaSpecific>{
+class _IdeaSpecificState extends State<IdeaSpecific> {
   _IdeaSpecificState(this.idea);
 
   IdeaData idea;
@@ -48,9 +49,11 @@ class _IdeaSpecificState extends State<IdeaSpecific>{
 
     final ButtonStyle buttonStyle = ElevatedButton.styleFrom(textStyle: const TextStyle(fontSize: 14,fontWeight:FontWeight.bold),onPrimary: Colors.white, primary: Color.fromARGB(255, 28, 28, 28));
     const TextStyle textStyle = TextStyle(color: Colors.white,fontSize: 14,fontWeight: FontWeight.bold);
+    
     List<IdeaData> comments = [];
     if(idea.comments != null){comments = idea.comments as List<IdeaData>;}
-    
+
+    List<IdeaData> commentData = comments.reversed.toList();
 
     String commentContent = "";
     print(idea.ideaId);
@@ -69,8 +72,39 @@ class _IdeaSpecificState extends State<IdeaSpecific>{
           'allowedRoles':[]
         }),
       );
-      
     }
+
+    void submitReaction(type) async {
+      http.Response res = await http.post(
+        Uri.parse('https://cse216-group4-test.herokuapp.com/api/idea/${globalState.specificIdea!.ideaId}/reactions?token=${globalState.userToken}'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String,dynamic>{
+          'type': type,
+        }),
+      );
+    }
+
+    ProfileData profile = ProfileData(idea.userId!,idea.userName!,idea.userAvatar!);
+    /*void getProfile() async {
+      http.Response res = await http.post(
+        Uri.parse('https://cse216-group4-test.herokuapp.com/api/idea/${globalState.specificIdea!.ideaId}/reactions?token=${globalState.userToken}'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(<String,dynamic>{
+          'userId': profile.userId,
+          'note': "",
+          'email': profile.userName,
+          'name': idea.userName,
+          'avatar': profile.userAvatar,
+          'companyRole': 0,
+        }),
+      );
+      //return profile;
+    }*/
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Color.fromARGB(255, 28, 28, 28),
@@ -85,11 +119,59 @@ class _IdeaSpecificState extends State<IdeaSpecific>{
           SizedBox(
             height: 150,
             child: ListView(
-              children: [ideaChild],
+              //first elevated button to click on id
+              //second the subject
+              //third content
+              //put likes and dislikes button to the right (and num comments
+              children: [
+                ElevatedButton(
+                    onPressed: () { context.read<GlobalStateService>().setProfile(profile); },
+                    child: Text(idea.userId!, style:textStyle),
+                    style: buttonStyle
+                ),
+                Text("Subject: " + idea.subject!),
+                Text("Content: " + idea.content!),
+                Text(idea.numLikes.toString() + " likes"),
+                Text(idea.numDislikes.toString() + " dislikes"),
+              ],
+                //display number of comments
             ),
           ),
+          SizedBox(
+            height: 100,
+            child: Text(((){
+              if(idea.attachment != null){
+                return "Download Image File";
+              }
+              else{
+                return "No available attachment";
+              }
+            }()))
+          ),
+          ElevatedButton(
+            onPressed: () {
+              submitReaction(1);
+              // ignore: prefer_const_constructors
+              var snackBar = SnackBar(content: Text('Like Successful'));
+              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            },
+            // ignore: prefer_const_constructors
+            child: Text('Like'),
+            style: buttonStyle
+          ),
+          ElevatedButton(
+            onPressed: () {
+              submitReaction(-1);
+              // ignore: prefer_const_constructors
+              var snackBar = SnackBar(content: Text('Dislike Successful'));
+              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            },
+            // ignore: prefer_const_constructors
+            child: Text('Dislike'),
+            style: buttonStyle
+          ),
           const DecoratedBox(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
                 color: Color.fromARGB(255, 28, 28, 28),
               ),
               child: SizedBox(
@@ -102,11 +184,43 @@ class _IdeaSpecificState extends State<IdeaSpecific>{
               ),
           ),
           Expanded(
-            child: SizedBox(
-              height:300,
-              child: ListView(
-                children: comments.map((commentData) => Comment(data:commentData)).toList().reversed.toList(),
-              ),
+            child: ListView.builder(
+              itemCount: commentData.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(commentData[index].content!),
+                  subtitle: Text(commentData[index].numLikes.toString() + " Likes " + commentData[index].numDislikes.toString() + " Dislikes"),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          submitReaction(1);
+                          // ignore: prefer_const_constructors
+                          var snackBar = SnackBar(content: Text('Like Successful'));
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                          // ignore: prefer_const_constructors
+                        }, 
+                        // ignore: prefer_const_constructors
+                        child: Text('Like'),
+                        style: buttonStyle
+                      ),
+                      TextButton(
+                        onPressed: () {
+                        submitReaction(-1);
+                        // ignore: prefer_const_constructors
+                        var snackBar = SnackBar(content: Text('Dislike Successful'));
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        // ignore: prefer_const_constructors
+                        }, 
+                        // ignore: prefer_const_constructors
+                        child: Text('Dislike'),
+                        style: buttonStyle
+                      ),
+                    ],
+                  )
+                );
+              },
             ),
           ),
           SizedBox(
@@ -117,8 +231,7 @@ class _IdeaSpecificState extends State<IdeaSpecific>{
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: TextField(
-                      
-                      decoration: const InputDecoration(
+                        decoration: const InputDecoration(
                         border: UnderlineInputBorder(),
                         labelText: 'Comment',
                       ),

@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "519089242965-8d7dh10qsfmq2bncgagnbj9ac7ekhe8b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cse216_group4.buzz",
+            "certificate_hash": "53878941baf6ba88ba1a396e03f41cb3f364bdb2"
+          }
+        },
+        {
           "client_id": "519089242965-tmvbdkba6a9f7qefcjmamhgj1ib7244m.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

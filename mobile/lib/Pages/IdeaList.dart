@@ -20,6 +20,7 @@ class _IdeaListState extends State<IdeaList>{
   String? token;
   bool shouldUpdate = true;
 
+  //pulls info from backend
   void test(String? token) async{
     List<IdeaData> ideaDataList = [];
     http.Response res = await http.get(
@@ -60,7 +61,9 @@ class _IdeaListState extends State<IdeaList>{
             padding: const EdgeInsets.only(right:20.0),
             child: TextButton(
               style: buttonStyle,
-              onPressed:(){context.read<GlobalStateService>().setNewIdea(true);},
+              onPressed:(){
+                context.read<GlobalStateService>().setNewIdea(true);
+                },
               child: const Text('New Idea'),
             ),
           ),
@@ -69,7 +72,13 @@ class _IdeaListState extends State<IdeaList>{
       drawer: BuzzDrawer(),
       body: SizedBox.expand(
           child: ListView(
-            children: listState.ideas.map((ideaData) => Idea(data:ideaData,full: false,)).toList(),
+            children: listState.ideas.map(
+              (ideaData) => 
+              GestureDetector(
+                onTap: (() => {context.read<GlobalStateService>().setSpecificId(ideaData)}),
+                child:Idea(data:ideaData,full: false,)
+              )
+            ).toList(),
           ),
         ),
     );
