@@ -57,6 +57,16 @@
      <version>v3-rev105-1.23.0</version>
    </dependency>
    <dependency>
+     <groupId>com.google.api-client</groupId>
+     <artifactId>google-api-client</artifactId>
+     <version>1.33.0</version>
+   </dependency>
+   <dependency>
+     <groupId>com.google.auth</groupId>
+     <artifactId>google-auth-library-credentials</artifactId>
+     <version>1.6.0</version>
+   </dependency>
+   <dependency>
      <groupId>com.google.oauth-client</groupId>
      <artifactId>google-oauth-client-jetty</artifactId>
      <version>1.23.0</version>
@@ -66,6 +76,21 @@
 	   <artifactId>google-http-client-jackson2</artifactId>
 	   <version>1.22.0</version>
    </dependency>
+   <dependency>
+    <groupId>org.json</groupId>
+    <artifactId>json</artifactId>
+    <version>20090211</version>
+   </dependency>
+   <dependency>
+     <groupId>com.googlecode.json-simple</groupId>
+     <artifactId>json-simple</artifactId>
+     <version>1.1.1</version>
+   </dependency>
+   <dependency>
+    <groupId>com.googlecode.xmemcached</groupId>
+    <artifactId>xmemcached</artifactId>
+    <version>2.4.3</version>
+  </dependency>
   </dependencies>
    <build>
 	<plugins>

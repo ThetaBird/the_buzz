@@ -5,8 +5,11 @@ import spark.Spark;
 
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.net.http.HttpClient;
 import java.util.Base64;
 
+import com.google.api.client.http.HttpRequest;
+import com.google.api.client.http.HttpResponse;
 import com.google.api.services.drive.*;
 import com.google.api.services.drive.model.File;
 
@@ -54,6 +57,31 @@ public class Routes {
             response.type("application/json");
 
             String validToken = dataStore.verifyToken(token);
+            System.out.println("route");
+            System.out.println(validToken + "\n");
+            
+
+            if(validToken.equals("")){return gson.toJson(new StructuredResponse("error", "unauthorized", null));}
+            return gson.toJson(new StructuredResponse("ok", "test", null));
+            /*
+            Database.UserRowData userData = dataStore.readUser(idx);
+            if (userData == null) {
+                return gson.toJson(new StructuredResponse("error", idx + " not found", null));
+            } else {
+                return gson.toJson(new StructuredResponse("ok", null, userData));
+            }*/
+        });
+
+        //Update user note in DB
+        Spark.post("/api/user/:id", (request, response) -> {
+            String idx = request.params("id");
+            String token = request.queryParams("token");
+            RequestUser req = gson.fromJson(request.body(), RequestUser.class);
+            // ensure status 200 OK, with a MIME type of JSON
+            response.status(200);
+            response.type("application/json");
+
+            String validToken = dataStore.verifyToken(token);
 
             if(validToken.equals("")){return gson.toJson(new StructuredResponse("error", "unauthorized", null));}
 
@@ -61,6 +89,7 @@ public class Routes {
             if (userData == null) {
                 return gson.toJson(new StructuredResponse("error", idx + " not found", null));
             } else {
+                dataStore.updateUser(userData.userId, req.note);
                 return gson.toJson(new StructuredResponse("ok", null, userData));
             }
         });
@@ -122,7 +151,7 @@ public class Routes {
             String validToken = dataStore.verifyToken(token);
 
             if(validToken.equals("")){return gson.toJson(new StructuredResponse("error", "unauthorized", null));}
-
+/*
             if(req.attachment != null){ //optional file upload
                 // https://stackoverflow.com/questions/37674016/similar-java-function-like-atob-in-javascript
                 String byteAttachment = new String(Base64.getEncoder().encode(req.attachment.getBytes()));  //encodes into base64, makes string
@@ -142,7 +171,18 @@ public class Routes {
                     System.err.println("Couldn't write to file");
                 }
             }
-
+*/
+            /*
+                - Call the profanity API, pass subject & content and receive results
+                (POST request)
+                if(response.bad == true){
+                    return gson.toJson(new StructuredResponse("error", "no bad words!", null));
+                }
+            */
+            boolean hasProfanity = Censor.checkProfanity(req.subject + " " + req.content);
+            if(hasProfanity){
+                return gson.toJson(new StructuredResponse("error", "profanity", null));
+            }
             // NB: createEntry checks for null title and message
             int newId = dataStore.createIdea( req.replyTo, validToken , req.subject, req.content, req.attachment, req.allowedRoles);
             if (newId == -1) {
@@ -253,10 +293,7 @@ public class Routes {
             String accessKey = reqOAuth.id_token;
             return gson.toJson(new StructuredResponse("ok", null ,OAuth.OAuthAuthorize(accessKey)));//return section key
 
-        });
-
-
-        
+        });   
 
 
 

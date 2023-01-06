@@ -4,6 +4,8 @@ package edu.lehigh.cse216.group4.backend;
 // create an HTTP GET route
 import spark.Spark;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.Map;
 import com.google.gson.*;
 
@@ -14,13 +16,23 @@ public class App {
     final static Gson gson = new Gson();
 
     public static void main(String[] args) {
-
+        //Censor censor = new Censor();
+        //censor.censor();
+        
         // dataStore holds all of the data that has been provided via HTTP
         // requests
         //
         // NB: every time we shut down the server, we will lose all data, and
         // every time we start the server, we'll have an empty dataStore,
         // with IDs starting over from 0.
+        try{DriveService.init();}
+        catch(IOException e){
+            System.out.println("IOException\n" + e);
+        }catch(GeneralSecurityException g){
+            System.out.println("GeneralSecurityException\n" + g);
+        }
+
+        
         final DataStore dataStore = new DataStore();
 
         // get the Postgres configuration from the environment
@@ -95,7 +107,7 @@ public class App {
         // Database.ReactionRowData result = dataStore.updateReaction(1, 1, 1);
         // System.out.println(result.ideaId);
 
-
+        
     }
 
     /**

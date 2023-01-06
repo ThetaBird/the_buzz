@@ -1,7 +1,5 @@
 package edu.lehigh.cse216.group4.backend;
 
-
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.GeneralSecurityException;
@@ -22,6 +20,8 @@ import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 public class OAuth {
     private static DataStore dataStore;
     public static final String CLIENT_ID = "841253943983-23js8dkv8houcvggnt3trl09v83270am.apps.googleusercontent.com";
+    public static final String CLIENT_ID_MOBILE = "519089242965-tmvbdkba6a9f7qefcjmamhgj1ib7244m.apps.googleusercontent.com";
+    public static final String CLIENT_ID_MOBILE2 = "519089242965-tbuabt15bvjm05l92fkhc4h583r17vlq.apps.googleusercontent.com";
     public static void setDataStore(DataStore d){
         dataStore = d;
     }
@@ -30,9 +30,9 @@ public class OAuth {
         NetHttpTransport transport = GoogleNetHttpTransport.newTrustedTransport();
         GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory)
                 // Specify the CLIENT_ID of the app that accesses the backend:
-                .setAudience(Arrays.asList(CLIENT_ID))
+                //.setAudience(Arrays.asList(CLIENT_ID))
                 // Or, if multiple clients access the backend:
-                // .setAudience(Arrays.asList(CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3))
+                .setAudience(Arrays.asList(CLIENT_ID, CLIENT_ID_MOBILE, CLIENT_ID_MOBILE2))
                 .build();
 
         // (Receive idTokenString by HTTPS POST)

@@ -1,14 +1,12 @@
 package edu.lehigh.cse216.group4.backend;
+import java.util.HashMap;
 import java.util.ArrayList;
-import java.util.Base64;
 
-import com.google.api.services.drive.Drive;
 import com.google.common.hash.Hashing;
 
 import edu.lehigh.cse216.group4.backend.Database.UserRowData;
 
 import java.nio.charset.StandardCharsets;
-import java.security.GeneralSecurityException;
 
 import net.rubyeye.xmemcached.MemcachedClient;
 import net.rubyeye.xmemcached.MemcachedClientBuilder;
@@ -20,9 +18,7 @@ import net.rubyeye.xmemcached.utils.AddrUtil;
 
 import java.lang.InterruptedException;
 import java.net.InetSocketAddress;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
@@ -37,14 +33,9 @@ import java.util.concurrent.TimeoutException;
  * web framework and there may be multiple concurrent accesses to the DataStore.
  */
 public class DataStore {
-
-    private List<InetSocketAddress> servers = AddrUtil.getAddresses(System.getenv("MEMCACHIER_SERVERS").replace(",", " "));
-    private AuthInfo authInfo = AuthInfo.plain(System.getenv("MEMCACHIER_USERNAME"), System.getenv("MEMCACHIER_PASSWORD"));
-    private MemcachedClientBuilder builder = new XMemcachedClientBuilder(servers);
-    private MemcachedClient mc;
-
-
+    HashMap<String, String> userSessionKeys = new HashMap<String, String>();
     private Database db;
+    private MemcachedClient mc;
 
     /**
      * Construct the DataStore by resetting its counter and creating the
@@ -65,27 +56,53 @@ public class DataStore {
         return 0;
     }
     public synchronized int attachCache(){
+        String memServers = System.getenv("MEMCACHIER_SERVERS");
+        System.out.println(memServers);
+        List<InetSocketAddress> servers =
+        AddrUtil.getAddresses(memServers);
+        AuthInfo authInfo =
+        AuthInfo.plain(System.getenv("MEMCACHIER_USERNAME"),
+                        System.getenv("MEMCACHIER_PASSWORD"));
+
+        MemcachedClientBuilder builder = new XMemcachedClientBuilder(servers);
+
         // Configure SASL auth for each server
-    for(InetSocketAddress server : servers) {
+        for(InetSocketAddress server : servers) {
         builder.addAuthInfo(server, authInfo);
-      }
-  
-      // Use binary protocol
-      builder.setCommandFactory(new BinaryCommandFactory());
-      // Connection timeout in milliseconds (default: )
-      builder.setConnectTimeout(1000);
-      // Reconnect to servers (default: true)
-      builder.setEnableHealSession(true);
-      // Delay until reconnect attempt in milliseconds (default: 2000)
-      builder.setHealSessionInterval(2000);
-  
-      try {
-        mc = builder.build();
-      } catch (IOException ioe) {
-        System.err.println("Couldn't create a connection to MemCachier: " +
-                           ioe.getMessage());
-      }
-        return 0;
+        }
+
+        // Use binary protocol
+        builder.setCommandFactory(new BinaryCommandFactory());
+        // Connection timeout in milliseconds (default: )
+        builder.setConnectTimeout(1000);
+        // Reconnect to servers (default: true)
+        builder.setEnableHealSession(true);
+        // Delay until reconnect attempt in milliseconds (default: 2000)
+        builder.setHealSessionInterval(2000);
+
+        try {
+            mc = builder.build();
+        }catch (IOException ioe) {
+            System.err.println("Couldn't create a connection to MemCachier: " + ioe.getMessage());
+        }
+        return 1;
+    }
+    private void temp(){
+     
+            try {
+              mc.set("foo", 0, "bar");
+              String val = mc.get("foo");
+              System.out.println(val);
+            } catch (TimeoutException te) {
+              System.err.println("Timeout during set or get: " +
+                                 te.getMessage());
+            } catch (InterruptedException ie) {
+              System.err.println("Interrupt during set or get: " +
+                                 ie.getMessage());
+            } catch (MemcachedException me) {
+              System.err.println("Memcached error during get or set: " +
+                                 me.getMessage());
+            }         
     }
 
     /** 
@@ -97,13 +114,17 @@ public class DataStore {
     public synchronized String verifyToken(String token){
         String sessionKey = Hashing.sha256().hashString(token, StandardCharsets.UTF_8).toString(); //hash the token
         System.out.println(sessionKey);
-        String val = "";
-        try {
-            val = mc.get(sessionKey);
-            if(val != "" || val == null){
-                return "";
-            }
-          } catch (TimeoutException te) {
+        /*
+        if(!userSessionKeys.containsKey(sessionKey)){ //check if hashed token in hashmap
+            return "";
+        }
+        System.out.println(sessionKey);
+        */
+        //return userSessionKeys.get(sessionKey);
+        String userId = "";
+        try{
+            userId = mc.get(sessionKey);
+        }  catch (TimeoutException te) {
             System.err.println("Timeout during set or get: " +
                                te.getMessage());
           } catch (InterruptedException ie) {
@@ -112,14 +133,14 @@ public class DataStore {
           } catch (MemcachedException me) {
             System.err.println("Memcached error during get or set: " +
                                me.getMessage());
-          }
-        System.out.println(sessionKey);
-        return val;
+          }  
+
+        return userId;
     }
 
 
     /** 
-     * add session key to the hashmap
+     * add session key to the hashamap
      * @param the email and sessionKey to be added
      * 
      * @return no return
@@ -131,13 +152,13 @@ public class DataStore {
         }
         System.out.println(sessionKey);
         checkUser(email);
-        
-        System.out.println(sessionKey);
-        try {
+        /*
+        userSessionKeys.put(sessionKey,email); //Add (email, sessionkey) to userSessionKeys
+        */
+
+        try{
             mc.set(sessionKey, 0, email);
-            String val = mc.get(sessionKey);
-            System.out.println(val);
-          } catch (TimeoutException te) {
+        }catch (TimeoutException te) {
             System.err.println("Timeout during set or get: " +
                                te.getMessage());
           } catch (InterruptedException ie) {
@@ -146,8 +167,8 @@ public class DataStore {
           } catch (MemcachedException me) {
             System.err.println("Memcached error during get or set: " +
                                me.getMessage());
-          }
-        
+          }  
+        System.out.println(sessionKey);
     }
 
      /** 
@@ -229,37 +250,6 @@ public class DataStore {
         if(idea == null){return null;}
         System.out.println("comments");
         System.out.println(idea.comments);
-
-        //download from google drive
-        OutputStream outputStream = new ByteArrayOutputStream();
-        Drive driveService;
-        try {
-            driveService = new DriveQuickstart().getService();
-            driveService.files().get(idea.attachment).executeMediaAndDownloadTo(outputStream);
-
-        //convert to string and set as attachment
-        byte[] file = ((ByteArrayOutputStream) outputStream).toByteArray();
-        String fileAttachment = new String(Base64.getEncoder().encode(file));
-        idea.attachment = fileAttachment;
-        try {   //store file in memcachier
-            mc.set(String.valueOf(ideaId), 0, fileAttachment);
-            String val = mc.get(String.valueOf(ideaId));
-            System.out.println(val);
-          } catch (TimeoutException te) {
-            System.err.println("Timeout during set or get: " +
-                               te.getMessage());
-          } catch (InterruptedException ie) {
-            System.err.println("Interrupt during set or get: " +
-                               ie.getMessage());
-          } catch (MemcachedException me) {
-            System.err.println("Memcached error during get or set: " +
-                               me.getMessage());
-          }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (GeneralSecurityException e) {
-            e.printStackTrace();
-        }
         return new Database.IdeaRowData(idea);
     }
 
@@ -310,8 +300,11 @@ public class DataStore {
      * @return null if no user found, UserRowData if user found.
      */
     public synchronized Database.UserRowData readUser(String userId){
+        System.out.println(userId);
         Database.UserRowData user = db.selectUser(userId);
+        System.out.println("userId");
         if(user == null){return null;}
+        System.out.println(user.userId);
         return new Database.UserRowData(user);
     }
 
@@ -401,15 +394,12 @@ public class DataStore {
      * @param companyRole current or updated role in the company
      * @return a UserRowData containing the new user information
      */
-    public synchronized Database.UserRowData updateUser(String userId, String note , String email, String name, Short companyRole){
+    public synchronized Database.UserRowData updateUser(String userId, String note){
         Database.UserRowData user = readUser(userId);
-        if(user == null || name == null){return null;}
+        if(user == null){return null;}
 
-        user.email = email;
-        user.name = name;
-        user.companyRole = companyRole;
-
-        int res = db.updateUser(userId, note , email, name, companyRole);
+        user.note = note;
+        int res = db.updateUser(userId, note);
         if(res == -1){return null;}
 
         return new Database.UserRowData(user);

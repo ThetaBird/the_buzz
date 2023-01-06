@@ -288,7 +288,7 @@ public class Database {
             db.mInsertUser = db.mConnection.prepareStatement("INSERT INTO users VALUES (?, ?, ?, ?, ?, ?)"); // ??//
             db.mSelectUser = db.mConnection.prepareStatement("SELECT * from users WHERE userId = ?");
             db.mUpdateUser = db.mConnection.prepareStatement(
-                    "UPDATE users SET note = ? , email = ?, name = ?, companyRole = ? WHERE ideaId = ?");
+                    "UPDATE users SET note = ? WHERE ideaId = ?");
         } catch (SQLException e) {
             System.err.println("Error creating prepared statement");
             e.printStackTrace();
@@ -655,15 +655,13 @@ public class Database {
      * @param companyRole current or updated role in the company
      * @return a UserRowData containing the new user information
      */
-    int updateUser(String userId, String note, String email, String name, Short companyRole) {
+    int updateUser(String userId, String note) {
         int res = -1;
         try {
             mUpdateUser.setString(1, note);
-            mUpdateUser.setString(2, email);
-            mUpdateUser.setString(3, name);
-            mUpdateUser.setShort(4, companyRole);
+            
 
-            mUpdateUser.setString(5, userId);
+            mUpdateUser.setString(2, userId);
             res = mUpdateUser.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
